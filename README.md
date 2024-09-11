@@ -20,3 +20,6 @@ ERD를 마무리하고, API 명세서를 작성중에 있습니다.
 
 # 2024. 09. 10
 API 명세서를 완성하고, MSA 도입을 위한 Spring cloud 학습에 도입했습니다.
+
+# 2024. 09. 11
+Spring cloud를 이해하고 Docker-compose를 적용하는 실습을 진행했습니다.
