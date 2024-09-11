@@ -279,3 +279,8 @@
 1. MSA 학습 중
 2. 인프라 구축 관련 공부 중
 3. API 명세서 작성 완료
+
+## 2024.09.11
+
+1. Spring cloud 학습 중
+2. config 서버, eureka 서버, gateway 서버 등 MSA를 위한 중앙 서버 학습 및 실습!!
