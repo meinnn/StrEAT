@@ -284,3 +284,8 @@
 
 1. Spring cloud 학습 중
 2. config 서버, eureka 서버, gateway 서버 등 MSA를 위한 중앙 서버 학습 및 실습!!
+
+## 2024.09.12
+
+1. Docker 학습 및 실습완료
+2. 발표 자료 PPT 제작
