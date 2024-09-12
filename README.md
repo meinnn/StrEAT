@@ -23,3 +23,7 @@ API 명세서를 완성하고, MSA 도입을 위한 Spring cloud 학습에 도�
 
 # 2024. 09. 11
 Spring cloud를 이해하고 Docker-compose를 적용하는 실습을 진행했습니다.
+
+# 2024.09.12
+Docker 학습 및 실습완료
+발표 자료 PPT 제작
