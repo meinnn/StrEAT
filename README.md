@@ -27,3 +27,6 @@ Spring cloud를 이해하고 Docker-compose를 적용하는 실습을 진행했�
 # 2024.09.12
 Docker 학습 및 실습완료
 발표 자료 PPT 제작
+
+# 2024. 09. 13
+발표
