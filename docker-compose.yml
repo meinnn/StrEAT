@@ -1,0 +1,38 @@
+services:
+  streat-eureka:
+    image: junbeomson/streat-eureka:latest
+    container_name: streat-eureka
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+    healthcheck: # eureka server가 완전히 준비되었는지 확인하는 헬스 체크 설정
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 5s  # 5초마다 상태 확인
+      timeout: 5s
+      retries: 5  # 5번의 실패 후 상태가 "unhealthy"로 간주됨
+
+  streat-user:
+    image: junbeomson/streat-user:latest
+    container_name: streat-user
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8080/eureka/  # Docker Compose 환경 변수로 Eureka Server URI 설정
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+    depends_on: # 다른 서비스가 먼저 실행되도록 설정
+      streat-eureka:
+        condition: service_healthy
+  
+  streat-gateway:
+    image: junbeomson/streat-gateway:latest
+    container_name: streat-gateway
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+
+networks:
+  streat-network:
+    driver: bridge
