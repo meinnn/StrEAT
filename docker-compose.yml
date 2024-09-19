@@ -16,7 +16,7 @@ services:
     image: junbeomson/streat-user:latest
     container_name: streat-user
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8080/eureka/  # Docker Compose 환경 변수로 Eureka Server URI 설정
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://streat-eureka:8080/eureka/  # Docker Compose 환경 변수로 Eureka Server URI 설정
     ports:
       - "0:8080"
     networks:
