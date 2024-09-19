@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: eureka
+eureka:
+  client:
+    register-with-eureka: false # 서버는 자신을 다른 서버에 등록할 필요가 없음
+    fetch-registry: false # 다른 레지스트리를 가져올 필요 없음
