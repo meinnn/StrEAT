@@ -1,6 +1,10 @@
 spring:
   application:
     name: eureka
+
+server:
+  port: 8761 # Eureka server는 보통 8761 포트 사용
+
 eureka:
   client:
     register-with-eureka: false # 서버는 자신을 다른 서버에 등록할 필요가 없음
