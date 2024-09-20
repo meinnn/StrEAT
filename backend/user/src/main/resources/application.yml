@@ -20,3 +20,5 @@ server:
 kakao:
   redirect-uri: http://localhost:8787/api/users/login/kakao/redirect
   app-key: 2348144c073d82c2759f313c40d3c9c9
+  token:
+    url: https://kauth.kakao.com/oauth/token"
