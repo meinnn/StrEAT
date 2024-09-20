@@ -22,6 +22,8 @@ kakao:
   app-key: 2348144c073d82c2759f313c40d3c9c9
   token:
     url: https://kauth.kakao.com/oauth/token"
+  user-info:
+    url: https://kapi.kakao.com/v2/user/me
 
 jwt:
   salt: STREAT-SALT-VALUE-40932999-071e-4368-a21f-6aa4b5fa16b0
