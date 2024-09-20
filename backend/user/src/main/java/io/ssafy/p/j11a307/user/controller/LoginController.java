@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.service.LoginService;
 import io.ssafy.p.j11a307.user.util.KakaoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,8 @@ import java.net.URI;
 @RequiredArgsConstructor
 @RequestMapping("/login")
 public class LoginController {
+
+    private final LoginService loginService;
 
     private final KakaoUtil kakaoUtil;
 
