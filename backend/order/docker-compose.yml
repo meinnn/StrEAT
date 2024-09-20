@@ -52,8 +52,8 @@ services:
     depends_on: # 다른 서비스가 먼저 실행되도록 설정
       streat-eureka:
         condition: service_healthy
-      # streat-config:
-      #   condition: service_healthy
+      streat-config:
+        condition: service_healthy
 
   streat-gateway:
     image: junbeomson/streat-gateway:latest
