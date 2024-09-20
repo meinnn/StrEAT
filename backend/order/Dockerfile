@@ -1,5 +1,5 @@
 # OpenJDK 17 버전 사용
-FROM openjdk:217-jdk
+FROM openjdk:17-jdk
 
 # 애플리케이션 JAR 파일을 Docker 이미지로 복사
 COPY build/libs/*.jar /app.jar
