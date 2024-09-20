@@ -6,7 +6,7 @@ import { RiSearchLine, RiHeart3Line } from 'react-icons/ri'
 import { TbSmartHome, TbReceipt } from 'react-icons/tb'
 import { HiOutlineUser } from 'react-icons/hi'
 
-const links = [
+const LINKS = [
   { name: '홈', href: '', icon: TbSmartHome },
   { name: '위치 검색', href: '/search', icon: RiSearchLine },
   { name: '주문 내역', href: '/orders', icon: TbReceipt },
@@ -20,7 +20,7 @@ export default function CustomerNav() {
   return (
     <nav className="z-50 bg-white h-tabbar fixed bottom-0 inset-x-0">
       <ul className="h-full flex justify-around items-center">
-        {links.map((link) => {
+        {LINKS.map((link) => {
           return (
             <li key={link.name}>
               <Link

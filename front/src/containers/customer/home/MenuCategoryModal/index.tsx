@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { IoCloseOutline } from 'react-icons/io5'
 import { useState } from 'react'
 
-const menuCategories = [
+const MENU_CATEGORIES = [
   {
     title: '식사류',
     items: [
@@ -82,7 +82,7 @@ export default function MenuCategoryModal({
           <IoCloseOutline size={24} />
         </button>
         <div className="mt-6">
-          {menuCategories.map((category) => (
+          {MENU_CATEGORIES.map((category) => (
             <div key={category.title} className="mb-6 p-2">
               <h2 className="text-lg font-semibold">{category.title}</h2>
               <div className="grid grid-cols-5 gap-3 mt-2">
