@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.ssafy.p.j11a307.user.service.LoginService;
 import io.ssafy.p.j11a307.user.util.KakaoUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +28,15 @@ public class LoginController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(uri));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    }
+
+    @GetMapping("/kakao/auth")
+    public ResponseEntity<Void> kakaoAuth(String code) throws JsonProcessingException {
+        String kakaoTokens = kakaoUtil.getKakaoTokens(code);
+        loginService.kakaoLogin(kakaoTokens);
+        HttpHeaders headers = new HttpHeaders();
+
+        return ResponseEntity.ok()
+                .headers(headers).build();
     }
 }
