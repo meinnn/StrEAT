@@ -11,3 +11,4 @@ spring:
           username: thswnsqja
           password: MzuTG3V9qxUpZhxzi-Vf
           search-paths: "/backend"
+          default-label: backend
