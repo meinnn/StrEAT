@@ -11,6 +11,19 @@ services:
       interval: 5s  # 5초마다 상태 확인
       timeout: 5s
       retries: 5  # 5번의 실패 후 상태가 "unhealthy"로 간주됨
+  
+  streat-config:
+    image: junbeomson/streat-config:latest
+    container_name: streat-config
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+    healthcheck: # config server가 완전히 준비되었는지 확인하는 헬스 체크 설정
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 5s  # 5초마다 상태 확인
+      timeout: 5s
+      retries: 5  # 5번의 실패 후 상태가 "unhealthy"로 간주됨
 
   streat-user:
     image: junbeomson/streat-user:latest
@@ -24,6 +37,8 @@ services:
     depends_on: # 다른 서비스가 먼저 실행되도록 설정
       streat-eureka:
         condition: service_healthy
+      # streat-config:
+      #   condition: service_healthy
   
   streat-gateway:
     image: junbeomson/streat-gateway:latest
