@@ -2,15 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { RiSearchLine, RiHeart3Line, RiUserLine } from 'react-icons/ri'
+import { RiSearchLine, RiHeart3Line } from 'react-icons/ri'
 import { TbSmartHome, TbReceipt } from 'react-icons/tb'
+import { HiOutlineUser } from 'react-icons/hi'
 
 const links = [
   { name: '홈', href: '', icon: TbSmartHome },
   { name: '위치 검색', href: '/search', icon: RiSearchLine },
   { name: '주문 내역', href: '/orders', icon: TbReceipt },
   { name: '찜 목록', href: '/favorites', icon: RiHeart3Line },
-  { name: '마이 페이지', href: '/mypage', icon: RiUserLine },
+  { name: '마이 페이지', href: '/mypage', icon: HiOutlineUser },
 ]
 
 export default function CustomerNav() {
