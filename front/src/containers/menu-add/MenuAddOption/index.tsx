@@ -127,7 +127,7 @@ const MenuAddOption = () => {
 
       {/* 삭제하기 버튼 */}
       <div className="mt-6 mb-6 flex justify-center">
-        <button className="bg-primary-500 text-white font-bold py-2 px-6 rounded-md w-full">
+        <button className="bg-primary-600 text-white font-bold py-2 px-6 rounded-md w-full">
           삭제하기
         </button>
       </div>
