@@ -1,7 +1,7 @@
 import { FiMap } from 'react-icons/fi'
 import StoreSearchHeader from '@/components/StoreSearchHeader'
 import StoreListItem from '@/containers/customer/home/StoreListItem'
-import { MdCheckBoxOutlineBlank, MdCheckBox } from 'react-icons/md'
+import { FaCheck } from 'react-icons/fa6'
 
 export default function ListView({
   setView,
@@ -28,21 +28,21 @@ export default function ListView({
             <h2 className="text-xl font-semibold text-primary-950">
               내 근처 붕어빵
             </h2>
-            <div className="flex items-center space-x-1 text-gray-dark">
-              {/* 커스텀 체크박스 */}
-              <label
-                htmlFor="favorite"
-                className="flex items-center cursor-pointer"
-              >
+            {/* 커스텀 체크박스 */}
+            <label
+              htmlFor="favorite"
+              className="flex items-center cursor-pointer text-gray-dark"
+            >
+              <div className="grid items-center justify-center">
                 <input
                   type="checkbox"
                   id="favorite"
-                  name="favorite"
-                  className="appearance-none h-4 w-4 border border-gray-300 rounded-sm checked:bg-primary-500 checked:border-transparent focus:outline-none" // 체크박스 스타일링
+                  className="peer row-start-1 col-start-1 appearance-none h-4 w-4 border border-gray-dark rounded-sm checked:bg-primary-500 checked:border-transparent focus:outline-none forced-colors:appearance-auto" // 체크박스 스타일링
                 />
-                <span className="ml-2">찜한 가게만</span>
-              </label>
-            </div>
+                <FaCheck className="invisible peer-checked:visible row-start-1 col-start-1 text-white forced-colors:hidden" />
+              </div>
+              <span className="ml-2 peer-checked:text-sm">찜한 가게만</span>
+            </label>
           </div>
 
           <StoreListItem />
