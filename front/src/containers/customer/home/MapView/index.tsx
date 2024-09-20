@@ -9,15 +9,15 @@ export default function MapView({
 }) {
   return (
     <div className="relative h-screen w-full">
-      <div className="absolute inset-0 h-full w-full flex items-center justify-center text-center">
+      <div className="absolute inset-0 h-full w-full flex items-center justify-center text-center bg-gray-light">
         <span className="text-9xl text-gray-dark">지도</span>
       </div>
 
-      <div className="relative z-10">
+      <div className="relative">
         <StoreSearchHeader view="map" />
       </div>
 
-      <div className="absolute bottom-16 w-full z-10">
+      <div className="absolute bottom-16 w-full">
         <button
           type="button"
           onClick={() => setView('list')} // 버튼 클릭 시 'list'로 상태 변경
