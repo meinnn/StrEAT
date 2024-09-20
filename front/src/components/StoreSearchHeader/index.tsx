@@ -5,10 +5,16 @@ import MenuCategoryModal from '@/containers/customer/home/MenuCategoryModal'
 
 export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedMenu, setSelectedMenu] = useState<string | null>(null) // 선택된 메뉴 저장
+
+  const handleMenuSelect = (menuName: string) => {
+    setSelectedMenu(menuName)
+    setIsModalOpen(false) // 메뉴 선택 후 모달 닫기
+  }
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between rounded-xl h-12 px-5 border border-gray-medium drop-shadow-sm bg-white">
+      <div className="flex items-center justify-between rounded-xl h-12 px-5 border border-gray-medium drop-shadow-md bg-white">
         <span>현재 주소</span>
         <GoChevronRight size="18" />
       </div>
@@ -16,10 +22,14 @@ export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)} // 모달 열기
-          className="flex items-center border border-gray-medium rounded-full px-3 h-9 text-xs bg-white"
+          className={`flex items-center rounded-full px-3 h-9 text-xs ${
+            selectedMenu
+              ? 'bg-[#371B1B] text-white'
+              : 'bg-white border border-gray-medium'
+          }`} // 선택된 메뉴에 따라 스타일 변경
         >
           <RiSearchLine className="text-primary-500 mr-1" size={16} />
-          <span>메뉴 검색</span>
+          <span>{selectedMenu || '메뉴 검색'}</span>
         </button>
 
         {view === 'map' && (
@@ -33,7 +43,10 @@ export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
       </div>
 
       {isModalOpen && (
-        <MenuCategoryModal onClose={() => setIsModalOpen(false)} /> // 모달 컴포넌트 호출
+        <MenuCategoryModal
+          onClose={() => setIsModalOpen(false)}
+          onSelect={handleMenuSelect}
+        /> // 모달 컴포넌트 호출
       )}
     </div>
   )

@@ -44,14 +44,21 @@ const menuCategories = [
 
 export default function MenuCategoryModal({
   onClose,
+  onSelect,
 }: {
   onClose: () => void
+  onSelect: (menuName: string) => void
 }) {
   const [isClosing, setIsClosing] = useState(false)
 
   const handleClose = () => {
     setIsClosing(true)
     setTimeout(onClose, 300) // 애니메이션 지속 시간 후 모달 닫기
+  }
+
+  const handleMenuSelect = (menuName: string) => {
+    onSelect(menuName) // 선택한 메뉴 전달
+    handleClose() // 모달 닫기
   }
 
   return (
@@ -81,8 +88,10 @@ export default function MenuCategoryModal({
               <div className="grid grid-cols-5 gap-3 mt-2">
                 {category.items.map((item) => (
                   <div
+                    role="presentation"
                     key={item.name}
                     className="flex flex-col justify-center items-center gap-1"
+                    onClick={() => handleMenuSelect(item.name)} // 메뉴 선택 처리
                   >
                     <button
                       type="button"
