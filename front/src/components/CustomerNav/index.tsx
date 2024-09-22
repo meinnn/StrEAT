@@ -17,6 +17,10 @@ const LINKS = [
 export default function CustomerNav() {
   const path = usePathname()
 
+  if (path.startsWith('/customer/stores')) {
+    return null
+  }
+
   return (
     <nav className="z-50 bg-white h-tabbar fixed bottom-0 inset-x-0">
       <ul className="h-full flex justify-around items-center">
