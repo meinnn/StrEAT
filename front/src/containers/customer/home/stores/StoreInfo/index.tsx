@@ -1,97 +1,71 @@
-'use client'
-
-import { useState } from 'react'
-import { RiHeart3Fill, RiHeart3Line } from 'react-icons/ri'
-import Image from 'next/image'
-import { FaStar } from 'react-icons/fa'
-import { GoChevronRight } from 'react-icons/go'
-import { GrLocation } from 'react-icons/gr'
-import MenuList from '@/containers/customer/home/stores/MenuList'
-import CartButton from '@/containers/customer/home/stores/CartButton'
-import BackButton from '@/components/BackButton'
-
 export default function StoreInfo() {
-  const [isLiked, setIsLiked] = useState(false)
-
-  const toggleLike = () => {
-    setIsLiked(!isLiked) // 좋아요 상태 토글
-  }
-
   return (
-    <div>
-      <BackButton />
-      {/* 가게 정보 */}
-      <Image
-        src="/images/store_image.png"
-        alt="가게 사진"
-        width={0}
-        height={0}
-        className="w-full h-48 object-cover bg-gray-medium"
-      />
-
-      <div className="relative">
-        <button
-          type="button"
-          onClick={toggleLike}
-          className="absolute top-8 right-4 bg-white p-2 rounded-full"
-        >
-          {isLiked ? (
-            <RiHeart3Fill className="text-primary-500" size={24} />
-          ) : (
-            <RiHeart3Line className="text-primary-500" size={24} />
-          )}
-        </button>
-      </div>
-
-      <div className="p-5">
-        <div>
-          <p className="text-xs mb-1">#치킨</p>
-          <h1 className="text-2xl font-bold">옐로우 키친 치킨</h1>
-
-          <div className="flex items-center mt-1 gap-2">
-            <div className="flex items-center gap-0.5">
-              <FaStar className="text-yellow-400" />
-              <span>4.9</span>
+    <>
+      <div className="w-full h-48 object-cover bg-gray-medium">지도</div>
+      <div className="p-6 bg-white">
+        {/* 가게 정보 */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-2">옐로우 키친 치킨</h2>
+          <div className="grid grid-cols-[100px_1fr] gap-2 text-sm">
+            <p className="font-semibold">주소</p>
+            <p>서울특별시 강남구 역삼동 123-123 1층 01호</p>
+            <p className="font-semibold">운영 시간</p>
+            <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1">
+              <p>월</p>
+              <p>정기 휴무</p>
+              <p>화</p>
+              <p>11:00 - 22:00</p>
+              <p>수</p>
+              <p>11:00 - 22:00</p>
+              <p>목</p>
+              <p>11:00 - 22:00</p>
+              <p>금</p>
+              <p>11:00 - 22:00</p>
+              <p>토</p>
+              <p>11:00 - 22:00</p>
+              <p>일</p>
+              <p>11:00 - 22:00</p>
             </div>
-            <span className="text-gray-dark">·</span>
-            <div className="flex items-center">
-              <span>리뷰 333개</span>
-              <GoChevronRight />
+            <p className="font-semibold">휴무일</p>
+            <div>
+              <p>매주 월요일</p>
+              <p>09/16~09/18 추석 연휴 휴무</p>
             </div>
-          </div>
-
-          <div className="flex gap-2 mt-2">
-            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
-              영업 중
-            </span>
-            <span className="px-3 py-1 bg-rose-100 text-rose-700 rounded-lg text-sm font-medium">
-              준비 중
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center mt-2 ">
-            <div className="flex items-center">
-              <GrLocation size={14} className="text-primary-500 mr-1" />
-              <p className="text-xs">서울특별시 강남구 테헤란로 212</p>
-            </div>
-            <button
-              type="button"
-              className="border border-primary-200 text-primary-500 rounded-full px-4 py-0.5 text-xs"
-            >
-              가게 정보 · 원산지
-            </button>
+            <p className="font-semibold">전화번호</p>
+            <p>010-8282-9999</p>
           </div>
         </div>
 
-        <div className="mt-6 bg-secondary p-3 rounded-lg">
+        {/* 사업자 정보 */}
+        <div className="mb-8">
+          <h3 className="text-lg font-bold mb-2">사업자 정보</h3>
+          <div className="grid grid-cols-[100px_1fr] gap-2 text-sm">
+            <p className="font-semibold">대표자명</p>
+            <p>김사장</p>
+            <p className="font-semibold">상호명</p>
+            <p>이게진짜상호명 강남점</p>
+            <p className="font-semibold">사업자주소</p>
+            <div>
+              <p>서울특별시 강남구 역삼동 123-123 1층 01호</p>
+              <p className="text-xs text-gray-dark">
+                위 주소는 사업자등록증에 표기된 정보입니다
+              </p>
+            </div>
+            <p className="font-semibold">사업자등록번호</p>
+            <p>123-12-12345</p>
+          </div>
+        </div>
+
+        {/* 원산지 표기 */}
+        <div className="mb-8">
+          <h3 className="text-lg font-bold mb-2">원산지 표기</h3>
           <p className="text-sm">
-            <span className="mx-1">📢</span>
-            역삼역 1번 출구 앞 건물 뒤에 있습니다! 오늘 주방장 폼 미침
+            어쩌구저쩌구: 국내산 <br />
+            중국인: 중국산 <br />
+            이주호: 일본산
           </p>
         </div>
-
-        <MenuList />
       </div>
-    </div>
+    </>
   )
 }
