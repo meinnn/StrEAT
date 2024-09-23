@@ -5,6 +5,7 @@ spring:
     config:
       uri: http://streat-config:8080
       label: backend
+      enabled: false
   config:
     import: "configserver:"
 
@@ -16,3 +17,4 @@ eureka:
 server:
   servlet:
     context-path: /api/orders
+

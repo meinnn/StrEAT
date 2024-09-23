@@ -5,6 +5,7 @@ spring:
     config:
       uri: http://localhost:8888
       label: backend
+      enabled: false
   config:
     import: "configserver:"
 
