@@ -3,7 +3,7 @@ spring:
     name: user
   cloud:
     config:
-      uri: http://streat-config:8080
+      uri: http://localhost:8888
       label: backend
   config:
     import: "configserver:"
