@@ -177,9 +177,9 @@ const MenuAddOption = () => {
               삭제하기
             </button>
           </div>
-          {groupIndex === optionGroups.length - 1 && (
+          {/* {groupIndex === optionGroups.length - 1 && (
             <div className="border-t-2 border-gray-300 my-6"></div>
-          )}
+          )} */}
         </div>
       ))}
 
