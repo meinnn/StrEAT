@@ -2,13 +2,11 @@
 
 import { useState } from 'react'
 import { RiHeart3Fill, RiHeart3Line } from 'react-icons/ri'
-import Image from 'next/image'
 import { FaStar } from 'react-icons/fa'
 import { GoChevronRight } from 'react-icons/go'
 import { GrLocation } from 'react-icons/gr'
-import MenuList from '@/containers/customer/home/stores/MenuList'
-import BackButton from '@/components/BackButton'
 import { useRouter } from 'next/navigation'
+import BackButtonWithImage from '@/components/BackButtonWithImage'
 
 export default function StoreDetails() {
   const [isLiked, setIsLiked] = useState(false)
@@ -20,15 +18,7 @@ export default function StoreDetails() {
 
   return (
     <div>
-      <BackButton />
-      {/* 가게 정보 */}
-      <Image
-        src="/images/store_image.png"
-        alt="가게 사진"
-        width={0}
-        height={0}
-        className="w-full h-48 object-cover bg-gray-medium"
-      />
+      <BackButtonWithImage src="/" alt="가게 사진" title="옐로우 키친 치킨" />
 
       <div className="relative">
         <button
@@ -44,7 +34,7 @@ export default function StoreDetails() {
         </button>
       </div>
 
-      <div className="p-5">
+      <div className="m-5">
         <div>
           <p className="text-xs mb-1">#치킨</p>
           <h1 className="text-2xl font-bold">옐로우 키친 치킨</h1>
@@ -91,8 +81,6 @@ export default function StoreDetails() {
             역삼역 1번 출구 앞 건물 뒤에 있습니다! 오늘 주방장 폼 미침
           </p>
         </div>
-
-        <MenuList />
       </div>
     </div>
   )
