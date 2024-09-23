@@ -50,4 +50,9 @@ public class User {
             this.kakaoRefreshToken = kakaoRefreshToken;
         }
     }
+
+    public void logout() {
+        this.kakaoAccessToken = null;
+        this.kakaoRefreshToken = null;
+    }
 }

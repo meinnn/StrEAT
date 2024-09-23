@@ -31,6 +31,12 @@ public class LoginService {
         user.refreshKakaoTokens(kakaoUserInfo.getAccessToken(), kakaoUserInfo.getRefreshToken());
     }
 
+    @Transactional
+    public void logout(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.logout();
+    }
+
     private boolean isJoined(Long kakaoId) {
         return userRepository.existsByKakaoId(kakaoId);
     }
