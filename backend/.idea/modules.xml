@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/backend.iml" filepath="$PROJECT_DIR$/.idea/backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/io.ssafy.p.j11a307.user.main.iml" filepath="$PROJECT_DIR$/.idea/modules/io.ssafy.p.j11a307.user.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/order.main.iml" filepath="$PROJECT_DIR$/.idea/modules/order.main.iml" />
     </modules>
   </component>
 </project>
