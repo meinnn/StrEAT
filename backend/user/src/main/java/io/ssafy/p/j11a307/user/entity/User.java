@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.entity;
 
+import io.ssafy.p.j11a307.user.vo.KakaoInfoVo;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +29,14 @@ public class User {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public User(KakaoInfoVo kakaoInfoVo) {
+        this.kakaoId = kakaoInfoVo.getKakaoId();
+        this.username = kakaoInfoVo.getNickname();
+        this.profileImgSrc = kakaoInfoVo.getImageSrc();
+        this.kakaoAccessToken = kakaoInfoVo.getAccessToken();
+        this.kakaoRefreshToken = kakaoInfoVo.getRefreshToken();
+    }
 
     public void refreshKakaoTokens(String kakaoAccessToken, String kakaoRefreshToken) {
         this.kakaoAccessToken = kakaoAccessToken;
