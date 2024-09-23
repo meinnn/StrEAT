@@ -1,3 +1,31 @@
 spring:
   application:
     name: user
+  cloud:
+    config:
+      uri: http://streat-config:8080
+      label: backend
+  config:
+    import: "configserver:"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://streat-eureka:8080/eureka/ # 해당 경로가 아니라도 설정이 반드시 필요함. 실행하지 않으면 docker-compose의 환경이 주입이 안됨.
+
+server:
+  servlet:
+    context-path: /api/users
+
+kakao:
+  redirect-uri: http://localhost:8787/api/users/login/kakao/auth
+  app-key: 2348144c073d82c2759f313c40d3c9c9
+  token:
+    url: https://kauth.kakao.com/oauth/token"
+  user-info:
+    url: https://kapi.kakao.com/v2/user/me
+
+jwt:
+  salt: STREAT-SALT-VALUE-40932999-071e-4368-a21f-6aa4b5fa16b0
+  access-token:
+    expiretime: 360000000000
