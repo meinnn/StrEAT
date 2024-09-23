@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="954f8782-10c0-4a50-813d-45bd5b5ef0dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/config/src/test/java/io/ssafy/p/j11a307/config/ConfigApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/config/src/test/java/io/ssafy/p/j11a307/config/ConfigApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eureka/src/test/java/io/ssafy/p/j11a307/eureka/EurekaApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/eureka/src/test/java/io/ssafy/p/j11a307/eureka/EurekaApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/test/java/io/ssafy/p/j11a307/gateway/GatewayApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/test/java/io/ssafy/p/j11a307/gateway/GatewayApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/store/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/src/test/java/io/ssafy/p/j11a307/store/StoreApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/store/src/test/java/io/ssafy/p/j11a307/store/StoreApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/java/io/ssafy/p/j11a307/user/UserApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/test/java/io/ssafy/p/j11a307/user/UserApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/config/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,26 +78,26 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;backend-store&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/SSAFY/Documents/streat/S11P21A307/backend/store&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "backend-store",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/SSAFY/Documents/streat/S11P21A307/backend/store",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\SSAFY\Documents\streat\S11P21A307\backend\store" />
@@ -163,7 +160,7 @@
       <option name="presentableId" value="Default" />
       <updated>1727072864937</updated>
       <workItem from="1727072865977" duration="244000" />
-      <workItem from="1727073574040" duration="2247000" />
+      <workItem from="1727073574040" duration="3560000" />
     </task>
     <servers />
   </component>

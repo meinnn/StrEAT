@@ -7,8 +7,8 @@ spring:
         encrypt:
           key: skdljfhefwklxx23423@streat
         git:
-          uri: https://lab.ssafy.com/s11-fintech-finance-sub1/S11P21A307.git
-          username: thswnsqja
-          password: MzuTG3V9qxUpZhxzi-Vf
+          uri: ENC(xT/we1KdLXHK5ExFzZO9R1gYKhLjI/y9j0dqUUQWsDMvbNdLHYDzmz4d3YfjhKsFC5BhHeBftqk=)
+          username: ENC(9AyAMpZbL3hky2/znLfnwzRN9Qv/oRex)
+          password: ENC(uST65mCQhhKFRup/JJs7HzIu3BL8is4X4VYsGght3NxO9auO9Dg43kUppX9dXX/koqKLILC4c8Y=)
           search-paths: "/backend"
           default-label: backend
