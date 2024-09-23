@@ -14,7 +14,7 @@ public class JasyptConfig {
     private String passwordKey;
 
     @Bean
-    public StringEncryptor StringEncryptor() {
+    public StringEncryptor jasyptStringEncryptor() {
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
         config.setPassword(passwordKey);
