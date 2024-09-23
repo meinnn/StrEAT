@@ -5,7 +5,7 @@ import { LuPencil } from 'react-icons/lu'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa'
 
-const MenuAddOption = () => {
+export default function MenuAddOption() {
   const [optionGroups, setOptionGroups] = useState([
     {
       name: '옵션 1',
@@ -135,7 +135,7 @@ const MenuAddOption = () => {
                 />
                 <button
                   onClick={() => handleDeleteOption(groupIndex, optionIndex)}
-                  className="ml-2 text-red-500"
+                  className="ml-2 text-black"
                 >
                   <FaRegTrashAlt />
                 </button>
@@ -242,5 +242,3 @@ const MenuAddOption = () => {
     </div>
   )
 }
-
-export default MenuAddOption

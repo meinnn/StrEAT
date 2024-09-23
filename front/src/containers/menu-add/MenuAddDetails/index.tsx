@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from 'react'
+import Image from 'next/image'
+import { FaCamera } from "react-icons/fa"
 
-const MenuAddDetails = () => {
+export default function MenuAddDetails() {
   const [foodName, setFoodName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [price, setPrice] = useState<string>('')
@@ -24,14 +26,16 @@ const MenuAddDetails = () => {
           className="block cursor-pointer text-center rounded-lg"
         >
           {image ? (
-            <img
+            <Image
               src={URL.createObjectURL(image)}
               alt="메뉴 사진"
+              width={331}
+              height={256}
               className="w-full h-64 rounded-lg"
             />
           ) : (
             <div className="bg-gray-200 rounded-lg w-full h-64 flex flex-col justify-center items-center text-gray-500">
-              📷 <br />
+              <FaCamera /> <br />
               메뉴 사진
             </div>
           )}
@@ -62,7 +66,7 @@ const MenuAddDetails = () => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border bg-gray-200 rounded h-20"
+            className="w-full p-2 border bg-gray-200 rounded h-20 resize-none"
             placeholder="요리 설명 입력"
           />
         </div>
@@ -80,5 +84,3 @@ const MenuAddDetails = () => {
     </div>
   )
 }
-
-export default MenuAddDetails
