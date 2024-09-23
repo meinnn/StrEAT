@@ -1,13 +1,11 @@
 package io.ssafy.p.j11a307.user.entity;
 
 import io.ssafy.p.j11a307.user.vo.KakaoInfoVo;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -29,6 +27,14 @@ public class User {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @ColumnDefault("true")
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean orderStatusAlert;
+
+    @ColumnDefault("true")
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean dibsStoreAlert;
 
     public User(KakaoInfoVo kakaoInfoVo) {
         this.kakaoId = kakaoInfoVo.getKakaoId();
