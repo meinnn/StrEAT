@@ -5,8 +5,6 @@ import { LuPencil } from 'react-icons/lu'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa'
 
-const day = ['dxfsfd', 'sdfsdf', 'fghgf']
-
 const MenuAddOption = () => {
   const [optionGroups, setOptionGroups] = useState([
     {
@@ -80,8 +78,6 @@ const MenuAddOption = () => {
           key={groupIndex}
           className="mb-10 border-2 border-gray-300 rounded-md p-4"
         >
-          {' '}
-          {/* 그룹 간 간격 조정 */}
           <div className="mb-4 flex justify-between items-center">
             {/* 옵션 그룹 이름 수정 필드 */}
             <div className="flex items-center">
@@ -161,8 +157,6 @@ const MenuAddOption = () => {
               <h1>옵션 수</h1>
             </div>
             <div className="flex justify-between items-center mt-2">
-              {' '}
-              {/* 간격 조정 */}
               <div className="flex items-center">
                 <label className="mr-2">최소</label>
                 <select

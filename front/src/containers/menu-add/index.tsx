@@ -1,8 +1,8 @@
 "use client"
 
-import MenuAddDetails from "./MenuAddDetails"
-import MenuAddOption from "./MenuAddOption"
-import { FaArrowLeft } from "react-icons/fa";
+import MenuAddDetails from "@/containers/menu-add/MenuAddDetails"
+import MenuAddOption from "@/containers/menu-add/MenuAddOption"
+import { FaArrowLeft } from "react-icons/fa"
 
 const MenuAdd = () => {
   return (
