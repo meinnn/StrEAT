@@ -1,10 +1,10 @@
 "use client"
 
 import MenuAddDetails from "@/containers/menu-add/MenuAddDetails"
-import MenuAddOption from "@/containers/menu-add/MenuAddOption"
+import MenuAddOptions from "@/containers/menu-add/MenuAddOptions"
 import { FaArrowLeft } from "react-icons/fa"
 
-const MenuAdd = () => {
+export default function MenuAdd() {
   return (
     <div>
       <div className="max-w-xl mx-auto flex flex-col">
@@ -23,11 +23,9 @@ const MenuAdd = () => {
 
         {/* 옵션 관리 */}
         <div className="w-full">
-          <MenuAddOption />
+          <MenuAddOptions />
         </div>
       </div>
     </div>
   )
 }
-
-export default MenuAdd
