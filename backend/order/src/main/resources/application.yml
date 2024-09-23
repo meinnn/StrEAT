@@ -15,5 +15,4 @@ eureka:
 
 server:
   servlet:
-    context-path: /api/users
-
+    context-path: /api/orders
