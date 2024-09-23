@@ -87,7 +87,7 @@ export default function MenuAddOption() {
                 onChange={(e) =>
                   handleGroupNameChange(groupIndex, e.target.value)
                 }
-                className="p-2 rounded-md border border-gray-300 w-auto font-bold"
+                className="p-2 rounded-md border border-gray-300 w-24 font-bold"
               />
               <LuPencil className="ml-2" />
             </div>
