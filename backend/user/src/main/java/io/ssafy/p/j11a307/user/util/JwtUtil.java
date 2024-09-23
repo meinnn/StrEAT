@@ -22,6 +22,11 @@ public class JwtUtil {
         return create(userId, "access-token", accessTokenExpireTime);
     }
 
+    public Integer getUserIdFromAccessToken(String accessToken) {
+        Claims claims = Jwts.parser().setSigningKey(generateKey()).parseClaimsJws(extractAccessToken(accessToken)).getBody();
+        return (Integer) claims.get("userId");
+    }
+
     private String create(Integer userId, String subject, long expireTime) {
 //		Payload 설정 : 생성일 (IssuedAt), 유효기간 (Expiration),
 //		토큰 제목 (Subject), 데이터 (Claim) 등 정보 세팅.
@@ -49,5 +54,9 @@ public class JwtUtil {
         } catch (UnsupportedEncodingException e) {
         }
         return null;
+    }
+
+    private String extractAccessToken(String accessToken) {
+        return accessToken.replace("Bearer ", "");
     }
 }
