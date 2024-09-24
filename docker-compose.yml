@@ -1,4 +1,12 @@
 services:
+  streat-frontend:
+    image: junbeomson/streat-frontend:latest
+    container_name: streat-frontend
+    ports:
+      - '80:80'
+    networks:
+      - streat-network
+
   streat-eureka:
     image: junbeomson/streat-eureka:latest
     container_name: streat-eureka
