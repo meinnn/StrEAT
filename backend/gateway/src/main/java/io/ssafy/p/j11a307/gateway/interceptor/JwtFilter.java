@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Component
-public class JwtInterceptor implements WebFilter {
+public class JwtFilter implements WebFilter {
 
     private final String HEADER_AHTU = "Authorization";
     private final JwtUtil jwtUtil;
