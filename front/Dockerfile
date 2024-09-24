@@ -1,5 +1,5 @@
 # 1. Node.js 이미지를 사용하여 Docker 환경 설정
-FROM node:20.15.1
+FROM node:20.15.1 AS build
 
 # 2. 작업 디렉토리를 'front' 폴더로 설정
 WORKDIR /app
