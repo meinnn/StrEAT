@@ -96,6 +96,8 @@ services:
   streat-gateway:
     image: junbeomson/streat-gateway:latest
     container_name: streat-gateway
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://streat-config:8080 # config server
     ports:
       - "8787:8080"
     networks:
