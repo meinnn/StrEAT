@@ -55,4 +55,8 @@ public class User {
         this.kakaoAccessToken = null;
         this.kakaoRefreshToken = null;
     }
+
+    public void toggleOrderStatusAlert(boolean alertOn) {
+        this.orderStatusAlert = alertOn;
+    }
 }

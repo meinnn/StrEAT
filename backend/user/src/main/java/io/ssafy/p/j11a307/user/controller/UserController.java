@@ -6,10 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +34,13 @@ public class UserController {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         userService.withdraw(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/order-status-alert")
+    public ResponseEntity<Void> toggleOrderStatusAlert(HttpServletRequest request, boolean alertOn) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+        userService.toggleOrderStatusAlert(userId, alertOn);
+        return ResponseEntity.ok().build();
     }
 }

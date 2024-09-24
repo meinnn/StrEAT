@@ -29,4 +29,10 @@ public class UserService {
         userRepository.delete(user);
         leftUserRepository.save(leftUser);
     }
+
+    @Transactional
+    public void toggleOrderStatusAlert(Integer userId, boolean alertOn) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.toggleOrderStatusAlert(alertOn);
+    }
 }
