@@ -13,7 +13,7 @@ services:
     networks:
       - streat-network
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
     ports:
       - "80:80"
 
