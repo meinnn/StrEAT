@@ -17,11 +17,5 @@ COPY . /app
 # 6. 빌드 명령 실행 (프로덕션 모드로 빌드)
 RUN npm run build
 
-# 프로덕션 스테이지
-FROM nginx:1.21.4-alpine
-
-# nginx 실행 전 default.conf 파일 수정
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 EXPOSE 3000
 CMD ["npm", "start"]
