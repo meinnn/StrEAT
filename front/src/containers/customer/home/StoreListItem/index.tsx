@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FaStar, FaLocationArrow } from 'react-icons/fa'
 import { RiHeart3Line, RiHeart3Fill } from 'react-icons/ri'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function StoreListItem() {
   const [isLiked, setIsLiked] = useState(false)
@@ -11,7 +12,10 @@ export default function StoreListItem() {
   }
 
   return (
-    <div className="flex items-center p-4 border-b border-gray-200">
+    <Link
+      href="/customer/stores/1"
+      className="flex items-center p-4 border-b border-gray-200"
+    >
       {/* 음식점 이미지 */}
       <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-300 mr-4">
         <Image
@@ -43,6 +47,6 @@ export default function StoreListItem() {
           <RiHeart3Line className="text-gray-dark" size={24} />
         )}
       </button>
-    </div>
+    </Link>
   )
 }

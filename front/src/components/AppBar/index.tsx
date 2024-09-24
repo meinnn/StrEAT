@@ -11,7 +11,7 @@ export default function AppBar({ title }: { title: string }) {
   }
 
   return (
-    <div className="w-full h-tabbar bg-white flex items-center justify-between px-4 z-50">
+    <div className="sticky top-0 w-full h-tabbar bg-white flex items-center justify-between px-4 z-50">
       <button
         type="button"
         onClick={handleBack}

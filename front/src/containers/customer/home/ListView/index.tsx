@@ -1,13 +1,16 @@
 import { FiMap } from 'react-icons/fi'
 import StoreSearchHeader from '@/components/StoreSearchHeader'
 import StoreListItem from '@/containers/customer/home/StoreListItem'
-import { FaCheck } from 'react-icons/fa6'
+import Checkbox from '@/components/Checkbox'
+import { useState } from 'react'
 
 export default function ListView({
   setView,
 }: {
   setView: (view: 'map' | 'list') => void
 }) {
+  const [isFavoriteOnly, setIsFavoriteOnly] = useState(false)
+
   return (
     <>
       <StoreSearchHeader view="list" />
@@ -28,21 +31,14 @@ export default function ListView({
           <h2 className="text-xl font-semibold text-primary-950">
             내 근처 붕어빵
           </h2>
-          {/* 커스텀 체크박스 */}
-          <label
-            htmlFor="favorite"
-            className="flex items-center cursor-pointer text-gray-dark"
-          >
-            <div className="grid items-center justify-center">
-              <input
-                type="checkbox"
-                id="favorite"
-                className="peer row-start-1 col-start-1 appearance-none h-4 w-4 border border-gray-dark rounded-sm checked:bg-primary-500 checked:border-transparent focus:outline-none forced-colors:appearance-auto" // 체크박스 스타일링
-              />
-              <FaCheck className="invisible peer-checked:visible row-start-1 col-start-1 text-white forced-colors:hidden" />
-            </div>
-            <span className="ml-2 peer-checked:text-sm">찜한 가게만</span>
-          </label>
+          <div className="text-gray-dark">
+            <Checkbox
+              id="custom-checkbox"
+              checked={isFavoriteOnly}
+              onChange={setIsFavoriteOnly}
+              label="찜한 가게만"
+            />
+          </div>
         </div>
 
         <StoreListItem />

@@ -1,6 +1,4 @@
-import Image from 'next/image'
-import { IoCloseOutline } from 'react-icons/io5'
-import { useState } from 'react'
+import Drawer from '@/components/Drawer'
 
 const MENU_CATEGORIES = [
   {
@@ -49,70 +47,42 @@ export default function MenuCategoryModal({
   onClose: () => void
   onSelect: (menuName: string) => void
 }) {
-  const [isClosing, setIsClosing] = useState(false)
-
-  const handleClose = () => {
-    setIsClosing(true)
-    setTimeout(onClose, 300) // 애니메이션 지속 시간 후 모달 닫기
-  }
-
   const handleMenuSelect = (menuName: string) => {
     onSelect(menuName) // 선택한 메뉴 전달
-    handleClose() // 모달 닫기
+    onClose() // 모달 닫기
   }
 
   return (
-    <>
-      {/* 배경 어둡게 처리 */}
-      <div
-        role="presentation"
-        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
-          isClosing ? 'opacity-0' : 'opacity-100'
-        }`}
-        onClick={handleClose}
-      />
-
-      {/* 슬라이드 인/아웃 모달 */}
-      <div
-        className={`fixed inset-x-0 bottom-16 z-50 bg-white p-4 rounded-t-2xl shadow-lg ${
-          isClosing ? 'animate-slide-down' : 'animate-slide-up'
-        }`}
-      >
-        <button type="button" className="float-right" onClick={handleClose}>
-          <IoCloseOutline size={24} />
-        </button>
-        <div className="mt-6">
-          {MENU_CATEGORIES.map((category) => (
-            <div key={category.title} className="mb-6 p-2">
-              <h2 className="text-lg font-semibold">{category.title}</h2>
-              <div className="grid grid-cols-5 gap-3 mt-2">
-                {category.items.map((item) => (
-                  <div
-                    role="presentation"
-                    key={item.name}
-                    className="flex flex-col justify-center items-center gap-1"
-                    onClick={() => handleMenuSelect(item.name)} // 메뉴 선택 처리
-                  >
-                    <button
-                      type="button"
-                      className="flex flex-col items-center bg-gray-200 w-14 h-14 rounded-full"
-                    >
-                      {/* <Image */}
-                      {/*  src={item.imageUrl} */}
-                      {/*  alt={item.name} */}
-                      {/*  width={56} */}
-                      {/*  height={56} */}
-                      {/*  className="object-cover mb-2" */}
-                      {/* > */}
-                    </button>
-                    <span className="text-xs cursor-pointer">{item.name}</span>
-                  </div>
-                ))}
+    <Drawer onClose={onClose}>
+      {MENU_CATEGORIES.map((category) => (
+        <div key={category.title} className="mb-6 p-2">
+          <h2 className="text-lg font-semibold">{category.title}</h2>
+          <div className="grid grid-cols-5 gap-3 mt-2">
+            {category.items.map((item) => (
+              <div
+                role="presentation"
+                key={item.name}
+                className="flex flex-col justify-center items-center gap-1"
+                onClick={() => handleMenuSelect(item.name)} // 메뉴 선택 처리
+              >
+                <button
+                  type="button"
+                  className="flex flex-col items-center bg-gray-200 w-14 h-14 rounded-full"
+                >
+                  {/* <Image */}
+                  {/*  src={item.imageUrl} */}
+                  {/*  alt={item.name} */}
+                  {/*  width={56} */}
+                  {/*  height={56} */}
+                  {/*  className="object-cover mb-2" */}
+                  {/* > */}
+                </button>
+                <span className="text-xs cursor-pointer">{item.name}</span>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </>
+      ))}
+    </Drawer>
   )
 }

@@ -4,6 +4,7 @@ import { FaStar, FaLocationArrow } from 'react-icons/fa'
 import { RiHeart3Line, RiHeart3Fill } from 'react-icons/ri'
 import Image from 'next/image'
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function StoreCard() {
   const [isLiked, setIsLiked] = useState(false)
@@ -13,7 +14,10 @@ export default function StoreCard() {
   }
 
   return (
-    <div className="relative bg-[#371B1B] text-white rounded-xl p-5 min-w-64 h-28">
+    <Link
+      href="/customer/stores/1"
+      className="relative bg-[#371B1B] text-white rounded-xl p-5 min-w-64 h-28"
+    >
       {/* 음식점 이미지 */}
       <div className="h-full w-full flex items-center">
         <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-medium">
@@ -50,6 +54,6 @@ export default function StoreCard() {
           <RiHeart3Line className="text-primary-500" size={24} />
         )}
       </button>
-    </div>
+    </Link>
   )
 }
