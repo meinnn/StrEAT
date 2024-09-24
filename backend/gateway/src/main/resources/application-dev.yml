@@ -9,6 +9,11 @@ spring:
           uri: http://localhost:8882
           predicates:
             - Path=/api/users/**
+        - id: store
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/stores/**
+
 
 server:
   port: 8787
