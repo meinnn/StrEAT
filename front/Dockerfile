@@ -12,10 +12,16 @@ COPY package-lock.json .
 RUN npm ci
 
 # 5. 나머지 프로젝트 파일 복사
-COPY . /app
+COPY . .
 
 # 6. 빌드 명령 실행 (프로덕션 모드로 빌드)
 RUN npm run build
 
+FROM node:20:15.1
+
+WORKDIR /app
+
+COPY --from=build /app ./
+
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
