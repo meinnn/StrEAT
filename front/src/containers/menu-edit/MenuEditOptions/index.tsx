@@ -5,7 +5,7 @@ import { LuPencil } from 'react-icons/lu'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa'
 
-export default function MenuAddOption() {
+export default function MenuEditOptions() {
   const [optionGroups, setOptionGroups] = useState([
     {
       name: '옵션 1',
@@ -87,7 +87,7 @@ export default function MenuAddOption() {
                 onChange={(e) =>
                   handleGroupNameChange(groupIndex, e.target.value)
                 }
-                className="p-2 rounded-md border border-gray-300 w-auto font-bold"
+                className="p-2 rounded-md border border-gray-300 w-24 font-bold"
               />
               <LuPencil className="ml-2" />
             </div>
