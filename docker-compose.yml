@@ -100,6 +100,9 @@ services:
       - "8787:8080"
     networks:
       - streat-network
+    depends_on: # 다른 서비스가 먼저 실행되도록 설정
+      streat-config:
+        condition: service_healthy
 
 networks:
   streat-network:
