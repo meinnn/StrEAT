@@ -1,7 +1,22 @@
 spring:
-
+  cloud:
+    gateway:
+      routes:
+        - id: user
+          uri: http://localhost:8882
+          predicates:
+            - Path=/api/users/**
+        - id: store
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/stores/**
+    config:
+      uri: http://localhost:8888
+      label: main
   application:
     name: gateway
+  config:
+    import: "configserver:"
 springdoc:
   api-docs:
     enabled: true
