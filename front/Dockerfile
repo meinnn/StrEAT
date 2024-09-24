@@ -16,10 +16,6 @@ COPY . .
 # 6. 빌드 명령 실행 (프로덕션 모드로 빌드)
 RUN npm run build
 
-FROM nginx
-
 EXPOSE 3000
 
-COPY ./default.conf /etc/nginx/conf.d/default.conf
-
-COPY --from=build /app/out /usr/share/nginx/html
+CMD ["npm", "run", "start"]
