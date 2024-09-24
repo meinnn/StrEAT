@@ -5,12 +5,7 @@
     "node": true,
     "es6": true
   },
-  "plugins": [
-    "import",
-    "@typescript-eslint",
-    "react",
-    "prettier"
-  ],
+  "plugins": ["import", "@typescript-eslint", "react", "prettier"],
   "extends": [
     "airbnb",
     "airbnb/hooks",
@@ -27,10 +22,7 @@
     "react/jsx-filename-extension": [
       "warn",
       {
-        "extensions": [
-          ".ts",
-          ".tsx"
-        ]
+        "extensions": [".ts", ".tsx"]
       }
     ],
     "@typescript-eslint/camelcase": "off",
@@ -51,11 +43,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "project": "./tsconfig.json"
+    "project": "./front/tsconfig.json"
   },
-  "ignorePatterns": [
-    "build",
-    "dist",
-    "public"
-  ]
+  "ignorePatterns": ["build", "dist", "public"]
 }
