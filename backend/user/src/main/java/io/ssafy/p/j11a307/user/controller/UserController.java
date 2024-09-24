@@ -43,4 +43,12 @@ public class UserController {
         userService.toggleOrderStatusAlert(userId, alertOn);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/dibs-store-alert")
+    public ResponseEntity<Void> toggleDibsStoreAlert(HttpServletRequest request, boolean alertOn) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+        userService.toggleDibsStoreAlert(userId, alertOn);
+        return ResponseEntity.ok().build();
+    }
 }

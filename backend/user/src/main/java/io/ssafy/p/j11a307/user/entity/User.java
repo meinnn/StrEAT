@@ -59,4 +59,8 @@ public class User {
     public void toggleOrderStatusAlert(boolean alertOn) {
         this.orderStatusAlert = alertOn;
     }
+
+    public void toggleDibsStoreAlert(boolean alertOn) {
+        this.dibsStoreAlert = alertOn;
+    }
 }
