@@ -2,9 +2,9 @@
 
 import OwnerTabList from '@/components/OwnerTabList'
 import Image from 'next/image'
-import StoreBusinessLocation from './StoreBusinessLocation'
-import StoreBusinessHours from './StoreBusinessHours'
-import StoreInformation from './StoreInformation'
+import StoreBusinessLocation from '@/containers/owner/store/StoreBusinessLocation'
+import StoreBusinessHours from '@/containers/owner/store/StoreBusinessHours'
+import StoreInformation from '@/containers/owner/store/StoreInformation'
 
 const TAB_LIST = [
   { name: '내 점포 정보', href: '/store' },
