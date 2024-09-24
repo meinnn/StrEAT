@@ -33,7 +33,10 @@ export default function CustomerNav() {
               <Link
                 href={`/customer${link.href}`}
                 className={
-                  path === `/customer${link.href}` ? 'text-primary-500' : ''
+                  path === `/customer${link.href}` ||
+                  (link.href !== '' && path.startsWith(`/customer${link.href}`))
+                    ? 'text-primary-500'
+                    : ''
                 }
               >
                 <div className="flex flex-col gap-y-0.5 items-center">
