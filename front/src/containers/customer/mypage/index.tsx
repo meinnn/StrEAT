@@ -31,7 +31,7 @@ export default function MyPage() {
             height={16}
             className="rounded-full"
           />
-          <p className="text-sm text-gray-500">anonymous@ya.ong</p>
+          <p className="text-sm text-gray-dark">anonymous@ya.ong</p>
         </div>
       </div>
 
@@ -54,7 +54,7 @@ export default function MyPage() {
           <p className="text-sm font-medium mt-2">알림</p>
         </Link>
 
-        <div className="h-8 border-l border-gray-200" />
+        <div className="h-8 border-l border-gray-medium" />
 
         {/* 찜 목록 */}
         <Link href="/customer/favorites" className="flex flex-col items-center">

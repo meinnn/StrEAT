@@ -78,9 +78,9 @@ export default function MenuList({ storeId }: { storeId: string }) {
                 className="w-20 h-20 object-cover rounded-lg bg-gray-medium"
               />
               <div className="ml-4">
-                <h3 className="text-base font-semibold">{item.name}</h3>
-                <p className="text-xs text-gray-500">{item.description}</p>
-                <p className="text-base font-semibold mt-2">{item.price}</p>
+                <h3 className="font-semibold">{item.name}</h3>
+                <p className="text-xs">{item.description}</p>
+                <p className="text-sm font-semibold mt-2">{item.price}</p>
               </div>
             </Link>
           ))}

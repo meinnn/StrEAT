@@ -31,7 +31,7 @@ export default function OngoingOrder() {
       </button>
 
       {/* 진행 중 메시지 */}
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-primary-950 mb-4">
         현재 진행 중인 주문 내역이 있어요
       </p>
 

@@ -15,7 +15,7 @@ export default function AppBar({ title }: { title: string }) {
       <button
         type="button"
         onClick={handleBack}
-        className="text-gray-700 flex items-center"
+        className="text-primary-950 flex items-center"
       >
         <FaAngleLeft size={24} className="text-primary-950" />
       </button>

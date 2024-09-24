@@ -12,10 +12,10 @@ export default function StoreListItem() {
   }
 
   return (
-    <div className="flex items-center justify-between p-4 border-b border-gray-200">
+    <div className="flex items-center justify-between p-4 border-b border-gray-medium">
       <Link href="/customer/stores/1" className="flex items-center w-full">
         {/* 음식점 이미지 */}
-        <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-300 mr-4">
+        <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-dark mr-4">
           <Image
             src="/store.jpg" // 실제 이미지 경로를 넣으세요
             alt="음식점 이미지"
@@ -29,7 +29,7 @@ export default function StoreListItem() {
         <div className="flex-grow">
           <p className="text-xs text-gray-dark">#분식</p>
           <h3 className="text-lg font-semibold">조은식당</h3>
-          <div className="flex items-center text-sm mt-1 text-gray-700">
+          <div className="flex items-center text-sm mt-1">
             <FaStar className="text-yellow-400 mr-1" />
             <span>4.8</span>
             <span className="mx-2">|</span>
