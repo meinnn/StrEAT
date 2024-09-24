@@ -11,10 +11,5 @@
         <module name="order.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="order" target="21" />
-      <module name="order.main" target="21" />
-      <module name="order.test" target="21" />
-    </bytecodeTargetLevel>
   </component>
 </project>
