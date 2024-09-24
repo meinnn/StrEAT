@@ -4,7 +4,7 @@ spring:
   cloud:
     config:
       uri: http://streat-config:8080
-      label: backend
+      label: main
   config:
     import: "configserver:"
 
