@@ -35,7 +35,7 @@ public class UserController {
     public ResponseEntity<Void> withdraw(HttpServletRequest request) {
         String accessToken = request.getHeader(HEADER_AUTH);
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
-
+        userService.withdraw(userId);
         return ResponseEntity.noContent().build();
     }
 }
