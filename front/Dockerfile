@@ -27,4 +27,4 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/.next /usr/share/nginx/html
 
 EXPOSE 80
-CMD [ "nginx", "-g", "daemon off;" ]
+CMD ["sh", "-c", "npm run start & nginx -g 'daemon off;'"]
