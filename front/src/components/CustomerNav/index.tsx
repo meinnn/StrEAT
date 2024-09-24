@@ -17,12 +17,15 @@ const LINKS = [
 export default function CustomerNav() {
   const path = usePathname()
 
-  if (path.startsWith('/customer/stores')) {
+  if (
+    path.startsWith('/customer/stores') ||
+    path.startsWith('/customer/cart')
+  ) {
     return null
   }
 
   return (
-    <nav className="z-50 bg-white h-tabbar fixed bottom-0 inset-x-0">
+    <nav className="bg-white h-tabbar fixed bottom-0 inset-x-0">
       <ul className="h-full flex justify-around items-center">
         {LINKS.map((link) => {
           return (

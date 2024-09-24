@@ -1,8 +1,9 @@
 import { TiShoppingCart } from 'react-icons/ti'
+import Link from 'next/link'
 
 export default function CartButton() {
   return (
-    <div className="fixed bottom-6 right-6">
+    <Link href="/customer/cart" className="fixed bottom-6 right-6">
       <button
         type="button"
         className="bg-primary-500 text-white p-5 rounded-full shadow-lg relative"
@@ -12,6 +13,6 @@ export default function CartButton() {
           1
         </span>
       </button>
-    </div>
+    </Link>
   )
 }
