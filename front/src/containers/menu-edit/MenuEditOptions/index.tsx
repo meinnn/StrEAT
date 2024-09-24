@@ -75,7 +75,7 @@ export default function MenuEditOptions() {
     <div className="mb-4 mt-6 pr-4 pl-4">
       {optionGroups.map((group, groupIndex) => (
         <div
-          key={groupIndex}
+          key={group.name}
           className="mb-10 border-2 border-gray-300 rounded-md p-4"
         >
           <div className="mb-4 flex justify-between items-center">
@@ -109,7 +109,7 @@ export default function MenuEditOptions() {
           {/* 옵션들 */}
           <div className="border-2 border-gray-500 rounded-md p-4">
             {group.options.map((option, optionIndex) => (
-              <div key={optionIndex} className="flex items-center mb-2">
+              <div key={option.name} className="flex items-center mb-2">
                 <input
                   type="text"
                   value={option.name}

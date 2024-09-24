@@ -38,7 +38,10 @@ export default function StoreBusinessLocation() {
           isMore ? 4 : BUSINESS_LOCATION_LIST.length
         ).map((location) => {
           return (
-            <p className="relative w-16 h-16 aspect-square rounded overflow-hidden bg-gray-medium">
+            <p
+              key={location.imageUrl}
+              className="relative w-16 h-16 aspect-square rounded overflow-hidden bg-gray-medium"
+            >
               <Image
                 src={location.imageUrl}
                 alt="location"

@@ -1,9 +1,9 @@
-import MenuAdd from "@/containers/menu-add"
+import MenuAdd from '@/containers/menu-add'
 
 export default function MenuAddPage() {
-    return (
-        <div>
-            <MenuAdd />
-        </div>
-    )
+  return (
+    <div>
+      <MenuAdd />
+    </div>
+  )
 }
