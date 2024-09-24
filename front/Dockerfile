@@ -5,7 +5,7 @@ FROM node:20.15.1 AS build
 WORKDIR /app
 
 # 3. 필요한 파일들을 복사
-COPY package.*.json ./
+COPY package.*.json .
 
 # 4. 의존성 설치
 RUN npm install
