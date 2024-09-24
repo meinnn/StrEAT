@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "store_category")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
