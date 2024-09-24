@@ -61,7 +61,7 @@ export default function OrderProgress() {
       </div>
 
       {/* 대기 및 조리 상태 메시지 */}
-      <p className="font-medium text-center text-gray-600 mt-6">
+      <p className="font-medium text-center mt-7">
         앞 {teamsInFront}개 팀,{' '}
         <span className="text-primary-500 font-semibold">
           메뉴 {menusBeingPrepared}개
