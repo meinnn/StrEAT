@@ -7,6 +7,14 @@ services:
     networks:
       - streat-network
 
+  streat-nginx:
+    image: nginx:1.21.4
+    container_name: streat-nginx
+    networks:
+      - streat-network
+    ports:
+      - '80:80'
+
   streat-eureka:
     image: junbeomson/streat-eureka:latest
     container_name: streat-eureka
