@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # 6. 빌드 명령 실행 (프로덕션 모드로 빌드)
-RUN npm run build && npm run export
+RUN npm run build
 
 FROM nginx
 
