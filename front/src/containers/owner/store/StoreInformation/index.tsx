@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { GoChevronRight } from 'react-icons/go'
 import { HiOutlineLocationMarker } from 'react-icons/hi'
+import { HiOutlineSpeakerphone } from 'react-icons/hi'
 
 export default function StoreInformation() {
   const [isBusinessStart, setIsBusinessStart] = useState(false)
@@ -51,7 +52,7 @@ export default function StoreInformation() {
       <div className="flex flex-col gap-2">
         <div className="py-3 px-4 border-gray-dark border rounded-lg">
           <p className="flex gap-2 items-center text-xs">
-            <span>📢</span>
+            <HiOutlineSpeakerphone className="w-4 h-4 text-red-500" />
             역삼역 1번 출구 앞 큰 건물 뒤에 있습니다! 오늘 주방장 폼 미침
           </p>
         </div>
