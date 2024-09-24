@@ -30,11 +30,11 @@ public class User {
 
     @ColumnDefault("true")
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean orderStatusAlert;
+    private boolean orderStatusAlert = true;
 
     @ColumnDefault("true")
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean dibsStoreAlert;
+    private boolean dibsStoreAlert = true;
 
     public User(KakaoInfoVo kakaoInfoVo) {
         this.kakaoId = kakaoInfoVo.getKakaoId();
