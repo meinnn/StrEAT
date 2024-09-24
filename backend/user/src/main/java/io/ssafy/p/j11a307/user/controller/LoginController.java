@@ -37,8 +37,8 @@ public class LoginController {
     @GetMapping("/login/kakao/auth")
     public ResponseEntity<Void> kakaoAuth(String code) throws JsonProcessingException {
         String kakaoTokens = kakaoUtil.getKakaoTokens(code);
-        loginService.kakaoLogin(kakaoTokens);
-        HttpHeaders headers = new HttpHeaders();
+        Integer userId = loginService.kakaoLogin(kakaoTokens);
+        HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
 
         return ResponseEntity.ok()
                 .headers(headers).build();

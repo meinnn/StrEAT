@@ -18,7 +18,7 @@ public class LoginService {
     private final KakaoUtil kakaoUtil;
 
     @Transactional
-    public void kakaoLogin(String kakaoTokens) throws JsonProcessingException {
+    public Integer kakaoLogin(String kakaoTokens) throws JsonProcessingException {
         KakaoInfoVo kakaoUserInfo = kakaoUtil.getKakaoUserInfo(kakaoTokens);
 
         if (!isJoined(kakaoUserInfo.getKakaoId())) {
@@ -29,6 +29,7 @@ public class LoginService {
         User user = userRepository.findByKakaoId(kakaoUserInfo.getKakaoId()).orElseThrow();
         // 재 가입하는 사람을 위해 refreshToken update
         user.refreshKakaoTokens(kakaoUserInfo.getAccessToken(), kakaoUserInfo.getRefreshToken());
+        return user.getId();
     }
 
     @Transactional
