@@ -1,5 +1,7 @@
 package io.ssafy.p.j11a307.gateway.interceptor;
 
+import io.ssafy.p.j11a307.gateway.exception.BusinessException;
+import io.ssafy.p.j11a307.gateway.exception.ErrorCode;
 import io.ssafy.p.j11a307.gateway.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,6 @@ public class JwtInterceptor implements WebFilter {
         if (token != null && !token.startsWith("Bearer ") && jwtUtil.checkToken(token)) {
             return chain.filter(exchange);
         }
-        throw new RuntimeException();
+        throw new BusinessException(ErrorCode.INVALID_TOKEN);
     }
 }
