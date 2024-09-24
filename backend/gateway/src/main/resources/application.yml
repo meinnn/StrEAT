@@ -4,8 +4,24 @@ spring:
 
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
       routes:
+        - id: store
+          uri: lb://store
+          predicates:
+            - Path=/api/stores/**
         - id: user
-          uri: http://streat-user:8080
+          uri: lb://user
           predicates:
             - Path=/api/users/**
+springdoc:
+  swagger-ui:
+    use-root-path: true
+    urls[0]:
+      name: Store API
+      url: http://localhost:8080/api/stores/v3/api-docs
+    urls[1]:
+      name: User API
+      url: http://localhost:8080/api/users/v3/api-docs

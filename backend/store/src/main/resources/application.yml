@@ -1,3 +1,32 @@
 spring:
   application:
     name: store
+
+  cloud:
+    config:
+      uri: http://localhost:8888
+      label: main
+
+  config:
+    import: "configserver:"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://streat-eureka:8080/eureka/ # 해당 경로가 아니라도 설정이 반드시 필요함. 실행하지 않으면 docker-compose의 환경이 주입이 안됨.
+
+server:
+  port: 8081  # Store 마이크로서비스가 실행될 포트
+  servlet:
+    context-path: /api/stores  # 게이트웨이에서 접근할 경로
+
+springdoc:
+  api-docs:
+    version: openapi_3_1  # OpenAPI 버전 3.1 사용
+    enabled: true  # API 문서화 활성화
+    path: /api/stores/v3/api-docs  # Store API의 문서 경로, Gateway에서 이 경로를 통해 접근함
+  enable-spring-security: true  # Spring Security와의 통합 활성화
+  default-consumes-media-type: application/json  # 기본 소비 미디어 타입
+  default-produces-media-type: application/json  # 기본 생성 미디어 타입
+  swagger-ui:
+    use-root-path: true  # Swagger UI를 루트 경로로 사용
