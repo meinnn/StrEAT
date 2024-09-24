@@ -8,7 +8,7 @@ import { HiOutlineSpeakerphone } from 'react-icons/hi'
 
 const LINKS = [
   { name: '내 점포 정보', href: '/store', icon: TbSmartHome },
-  { name: '주문 접수', href: '/receipt', icon: BiReceipt },
+  { name: '주문 접수', href: '/order-management', icon: BiReceipt },
   { name: '매장 관리', href: '/manage', icon: BiStoreAlt },
   { name: '공고', href: '/announcement', icon: HiOutlineSpeakerphone },
 ]
