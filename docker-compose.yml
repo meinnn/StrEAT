@@ -45,6 +45,54 @@ services:
       streat-config:
         condition: service_healthy
   
+  streat-order:
+    image: junbeomson/streat-order:latest
+    container_name: streat-order
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://streat-eureka:8761/eureka/  # Docker Compose 환경 변수로 Eureka Server URI 설정
+      - SPRING_CLOUD_CONFIG_URI=http://streat-config:8080 # config server
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+    depends_on: # 다른 서비스가 먼저 실행되도록 설정
+      streat-eureka:
+        condition: service_healthy
+      streat-config:
+        condition: service_healthy
+
+  streat-store:
+    image: junbeomson/streat-store:latest
+    container_name: streat-store
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://streat-eureka:8761/eureka/  # Docker Compose 환경 변수로 Eureka Server URI 설정
+      - SPRING_CLOUD_CONFIG_URI=http://streat-config:8080 # config server
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+    depends_on: # 다른 서비스가 먼저 실행되도록 설정
+      streat-eureka:
+        condition: service_healthy
+      streat-config:
+        condition: service_healthy
+
+  streat-product:
+    image: junbeomson/streat-product:latest
+    container_name: streat-product
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://streat-eureka:8761/eureka/  # Docker Compose 환경 변수로 Eureka Server URI 설정
+      - SPRING_CLOUD_CONFIG_URI=http://streat-config:8080 # config server
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+    depends_on: # 다른 서비스가 먼저 실행되도록 설정
+      streat-eureka:
+        condition: service_healthy
+      streat-config:
+        condition: service_healthy
+        
   streat-gateway:
     image: junbeomson/streat-gateway:latest
     container_name: streat-gateway
