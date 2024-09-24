@@ -8,7 +8,7 @@ services:
       - streat-network
 
   streat-nginx:
-    image: nginx:1.21.4
+    image: nginx:1.21.4-alpine
     container_name: streat-nginx
     networks:
       - streat-network
