@@ -17,5 +17,14 @@ COPY . /app
 # 6. 빌드 명령 실행 (프로덕션 모드로 빌드)
 RUN npm run build
 
-# 7. 사용할 포트 설정 (예: React 기본 3000 포트)
-EXPOSE 3000
+# 프로덕션 스테이지
+FROM nginx:1.21.4-alpine
+
+# nginx 실행 전 default.conf 파일 수정
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# 빌드 이미지에서 생성된 dist 폴더를 nginx 이미지로 복사
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+CMD [ "nginx", "-g", "daemon off;" ]
