@@ -35,4 +35,10 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow();
         user.toggleOrderStatusAlert(alertOn);
     }
+
+    @Transactional
+    public void toggleDibsStoreAlert(Integer userId, boolean alertOn) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.toggleDibsStoreAlert(alertOn);
+    }
 }
