@@ -14,3 +14,14 @@ spring:
       label: main
   config:
     import: "configserver:"
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    use-root-path: true
+    urls:
+      - name: Store API
+        url: http://localhost:8787/api/stores/v3/api-docs
