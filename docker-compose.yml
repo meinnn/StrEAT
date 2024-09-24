@@ -2,18 +2,20 @@ services:
   streat-frontend:
     image: junbeomson/streat-frontend:latest
     container_name: streat-frontend
-    ports:
-      - '3000:3000'
+    expose:
+      - 3000
     networks:
       - streat-network
 
-  streat-nginx:
+  nginx:
     image: nginx:1.21.4-alpine
-    container_name: streat-nginx
+    container_name: nginx
     networks:
       - streat-network
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
     ports:
-      - '80:80'
+      - 80:80
 
   streat-eureka:
     image: junbeomson/streat-eureka:latest
