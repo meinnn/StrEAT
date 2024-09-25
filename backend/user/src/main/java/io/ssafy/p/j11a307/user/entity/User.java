@@ -30,11 +30,11 @@ public class User {
 
     @ColumnDefault("true")
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean orderStatusAlert;
+    private boolean orderStatusAlert = true;
 
     @ColumnDefault("true")
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean dibsStoreAlert;
+    private boolean dibsStoreAlert = true;
 
     public User(KakaoInfoVo kakaoInfoVo) {
         this.kakaoId = kakaoInfoVo.getKakaoId();
@@ -54,5 +54,13 @@ public class User {
     public void logout() {
         this.kakaoAccessToken = null;
         this.kakaoRefreshToken = null;
+    }
+
+    public void toggleOrderStatusAlert(boolean alertOn) {
+        this.orderStatusAlert = alertOn;
+    }
+
+    public void toggleDibsStoreAlert(boolean alertOn) {
+        this.dibsStoreAlert = alertOn;
     }
 }
