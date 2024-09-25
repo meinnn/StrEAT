@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import PrintOrderBtn from '@/containers/order-management/OrderBox/PrintOrderBtn'
-import OrderInfoBtn from '@/containers/order-management/OrderInfo/OrderInfoBtn'
+import PrintOrderBtn from '@/containers/owner/order-management/OrderBox/PrintOrderBtn'
+import OrderInfoBtn from '@/containers/owner/order-management/OrderInfo/OrderInfoBtn'
 
 export default function CompleteBox() {
   return (

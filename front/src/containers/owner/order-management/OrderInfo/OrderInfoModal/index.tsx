@@ -1,4 +1,4 @@
-import OrderInfo from '@/containers/order-management/OrderInfo'
+import OrderInfo from '@/containers/owner/order-management/OrderInfo'
 
 interface OrderInfoModalProps {
   onClose: () => void

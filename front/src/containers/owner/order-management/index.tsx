@@ -1,8 +1,8 @@
 'use client'
 
-import OrderProcessing from '@/containers/order-management/OrderProcessing'
-import OrderInquiry from '@/containers/order-management/OrderInquiry'
-import OrderComplete from '@/containers/order-management/OrderComplete'
+import OrderProcessing from '@/containers/owner/order-management/OrderProcessing'
+import OrderInquiry from '@/containers/owner/order-management/OrderInquiry'
+import OrderComplete from '@/containers/owner/order-management/OrderComplete'
 import OwnerTabList from '@/components/OwnerTabList'
 import { useState } from 'react'
 

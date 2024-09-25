@@ -1,7 +1,7 @@
 // 주문정보 보기
 
 import { useState } from 'react'
-import OrderInfoModal from './OrderInfoModal'
+import OrderInfoModal from '@/containers/owner/order-management/OrderInfo/OrderInfoModal'
 
 export default function OrderInfoBtn() {
   const [isModalOpen, setIsModalOpen] = useState(false)
