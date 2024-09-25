@@ -1,4 +1,4 @@
-import MenuAdd from '@/containers/menu-add'
+import MenuAdd from '@/containers/owner/store/menu/menu-add'
 
 export default function MenuAddPage() {
   return (

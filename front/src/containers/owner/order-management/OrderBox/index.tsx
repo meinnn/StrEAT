@@ -11,13 +11,13 @@ export default function OrderBox() {
 
   return (
     <div
-      className={`flex gap-2 border p-4 rounded-lg shadow-md max-w-md mt-4 mx-2 ${
+      className={`flex gap-2 border p-4 rounded-lg shadow-md max-w-md mt-4 mx-3 ${
         isAccepted ? 'bg-white text-black' : 'bg-primary-400 text-white'
       }`}
     >
       <div className="flex items-start">
         {/* 왼쪽에 시간 배치 */}
-        <div className="text-2xl font-bold mr-4 flex flex-col justify-center h-full">
+        <div className="text-2xl font-semibold mr-4 flex flex-col justify-center h-full">
           13:22
         </div>
         {/* 메뉴 정보 및 가격 */}

@@ -7,8 +7,8 @@ import OwnerTabList from '@/components/OwnerTabList'
 import { useState } from 'react'
 
 const TAB_LIST = [
-  { id: 'order-processing', name: '신규, 처리중 11', href: '' },
-  { id: 'order-complete', name: '완료 10', href: '' },
+  { id: 'order-processing', name: '신규, 처리중 0', href: '' },
+  { id: 'order-complete', name: '완료 1', href: '' },
   { id: 'order-inquiry', name: '주문 조회', href: '' },
 ]
 
