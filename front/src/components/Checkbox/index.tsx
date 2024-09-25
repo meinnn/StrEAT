@@ -1,4 +1,4 @@
-import { MdCheckBoxOutlineBlank, MdCheckBox } from 'react-icons/md'
+import { MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md'
 import React from 'react'
 
 interface CheckboxProps {

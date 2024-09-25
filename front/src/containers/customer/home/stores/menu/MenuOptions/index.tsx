@@ -4,18 +4,21 @@ import { useEffect, useState } from 'react'
 import Checkbox from '@/components/Checkbox'
 import RadioButton from '@/components/RadioButton'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
+import { MenuItem } from '@/types/menu'
+import { CartItem } from '@/types/cart'
 
-export default function MenuOptions({
-  type,
-  menuInfo,
-}: {
+interface MenuOptionsProps {
   type?: 'default' | 'change'
-  menuInfo: any // 임시
-}) {
+  menuInfo: MenuItem | CartItem
+}
+
+export default function MenuOptions({ type, menuInfo }: MenuOptionsProps) {
+  // CartItem일 경우 이미 quantity가 있으므로, CartItem을 사용한다면 해당 값을 설정
+  const initialQuantity = 'quantity' in menuInfo ? menuInfo.quantity : 1
   const [selectedOptions, setSelectedOptions] = useState<
     Record<number, string[]>
   >({})
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity] = useState(initialQuantity)
   const [showAlert, setShowAlert] = useState(false)
   const [accordionOpen, setAccordionOpen] = useState<Record<number, boolean>>(
     {}
@@ -24,7 +27,7 @@ export default function MenuOptions({
   // 첫 번째 RadioButton 옵션 자동 선택
   useEffect(() => {
     const initialSelections: Record<number, string[]> = {}
-    menuInfo.option_categories.forEach((category: any) => {
+    menuInfo.option_categories.forEach((category) => {
       if (category.max_select === 1 && category.options.length > 0) {
         initialSelections[category.id] = [category.options[0].desc]
       }
@@ -35,7 +38,7 @@ export default function MenuOptions({
   // 아코디언 상태 초기화
   useEffect(() => {
     const initialAccordionState: Record<number, boolean> = {}
-    menuInfo.option_categories.forEach((category: any) => {
+    menuInfo.option_categories.forEach((category) => {
       initialAccordionState[category.id] = type !== 'change' // change일 때는 접혀있도록
     })
     setAccordionOpen(initialAccordionState)
@@ -75,7 +78,7 @@ export default function MenuOptions({
   }
 
   const areAllRequiredOptionsSelected = () => {
-    return menuInfo.option_categories.every((category: any) => {
+    return menuInfo.option_categories.every((category) => {
       const selectedCount = selectedOptions[category.id]?.length || 0
       return selectedCount >= category.min_select
     })
@@ -85,10 +88,9 @@ export default function MenuOptions({
     if (!areAllRequiredOptionsSelected()) {
       setShowAlert(true)
       setTimeout(() => setShowAlert(false), 3000)
-      return
     }
 
-    console.log('장바구니 담기 실행')
+    // 장바구니 작업
   }
 
   const toggleAccordion = (categoryId: number) => {
@@ -113,7 +115,7 @@ export default function MenuOptions({
         </div>
 
         {/* 옵션 카테고리들 */}
-        {menuInfo.option_categories.map((category: any) => (
+        {menuInfo.option_categories.map((category) => (
           <div
             key={category.id}
             className={`${type === 'change' ? 'border border-gray-medium rounded-lg py-4 px-5 m-2' : 'p-6'}`}
@@ -173,7 +175,7 @@ export default function MenuOptions({
                   ))}
 
                 <div className="mt-5 mx-2 space-y-5">
-                  {category.options.map((option: any) =>
+                  {category.options.map((option) =>
                     category.max_select > 1 ? (
                       <Checkbox
                         key={option.id}

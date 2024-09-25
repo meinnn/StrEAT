@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { RiSearchLine, RiHeart3Line } from 'react-icons/ri'
-import { TbSmartHome, TbReceipt } from 'react-icons/tb'
+import { RiHeart3Line, RiSearchLine } from 'react-icons/ri'
+import { TbReceipt, TbSmartHome } from 'react-icons/tb'
 import { HiOutlineUser } from 'react-icons/hi'
 
 const LINKS = [

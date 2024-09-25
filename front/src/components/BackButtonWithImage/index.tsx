@@ -52,8 +52,8 @@ export default function BackButtonWithImage({
       <Image
         src={src}
         alt={alt}
-        width={0}
-        height={0}
+        width={192}
+        height={192}
         className="absoulte top-0 w-full h-48 object-cover bg-gray-dark"
       />
 

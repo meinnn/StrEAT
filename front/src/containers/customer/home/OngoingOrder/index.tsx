@@ -26,12 +26,16 @@ export default function OngoingOrder() {
   return (
     <div className="m-6 p-6 fixed top-0 inset-x-0 z-50 bg-white shadow-lg rounded-lg">
       {/* 닫기 버튼 */}
-      <button className="float-end hover:text-gray-dark" onClick={handleClose}>
+      <button
+        type="button"
+        className="float-end hover:text-gray-dark"
+        onClick={handleClose}
+      >
         <IoCloseOutline size={18} />
       </button>
 
       {/* 진행 중 메시지 */}
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-primary-950 mb-4">
         현재 진행 중인 주문 내역이 있어요
       </p>
 

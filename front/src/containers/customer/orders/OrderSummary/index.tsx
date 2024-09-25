@@ -1,43 +1,33 @@
-import Image from 'next/image'
-import Link from 'next/link'
 import StoreLink from '@/components/StoreLink'
 import OrderMenuDetail from '@/components/OrderMenuDetail'
+import { OrderItem } from '@/types/order'
+
+export const ORDER_ITEMS: OrderItem[] = [
+  {
+    id: 1,
+    name: '후라이드 치킨',
+    image: '/images/보쌈사진.jpg',
+    price: 1000000000,
+    quantity: 1,
+    options: ['한마리', '양념치킨 소스'],
+  },
+  {
+    id: 2,
+    name: '양념 치킨',
+    image: '/images/보쌈사진.jpg',
+    price: 1000000000,
+    quantity: 1,
+    options: ['한마리', '양념치킨 소스'],
+  },
+]
 
 export default function OrderSummary() {
   // 임시 데이터
-  const ORDER_ITEMS = [
-    {
-      id: 1,
-      name: '후라이드 치킨',
-      quantity: 1,
-      options: ['한마리', '양념치킨 소스'],
-      price: 4000,
-      image: '/images/보쌈사진.jpg', // 실제 이미지 경로로 변경
-    },
-    {
-      id: 2,
-      name: '후라이드 치킨',
-      quantity: 1,
-      options: ['한마리', '양념치킨 소스'],
-      price: 4000,
-      image: '/images/보쌈사진.jpg', // 실제 이미지 경로로 변경
-    },
-    {
-      id: 3,
-      name: '후라이드 치킨',
-      quantity: 1,
-      options: ['한마리', '양념치킨 소스'],
-      price: 4000,
-      image: '/images/보쌈사진.jpg', // 실제 이미지 경로로 변경
-    },
-  ]
+  const orderItems = [...ORDER_ITEMS]
 
   // 총 개수와 총 가격 계산 (임시 데이터로)
-  const totalQuantity = ORDER_ITEMS.reduce(
-    (acc, item) => acc + item.quantity,
-    0
-  )
-  const totalPrice = ORDER_ITEMS.reduce((acc, item) => acc + item.price, 0)
+  const totalQuantity = orderItems.reduce((acc, item) => acc + item.quantity, 0)
+  const totalPrice = orderItems.reduce((acc, item) => acc + item.price, 0)
 
   return (
     <div className="p-6">
@@ -47,7 +37,7 @@ export default function OrderSummary() {
         주문내역
       </h3>
       <div className="m-4">
-        {ORDER_ITEMS.map((item) => (
+        {orderItems.map((item) => (
           <div key={item.id} className="flex justify-between my-6">
             <OrderMenuDetail item={item} />
             <p className="text-md font-bold">{item.price.toLocaleString()}원</p>
