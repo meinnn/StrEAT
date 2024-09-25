@@ -15,3 +15,11 @@ spring:
             - Path=/api/stores/**
 server:
   port: 8787
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Store API
+        url: http://localhost:8787/api/stores/v3/api-docs
+      - name: user API
+        url: http://localhost:8882/api/stores/v3/api-docs
