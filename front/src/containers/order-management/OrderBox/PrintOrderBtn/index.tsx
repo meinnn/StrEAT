@@ -2,8 +2,9 @@
 
 export default function PrintOrderBtn() {
   const handlePrint = () => {
-    ;('주문표 인쇄 클릭됨')
+    console.log('주문표 인쇄 클릭됨')
   }
+
   return (
     <button
       onClick={handlePrint}

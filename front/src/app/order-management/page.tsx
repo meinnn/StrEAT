@@ -2,11 +2,9 @@
 import OrderManagement from '@/containers/order-management'
 
 export default function OrderManagementPage() {
-    
-    
-    return (
-        <div>
-           <OrderManagement />
-        </div>
-    )
+  return (
+    <div>
+      <OrderManagement />
+    </div>
+  )
 }

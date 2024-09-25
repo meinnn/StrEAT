@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { LuPencil } from 'react-icons/lu'
-import { FaRegTrashAlt } from 'react-icons/fa'
-import { FaPlus } from 'react-icons/fa'
+import { FaRegTrashAlt, FaPlus } from 'react-icons/fa'
 
 export default function MenuAddOption() {
   const [optionGroups, setOptionGroups] = useState([
@@ -164,7 +163,8 @@ export default function MenuAddOption() {
                   onChange={(e) => {
                     const newOptionGroups = [...optionGroups]
                     newOptionGroups[groupIndex].minOptions = parseInt(
-                      e.target.value
+                      e.target.value,
+                      10
                     )
                     setOptionGroups(newOptionGroups)
                   }}
@@ -187,7 +187,8 @@ export default function MenuAddOption() {
                   onChange={(e) => {
                     const newOptionGroups = [...optionGroups]
                     newOptionGroups[groupIndex].maxOptions = parseInt(
-                      e.target.value
+                      e.target.value,
+                      10
                     )
                     setOptionGroups(newOptionGroups)
                   }}
@@ -214,9 +215,6 @@ export default function MenuAddOption() {
               삭제하기
             </button>
           </div>
-          {/* {groupIndex === optionGroups.length - 1 && (
-            <div className="border-t-2 border-gray-300 my-6"></div>
-          )} */}
         </div>
       ))}
 

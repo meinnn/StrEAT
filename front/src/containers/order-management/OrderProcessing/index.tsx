@@ -4,9 +4,7 @@ import OrderBox from '@/containers/order-management/OrderBox'
 export default function OrderProcessing() {
   return (
     <div>
-      <div>
-        <OrderBox />
-      </div>
+      <OrderBox />
     </div>
   )
 }

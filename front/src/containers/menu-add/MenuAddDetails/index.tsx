@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { FaCamera } from "react-icons/fa"
+import { FaCamera } from 'react-icons/fa'
 
 export default function MenuAddDetails() {
   const [foodName, setFoodName] = useState<string>('')

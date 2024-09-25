@@ -1,9 +1,9 @@
-import MenuEdit from "@/containers/menu-edit"
+import MenuEdit from '@/containers/menu-edit'
 
 export default function MenuEditPage() {
-    return (
-        <div>
-            <MenuEdit />
-        </div>
-    )
+  return (
+    <div>
+      <MenuEdit />
+    </div>
+  )
 }
