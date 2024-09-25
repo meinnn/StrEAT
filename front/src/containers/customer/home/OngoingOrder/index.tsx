@@ -26,7 +26,11 @@ export default function OngoingOrder() {
   return (
     <div className="m-6 p-6 fixed top-0 inset-x-0 z-50 bg-white shadow-lg rounded-lg">
       {/* 닫기 버튼 */}
-      <button className="float-end hover:text-gray-dark" onClick={handleClose}>
+      <button
+        type="button"
+        className="float-end hover:text-gray-dark"
+        onClick={handleClose}
+      >
         <IoCloseOutline size={18} />
       </button>
 

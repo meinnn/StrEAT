@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { FaStar, FaLocationArrow } from 'react-icons/fa'
-import { RiHeart3Line, RiHeart3Fill } from 'react-icons/ri'
+import { FaLocationArrow, FaStar } from 'react-icons/fa'
+import { RiHeart3Fill, RiHeart3Line } from 'react-icons/ri'
 import Image from 'next/image'
 import Link from 'next/link'
 

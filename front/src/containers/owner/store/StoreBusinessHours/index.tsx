@@ -53,7 +53,7 @@ export default function StoreBusinessHours() {
               return (
                 <p key={day} className="flex gap-2">
                   <span>{day}</span>
-                  {!!businessDay.length
+                  {businessDay.length
                     ? `${businessDay[0].startTime} - ${businessDay[0].endTime}`
                     : '정기 휴무'}
                 </p>

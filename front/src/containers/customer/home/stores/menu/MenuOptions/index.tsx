@@ -90,7 +90,7 @@ export default function MenuOptions({ type, menuInfo }: MenuOptionsProps) {
       setTimeout(() => setShowAlert(false), 3000)
     }
 
-    // TODO: 장바구니 작업
+    // 장바구니 작업
   }
 
   const toggleAccordion = (categoryId: number) => {

@@ -17,6 +17,7 @@ export default function SignUp() {
       <div className="flex space-x-4">
         {/* 사장님 버튼 */}
         <button
+          type="button"
           className={`border size-40 rounded-lg flex flex-col space-y-2 items-center justify-center transition-colors ${
             selectedRole === 'owner'
               ? 'bg-primary-500 text-white'
@@ -30,6 +31,7 @@ export default function SignUp() {
 
         {/* 손님 버튼 */}
         <button
+          type="button"
           className={`border size-40 rounded-lg flex flex-col space-y-2 items-center justify-center transition-colors ${
             selectedRole === 'customer'
               ? 'bg-primary-500 text-white'

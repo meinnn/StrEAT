@@ -9,6 +9,26 @@ export default function OrderProgress() {
   const teamsInFront = 4
   const menusBeingPrepared = 5
 
+  const getStepStyle = (status: string) => {
+    if (status === 'completed') {
+      return 'border-2 border-primary-300 bg-white text-primary-500'
+    }
+    if (status === 'in-progress') {
+      return 'bg-primary-500 text-white'
+    }
+    return 'border-2 border-gray-medium bg-white text-gray-dark'
+  }
+
+  const getLabelStyle = (status: string) => {
+    if (status === 'completed') {
+      return 'text-primary-500'
+    }
+    if (status === 'in-progress') {
+      return 'text-primary-500 font-bold'
+    }
+    return 'text-gray-dark'
+  }
+
   return (
     <div className="py-8">
       {/* 진행 상태 표시 */}
@@ -18,27 +38,12 @@ export default function OrderProgress() {
             {/* 원과 텍스트 */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                  step.status === 'completed'
-                    ? 'border-2 border-primary-300 bg-white text-primary-500'
-                    : step.status === 'in-progress'
-                      ? 'bg-primary-500 text-white'
-                      : 'border-2 border-gray-medium bg-white text-gray-dark'
-                }`}
+                className={`w-8 h-8 flex items-center justify-center rounded-full ${getStepStyle(step.status)}`}
               >
                 {step.id}
               </div>
 
-              <p
-                key={step.id}
-                className={`mt-1 text-sm ${
-                  step.status === 'completed'
-                    ? 'text-primary-500'
-                    : step.status === 'in-progress'
-                      ? 'text-primary-500 font-bold'
-                      : 'text-gray-400'
-                }`}
-              >
+              <p className={`mt-1 text-sm ${getLabelStyle(step.status)}`}>
                 {step.label}
               </p>
             </div>

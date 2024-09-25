@@ -2,7 +2,7 @@ import AppBar from '@/components/AppBar'
 import OrderProgress from '@/containers/customer/orders/OrderProgress'
 import OrderSummary from '@/containers/customer/orders/OrderSummary'
 
-export default function OrderDetail({ params }: { params: { id: string } }) {
+export default function OrderDetail() {
   return (
     <>
       <AppBar title="주문 상세" />

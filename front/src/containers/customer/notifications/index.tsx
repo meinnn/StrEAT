@@ -31,7 +31,7 @@ export const NOTIFICATIONS = [
 export default function Notifications() {
   return (
     <div className="p-4">
-      {NOTIFICATIONS.map((notification, index) => (
+      {NOTIFICATIONS.map((notification) => (
         <NotificationItem
           key={notification.id}
           message={`${notification.icon} ${notification.title}`}
