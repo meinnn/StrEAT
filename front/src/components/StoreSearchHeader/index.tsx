@@ -15,7 +15,7 @@ export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 fixed top-0 inset-x-0">
       <button
         type="button"
         onClick={() => {
