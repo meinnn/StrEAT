@@ -13,7 +13,5 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/stores/**
-
-
 server:
   port: 8787
