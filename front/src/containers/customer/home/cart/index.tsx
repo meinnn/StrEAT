@@ -8,8 +8,6 @@ import Checkbox from '@/components/Checkbox'
 import Link from 'next/link'
 import Drawer from '@/components/Drawer'
 import MenuOptions from '@/containers/customer/home/stores/menu/MenuOptions'
-import StoreLink from '@/components/StoreLink'
-import OrderMenuDetail from '@/components/OrderMenuDetail'
 
 export default function CartPage() {
   // 장바구니 아이템 예시 데이터
@@ -21,7 +19,7 @@ export default function CartPage() {
       options: ['한마리', '양념치킨 소스'],
       price: 1000000000,
       checked: false,
-      image: '/images/보쌈사진.jpg', // 실제 이미지 경로로 변경
+      image: '/chicken.jpg', // 실제 이미지 경로로 변경
       option_categories: [
         {
           id: 1,
@@ -66,7 +64,7 @@ export default function CartPage() {
       options: ['한마리', '양념치킨 소스'],
       price: 1000000000,
       checked: true,
-      image: '/images/보쌈사진.jpg', // 실제 이미지 경로로 변경
+      image: '/chicken.jpg', // 실제 이미지 경로로 변경
       option_categories: [
         {
           id: 1,
@@ -143,7 +141,19 @@ export default function CartPage() {
     >
       <div>
         {/* 가게 정보 */}
-        <StoreLink storeId={1} />
+        <Link href="/customer/stores/1" className="ms-2 mb-5 flex">
+          <Image
+            src="/store.jpg"
+            alt="store"
+            width={48}
+            height={48}
+            className="rounded-lg bg-gray-medium"
+          />
+          <div className="flex items-center">
+            <span className="ml-4 text-lg font-bold">옐로우 키친 치킨</span>
+            <GoChevronRight size={20} />
+          </div>
+        </Link>
 
         {/* 장바구니 아이템 리스트 */}
         {cartItems.map((item) => (
@@ -167,8 +177,23 @@ export default function CartPage() {
             </div>
 
             {/* 메뉴 정보 */}
-            <div className="ms-10 mt-2">
-              <OrderMenuDetail item={item} />
+            <div className="ms-10 mt-2 flex items-start space-x-4">
+              <Image
+                src={item.image}
+                alt={item.name}
+                width={80}
+                height={80}
+                className="rounded-lg bg-gray-medium"
+              />
+              <div>
+                <h3 className="text-md font-semibold">{item.name}</h3>
+                <p className="text-sm">{item.quantity}개</p>
+                {item.options.map((option) => (
+                  <p className="text-sm text-gray-dark leading-4" key={option}>
+                    {option}
+                  </p>
+                ))}
+              </div>
             </div>
 
             <div className="ms-10 mt-4 flex justify-between items-center">

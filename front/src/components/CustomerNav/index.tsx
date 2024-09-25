@@ -14,15 +14,15 @@ const LINKS = [
   { name: '마이 페이지', href: '/mypage', icon: HiOutlineUser },
 ]
 
-const HIDDEN_PATHS = ['/customer/stores', '/customer/cart', '/customer/payment']
-
 export default function CustomerNav() {
   const path = usePathname()
 
-  const isHiddenPath = HIDDEN_PATHS.some((hiddenPath) =>
-    path.startsWith(hiddenPath)
-  )
-  if (isHiddenPath) return null
+  if (
+    path.startsWith('/customer/stores') ||
+    path.startsWith('/customer/cart')
+  ) {
+    return null
+  }
 
   return (
     <nav className="bg-white h-tabbar fixed bottom-0 inset-x-0">
@@ -33,10 +33,7 @@ export default function CustomerNav() {
               <Link
                 href={`/customer${link.href}`}
                 className={
-                  path === `/customer${link.href}` ||
-                  (link.href !== '' && path.startsWith(`/customer${link.href}`))
-                    ? 'text-primary-500'
-                    : ''
+                  path === `/customer${link.href}` ? 'text-primary-500' : ''
                 }
               >
                 <div className="flex flex-col gap-y-0.5 items-center">

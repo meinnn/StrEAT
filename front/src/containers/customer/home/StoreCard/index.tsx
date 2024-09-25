@@ -14,11 +14,12 @@ export default function StoreCard() {
   }
 
   return (
-    <div className="relative bg-[#371B1B] text-white rounded-xl p-5 min-w-64 h-28">
-      <Link
-        href="/customer/stores/1"
-        className="h-full w-full flex items-center"
-      >
+    <Link
+      href="/customer/stores/1"
+      className="relative bg-[#371B1B] text-white rounded-xl p-5 min-w-64 h-28"
+    >
+      {/* 음식점 이미지 */}
+      <div className="h-full w-full flex items-center">
         <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-medium">
           <Image
             src="/store.jpg"
@@ -40,7 +41,7 @@ export default function StoreCard() {
             <span>10m</span>
           </div>
         </div>
-      </Link>
+      </div>
 
       <button
         type="button"
@@ -53,6 +54,6 @@ export default function StoreCard() {
           <RiHeart3Line className="text-primary-500" size={24} />
         )}
       </button>
-    </div>
+    </Link>
   )
 }
