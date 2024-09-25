@@ -3,6 +3,10 @@ spring:
     name: user
   config:
     import: "configserver:"
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 eureka:
   client:
