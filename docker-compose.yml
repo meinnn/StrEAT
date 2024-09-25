@@ -108,5 +108,4 @@ services:
 
 networks:
   streat-network:
-    name: streat-network
-    driver: bridge
+    external: true
