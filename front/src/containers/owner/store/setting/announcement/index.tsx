@@ -1,6 +1,6 @@
 import AppBar from '@/components/AppBar'
 
-export default function OwnerStoreSettingAccouncement() {
+export default function OwnerStoreSettingAnnouncement() {
   return (
     <div>
       <AppBar title="내 점포" />

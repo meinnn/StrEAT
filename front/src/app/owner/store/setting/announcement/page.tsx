@@ -1,9 +1,9 @@
 import OwnerStoreSettingAccouncement from '@/containers/owner/store/setting/announcement'
 
-export default function OwnerSettingAnnouncementPage() {
+export default function OwnerStoreSettingAnnouncementPage() {
   return (
-    <div>
+    <section>
       <OwnerStoreSettingAccouncement />
-    </div>
+    </section>
   )
 }
