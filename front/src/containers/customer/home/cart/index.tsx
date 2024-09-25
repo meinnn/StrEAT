@@ -1,8 +1,6 @@
 'use client'
 
-import Image from 'next/image'
 import { useState } from 'react'
-import { GoChevronRight } from 'react-icons/go'
 import { IoCloseOutline } from 'react-icons/io5'
 import Checkbox from '@/components/Checkbox'
 import Link from 'next/link'
@@ -10,101 +8,100 @@ import Drawer from '@/components/Drawer'
 import MenuOptions from '@/containers/customer/home/stores/menu/MenuOptions'
 import StoreLink from '@/components/StoreLink'
 import OrderMenuDetail from '@/components/OrderMenuDetail'
+import { CartItem } from '@/types/cart'
+
+export const CART_ITEMS: CartItem[] = [
+  {
+    id: 1,
+    name: '후라이드 치킨',
+    image: '/images/보쌈사진.jpg',
+    price: 1000000000,
+    quantity: 1,
+    checked: false,
+    options: ['한마리', '양념치킨 소스'], // 사용자가 선택한 옵션
+    option_categories: [
+      {
+        id: 1,
+        name: '부분육 선택',
+        min_select: 1,
+        max_select: 1,
+        options: [
+          { id: 1, desc: '한마리' },
+          { id: 2, desc: '순살 변경' },
+          { id: 3, desc: '윙&봉 변경' },
+        ],
+      },
+      {
+        id: 2,
+        name: '소스 추가 선택',
+        min_select: 2,
+        max_select: 2,
+        options: [
+          { id: 4, desc: '양념치킨 소스' },
+          { id: 5, desc: '스모크 소스' },
+        ],
+      },
+      {
+        id: 3,
+        name: '소스 추가 선택',
+        min_select: 0,
+        max_select: 2,
+        options: [
+          { id: 6, desc: '양념치킨 소스' },
+          { id: 7, desc: '스모크 소스' },
+          { id: 8, desc: '다른 소스' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: '양념 치킨',
+    image: '/images/보쌈사진.jpg',
+    price: 1000000000,
+    quantity: 1,
+    checked: true,
+    options: ['한마리', '양념치킨 소스'], // 사용자가 선택한 옵션
+    option_categories: [
+      {
+        id: 1,
+        name: '부분육 선택',
+        min_select: 1,
+        max_select: 1,
+        options: [
+          { id: 1, desc: '한마리' },
+          { id: 2, desc: '순살 변경' },
+          { id: 3, desc: '윙&봉 변경' },
+        ],
+      },
+      {
+        id: 2,
+        name: '소스 추가 선택',
+        min_select: 2,
+        max_select: 2,
+        options: [
+          { id: 4, desc: '양념치킨 소스' },
+          { id: 5, desc: '스모크 소스' },
+        ],
+      },
+      {
+        id: 3,
+        name: '소스 추가 선택',
+        min_select: 0,
+        max_select: 2,
+        options: [
+          { id: 6, desc: '양념치킨 소스' },
+          { id: 7, desc: '스모크 소스' },
+          { id: 8, desc: '다른 소스' },
+        ],
+      },
+    ],
+  },
+]
 
 export default function CartPage() {
   // 장바구니 아이템 예시 데이터
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: '후라이드 치킨',
-      quantity: 1,
-      options: ['한마리', '양념치킨 소스'],
-      price: 1000000000,
-      checked: false,
-      image: '/images/보쌈사진.jpg', // 실제 이미지 경로로 변경
-      option_categories: [
-        {
-          id: 1,
-          name: '부분육 선택',
-          min_select: 1,
-          max_select: 1, // 1개만 선택 가능 -> RadioButton
-          options: [
-            { id: 1, desc: '한마리' },
-            { id: 2, desc: '순살 변경' },
-            { id: 3, desc: '윙&봉 변경' },
-          ],
-        },
-        {
-          id: 2,
-          name: '소스 추가 선택',
-          is_essential: false,
-          min_select: 2,
-          max_select: 2, // 여러 개 선택 가능 -> Checkbox
-          options: [
-            { id: 4, desc: '양념치킨 소스' },
-            { id: 5, desc: '스모크 소스' },
-          ],
-        },
-        {
-          id: 3,
-          name: '소스 추가 선택',
-          is_essential: false,
-          min_select: 0,
-          max_select: 2, // 여러 개 선택 가능 -> Checkbox
-          options: [
-            { id: 6, desc: '양념치킨 소스' },
-            { id: 7, desc: '스모크 소스' },
-            { id: 8, desc: '다른 소스' },
-          ],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: '양념 치킨',
-      quantity: 1,
-      options: ['한마리', '양념치킨 소스'],
-      price: 1000000000,
-      checked: true,
-      image: '/images/보쌈사진.jpg', // 실제 이미지 경로로 변경
-      option_categories: [
-        {
-          id: 1,
-          name: '부분육 선택',
-          min_select: 1,
-          max_select: 1, // 1개만 선택 가능 -> RadioButton
-          options: [
-            { id: 1, desc: '한마리' },
-            { id: 2, desc: '순살 변경' },
-            { id: 3, desc: '윙&봉 변경' },
-          ],
-        },
-        {
-          id: 2,
-          name: '소스 추가 선택',
-          is_essential: false,
-          min_select: 2,
-          max_select: 2, // 여러 개 선택 가능 -> Checkbox
-          options: [
-            { id: 4, desc: '양념치킨 소스' },
-            { id: 5, desc: '스모크 소스' },
-          ],
-        },
-        {
-          id: 3,
-          name: '소스 추가 선택',
-          is_essential: false,
-          min_select: 0,
-          max_select: 2, // 여러 개 선택 가능 -> Checkbox
-          options: [
-            { id: 6, desc: '양념치킨 소스' },
-            { id: 7, desc: '스모크 소스' },
-            { id: 8, desc: '다른 소스' },
-          ],
-        },
-      ],
-    },
-  ])
+  const [cartItems, setCartItems] = useState([...CART_ITEMS])
 
   const [showDrawer, setShowDrawer] = useState(false) // Drawer 상태 관리
   const [selectedItem, setSelectedItem] = useState(cartItems[0]) // 선택한 아이템 상태
@@ -121,7 +118,7 @@ export default function CartPage() {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id))
   }
 
-  const handleOpenDrawer = (item: any) => {
+  const handleOpenDrawer = (item: CartItem) => {
     setSelectedItem(item) // 선택한 아이템 저장
     setShowDrawer(true) // Drawer 열기
   }
@@ -159,6 +156,7 @@ export default function CartPage() {
                 size={24}
               />
               <button
+                type="button"
                 onClick={() => handleRemoveItem(item.id)}
                 className="hover:text-primary-500"
               >
@@ -224,6 +222,7 @@ export default function CartPage() {
       {showDrawer && (
         <Drawer title={selectedItem.name} onClose={handleCloseDrawer}>
           <div className="mb-20">
+            {/* CartItem을 MenuOptions에 전달 */}
             <MenuOptions type="change" menuInfo={selectedItem} />
           </div>
         </Drawer>
