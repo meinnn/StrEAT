@@ -12,8 +12,9 @@ services:
     container_name: nginx
     networks:
       - streat-network
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
       - "80:80"
 
