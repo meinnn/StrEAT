@@ -1,3 +1,4 @@
+import { GoPlus } from 'react-icons/go'
 import FloatingButton from '@/components/FloatingButton'
 import StoreMenuItem from '@/containers/owner/store/menu/StoreMenuItem'
 
@@ -29,7 +30,10 @@ export default function StoreMenu() {
           )
         })}
       </div>
-      <FloatingButton />
+      <FloatingButton
+        href=""
+        icon={<GoPlus className="text-secondary-light w-9 h-9" />}
+      />
     </main>
   )
 }

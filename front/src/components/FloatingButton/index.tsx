@@ -1,9 +1,8 @@
 import Link from 'next/link'
-import { GoPlus } from 'react-icons/go'
 
 export default function FloatingButton({
-  href = '',
-  icon = <GoPlus className="text-secondary-light w-9 h-9" />,
+  href,
+  icon,
 }: {
   href: string
   icon: JSX.Element
