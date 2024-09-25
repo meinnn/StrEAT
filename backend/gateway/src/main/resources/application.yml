@@ -28,7 +28,6 @@ springdoc:
     use-root-path: true
     urls:
       - name: Store API
-        url: http://streat-store:8080/api/stores/v3/api-docs
+        url: http://localhost:8080/api/stores/v3/api-docs
       - name: user API
-        url: http://streat-user:8080/api/stores/v3/api-docs
-
+        url: http://localhost:8080/api/users/v3/api-docs
