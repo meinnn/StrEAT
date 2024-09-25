@@ -5,9 +5,9 @@ export default function MyReviewPage() {
   return (
     <div>
       <AppBar title="내 리뷰 조회" />
-      <div className="bg-secondary-light">
+      <main className="bg-secondary-light">
         <MyReviewList />
-      </div>
+      </main>
     </div>
   )
 }
