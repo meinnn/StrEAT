@@ -27,7 +27,13 @@ export default function FavoriteItem({
     <section className="flex py-6 px-8 gap-3">
       <Link href={`/customer/stores/${id}`}>
         <p className="relative flex-shrink-0 w-16 h-16 aspect-square rounded overflow-hidden bg-gray-medium">
-          <Image src={imageUrl} alt="가게 사진" fill className="object-cover" />
+          <Image
+            src={imageUrl}
+            alt="가게 사진"
+            fill
+            className="object-cover"
+            priority
+          />
         </p>
       </Link>
       <div className="flex flex-col w-full gap-1 pt-1">
