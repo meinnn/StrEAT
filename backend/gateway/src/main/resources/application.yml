@@ -25,3 +25,5 @@ springdoc:
     urls:
       - name: Store API
         url: http://streat-store:8080/api/stores/v3/api-docs
+      - name: user API
+        url: http://streat-user:8080/api/stores/v3/api-docs
