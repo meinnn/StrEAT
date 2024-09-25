@@ -25,3 +25,4 @@ springdoc:
     urls:
       - name: Store API
         url: http://localhost:8787/api/stores/v3/api-docs
+
