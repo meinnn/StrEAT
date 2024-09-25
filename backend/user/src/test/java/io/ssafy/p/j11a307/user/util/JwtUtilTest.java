@@ -31,4 +31,18 @@ public class JwtUtilTest {
 
         Assertions.assertThat(jwtUtil.getUserIdFromAccessToken(accessToken)).isEqualTo(userId);
     }
+
+    @Test
+    void checkCreationTimeTest() throws InterruptedException {
+        long timeBeforeCreation = System.currentTimeMillis();
+        Thread.sleep(1000);
+        Integer userId = 1;
+        String accessToken = jwtUtil.createAccessToken(userId);
+        Thread.sleep(1000);
+        long timeAfterCreation = System.currentTimeMillis();
+        long createdAt = jwtUtil.getIssuedAt(accessToken);
+        Assertions.assertThat(createdAt).isGreaterThan(timeBeforeCreation);
+        Assertions.assertThat(createdAt).isLessThan(timeAfterCreation);
+
+    }
 }
