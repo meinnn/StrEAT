@@ -4,7 +4,9 @@ interface OrderInfoModalProps {
   onClose: () => void
 }
 
-export default function OrderInfoModal({ onClose }: OrderInfoModalProps): JSX.Element {
+export default function OrderInfoModal({
+  onClose,
+}: OrderInfoModalProps): JSX.Element {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">

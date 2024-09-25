@@ -3,11 +3,7 @@
 
 import { useState } from 'react'
 import { LuPencil } from 'react-icons/lu'
-<<<<<<< HEAD:front/src/containers/menu-add/MenuAddOptions/index.tsx
 import { FaRegTrashAlt, FaPlus } from 'react-icons/fa'
-=======
-import { FaPlus, FaRegTrashAlt } from 'react-icons/fa'
->>>>>>> front:front/src/containers/owner/store/menu/menu-add/MenuAddOptions/index.tsx
 
 export default function MenuAddOption() {
   const [optionGroups, setOptionGroups] = useState([
