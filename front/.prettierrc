@@ -8,6 +8,5 @@
   "jsxBracketSameLine": false,
   "arrowParens": "always",
   "useTabs": false,
-  "quoteProps": "consistent",
-  "endOfLine": "lf"
+  "quoteProps": "consistent"
 }
