@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Checkbox from '@/components/Checkbox'
 import RadioButton from '@/components/RadioButton'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
@@ -99,7 +99,9 @@ export default function MenuOptions({
 
   return (
     <div>
-      <div className={type === 'default' ? 'divide-y-4' : ''}>
+      <div
+        className={type === 'default' ? 'divide-y-4 divide-gray-medium' : ''}
+      >
         {/* 가격 섹션 */}
         <div
           className={`${type === 'change' ? 'border border-gray-medium rounded-lg py-4 px-5 m-2' : 'p-6'}`}
