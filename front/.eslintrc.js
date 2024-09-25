@@ -1,0 +1,62 @@
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    node: true,
+    es6: true,
+  },
+  plugins: ['import', '@typescript-eslint', 'react', 'prettier'],
+  extends: [
+    'airbnb',
+    'airbnb/hooks',
+    'next/core-web-vitals',
+    'next/typescript',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:prettier/recommended',
+    'prettier',
+  ],
+  rules: {
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    'react/react-in-jsx-scope': 'off',
+    'react/button-has-type': 'off',
+    'no-extra-boolean-cast': 'off',
+    'react/jsx-filename-extension': [
+      'warn',
+      {
+        extensions: ['.ts', '.tsx'],
+      },
+    ],
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/camelcase': 'off',
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'jsx-a11y/no-noninteractive-element-interactions': 'off',
+    'import/no-duplicates': 'off',
+    'jsx-a11y/label-has-associated-control': 'off',
+    'radix': 'off',
+    'jsx-a11y/no-static-element-interactions': 'off',
+    'import/extensions': [
+      'off',
+      'ignorePackages',
+      {
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
+    'import/no-unresolved': 'off',
+    'no-console': 'off',
+  },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+    project: './tsconfig.json',
+    tsconfigRootDir: __dirname,
+  },
+  ignorePatterns: ['build', 'dist', 'public', '.eslintrc.js'],
+}
