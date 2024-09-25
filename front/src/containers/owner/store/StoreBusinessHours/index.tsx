@@ -47,13 +47,13 @@ export default function StoreBusinessHours() {
           <h6 className="w-16">운영 시간</h6>
           <div className="flex flex-col gap-1">
             {DAY_LIST.map((day) => {
-              let businessDay = BUSINESS_TIME_LIST.filter(
+              const businessDay = BUSINESS_TIME_LIST.filter(
                 (time) => day === time.day
               )
               return (
-                <p className="flex gap-2">
+                <p key={day} className="flex gap-2">
                   <span>{day}</span>
-                  {!!businessDay.length
+                  {businessDay.length
                     ? `${businessDay[0].startTime} - ${businessDay[0].endTime}`
                     : '정기 휴무'}
                 </p>
