@@ -128,4 +128,5 @@ services:
 
 networks:
   streat-network:
-    driver: bridge
+    external: true
+
