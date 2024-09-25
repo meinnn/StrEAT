@@ -9,6 +9,10 @@ spring:
           uri: http://streat-user:8080
           predicates:
             - Path=/api/users/**
+        - id: store
+          uri: http://streat-store:8080
+          predicates:
+            - Path=/api/stores/**
     config:
       uri: http://localhost:8888
       label: main
