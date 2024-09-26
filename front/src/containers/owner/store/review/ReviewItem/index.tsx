@@ -58,13 +58,13 @@ export default function ReviewItem({
           <p className="font-normal text-text">{content}</p>
         </div>
         <div className="flex gap-1 items-start">
-          <TbReceipt className="w-4 h-4 flex-shrink-0 mt-1 text-primary-500" />
-          <div className="flex flex-wrap gap-1">
+          <TbReceipt className="w-6 h-6 flex-shrink-0 mt-1 text-primary-500" />
+          <div className="flex flex-wrap gap-2">
             {orderList.map((order) => {
               return (
                 <span
                   key={order}
-                  className="text-primary-500 rounded-full text-[0.625rem] border py-[2px] px-2 border-primary-500"
+                  className="rounded-full text-sm border py-1 px-3 border-primary-500 text-primary-500"
                 >
                   {order}
                 </span>
