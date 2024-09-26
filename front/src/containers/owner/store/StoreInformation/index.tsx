@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { GoChevronRight } from 'react-icons/go'
@@ -19,10 +20,12 @@ export default function StoreInformation() {
               <FaStar className="text-yellow-400" />
               <span>4.9</span>
             </div>
-            <div className="flex gap items-center gap-1">
-              <p>리뷰 333개</p>
-              <GoChevronRight />
-            </div>
+            <Link href="/owner/store/review">
+              <div className="flex gap items-center gap-1">
+                <p>리뷰 333개</p>
+                <GoChevronRight />
+              </div>
+            </Link>
           </div>
           <div className="flex gap-1 items-center">
             <span
