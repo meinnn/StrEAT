@@ -16,6 +16,18 @@ const LINKS = [
 export default function OwnerNav() {
   const path = usePathname()
 
+  const HIDDEN_PATHS = [
+    '/owner/store/setting/announcement',
+    '/owner/store/setting/business-hours',
+    '/owner/store/setting/business-location',
+    '/owner/store/review',
+  ]
+
+  const isHiddenPath = HIDDEN_PATHS.some((hiddenPath) =>
+    path.startsWith(hiddenPath)
+  )
+  if (isHiddenPath) return null
+
   return (
     <nav className="z-50 bg-white h-tabbar fixed bottom-0 inset-x-0">
       <ul className="h-full flex justify-around items-center">
