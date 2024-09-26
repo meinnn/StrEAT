@@ -1,5 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { GoChevronRight } from 'react-icons/go'
 
 export default function OrderItem({
@@ -19,6 +22,8 @@ export default function OrderItem({
   progress: number
   review: boolean
 }) {
+  const router = useRouter()
+
   return (
     <section className="pt-3 pb-2 flex flex-col  shadow-md bg-white rounded-lg overflow-hidden">
       <div className="px-6">
@@ -88,6 +93,7 @@ export default function OrderItem({
       {progress === 4 ? (
         <div className="w-full px-2">
           <button
+            onClick={() => router.push('/customer/orders/1/review/new')}
             type="button"
             className={`${review ? ' bg-gray-medium text-text opacity-50' : ' bg-primary-500 text-secondary-light'} font-normal py-2 w-full rounded-lg`}
           >

@@ -38,7 +38,10 @@ export default function MyPage() {
       {/* 메뉴 */}
       <div className="flex items-center justify-evenly bg-white py-6 rounded-xl border border-gray-medium">
         {/* 내 리뷰 */}
-        <Link href="/customer/reviews" className="flex flex-col items-center">
+        <Link
+          href="/customer/mypage/reviews"
+          className="flex flex-col items-center"
+        >
           <MdEventNote className="text-primary-500" size={20} />
           <p className="text-sm font-medium mt-2">내 리뷰</p>
         </Link>
