@@ -4,7 +4,7 @@ import OngoingOrder from '@/containers/customer/home/OngoingOrder'
 export default function CustomerHome() {
   return (
     <>
-      <OngoingOrder />
+      {/* <OngoingOrder /> */}
       <CustomerHomeContainer />
     </>
   )
