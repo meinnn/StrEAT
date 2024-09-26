@@ -12,7 +12,7 @@ export default function OrderBox() {
   return (
     <div
       className={`flex gap-2 border p-4 rounded-lg shadow-md max-w-md mt-4 mx-3 ${
-        isAccepted ? 'bg-white text-black' : 'bg-primary-400 text-white'
+        isAccepted ? 'bg-primary-50 text-black' : 'bg-primary-400 text-white'
       }`}
     >
       <div className="flex items-start">
