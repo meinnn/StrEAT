@@ -29,12 +29,14 @@ export default function StoreBusinessSchedulePicker() {
           {DAY.map((day, index) => {
             return (
               <button
-                // onClick={() => {
-                //   let nSelectedList = [...selectedList]
-                //   nSelectedList[index] = !nSelectedList[index]
-                //   // nSelectedList.splice(index, 1)
-                //   setSelectedList(nSelectedList)
-                // }}
+                key={day}
+                type="button"
+                onClick={() => {
+                  const nSelectedList = [...selectedList]
+                  // nSelectedList[index] = !nSelectedList[index]
+                  // nSelectedList.splice(index, 1)
+                  setSelectedList(nSelectedList)
+                }}
                 className={`${selectedList[index] ? 'text-primary-400 border-primary-400' : 'text-primary-950 border-primary-950'} rounded-2xl border py-3 px-4`}
               >
                 {day}
@@ -43,11 +45,11 @@ export default function StoreBusinessSchedulePicker() {
           })}
         </div>
         <table className="table-auto border-collapse">
-          <thead>
-            <th className="w-1/5"></th>
+          {/* <thead>
+            <th className="w-1/5" />
             <th className="w-2/5 text-xs">영업 시작 시간</th>
             <th className="w-2/5 text-xs">영업 끝 시간</th>
-          </thead>
+          </thead> */}
           {/* <tbody>
             <tr>
               <td className="text-xl font-normal text-center">월</td>
