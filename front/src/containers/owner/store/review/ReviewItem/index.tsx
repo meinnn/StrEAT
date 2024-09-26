@@ -21,7 +21,7 @@ export default function ReviewItem({
   orderList: string[]
 }) {
   return (
-    <section className="border-b border-gray-medium px-6 py-3">
+    <section className="border-b border-gray-medium px-6 py-3 last:border-b-0">
       <div className="flex flex-col">
         <div className="flex justify-between mb-2">
           <div className="flex gap-1 items-center">

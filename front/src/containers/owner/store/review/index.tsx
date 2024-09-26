@@ -64,19 +64,21 @@ export default function StoreReview() {
   return (
     <div>
       <AppBar title={`리뷰 조회 `} option={`(${REVIEW_LIST.length})`} />
-      {REVIEW_LIST.map((review) => {
-        return (
-          <ReviewItem
-            key={review.id}
-            user={review.user}
-            createdAt={review.createdAt}
-            score={review.score}
-            reviewImageList={review.reviewImageList}
-            content={review.content}
-            orderList={review.orderList}
-          />
-        )
-      })}
+      <main className="mb-32">
+        {REVIEW_LIST.map((review) => {
+          return (
+            <ReviewItem
+              key={review.id}
+              user={review.user}
+              createdAt={review.createdAt}
+              score={review.score}
+              reviewImageList={review.reviewImageList}
+              content={review.content}
+              orderList={review.orderList}
+            />
+          )
+        })}
+      </main>
     </div>
   )
 }
