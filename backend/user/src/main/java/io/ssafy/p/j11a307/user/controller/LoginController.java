@@ -44,6 +44,14 @@ public class LoginController {
                 .headers(headers).build();
     }
 
+    @PostMapping("/login-auto")
+    public ResponseEntity<Void> autoLogin(HttpServletRequest request) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+        loginService.autoLogin(userId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String accessToken = request.getHeader(HEADER_AUTH);

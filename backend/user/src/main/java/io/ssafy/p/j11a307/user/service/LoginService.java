@@ -2,6 +2,8 @@ package io.ssafy.p.j11a307.user.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.ssafy.p.j11a307.user.entity.User;
+import io.ssafy.p.j11a307.user.exception.BusinessException;
+import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.repository.UserRepository;
 import io.ssafy.p.j11a307.user.util.KakaoUtil;
 import io.ssafy.p.j11a307.user.vo.KakaoInfoVo;
@@ -41,6 +43,15 @@ public class LoginService {
         User user = userRepository.findById(userId).orElseThrow();
         registerLogoutTime(userId);
         user.logout();
+    }
+
+    public void autoLogin(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        try {
+            kakaoUtil.refreshAccessToken(user.getKakaoRefreshToken(), user);
+        } catch (JsonProcessingException e) {
+            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+        }
     }
 
     private boolean isJoined(Long kakaoId) {
