@@ -34,6 +34,10 @@ public class JwtFilter implements WebFilter {
             if (!isValidToken(token)) {
                 throw new BusinessException(ErrorCode.INVALID_TOKEN);
             }
+
+            if (jwtUtil.isExpired(token)) {
+                throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+            }
         }
 
         return chain.filter(exchange);
