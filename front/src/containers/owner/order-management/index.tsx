@@ -30,7 +30,7 @@ export default function OrderManagement() {
 
   return (
     <div className="bg-white flex justify-center">
-      <div className="bg-white w-full max-w-[430px] mx-auto flex flex-col">
+      <div className="bg-white w-full max-w-full mx-auto flex flex-col">
         <OwnerTabList
           tabList={TAB_LIST}
           selectedTab={selectedTab}

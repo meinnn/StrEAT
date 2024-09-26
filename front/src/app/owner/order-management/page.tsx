@@ -1,3 +1,10 @@
-export default function OwnerOrderManagementPage() {
-  return <div>주문 접수 페이지</div>
+// 신규, 처리중
+import OrderManagement from '@/containers/owner/order-management'
+
+export default function OrderManagementPage() {
+  return (
+    <div>
+      <OrderManagement />
+    </div>
+  )
 }
