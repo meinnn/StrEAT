@@ -32,9 +32,10 @@ public class LoginService {
         }
 
         // 가입 절차를 밟았기 때문에 nullPointerException이 발생하지 않음이 보장됨
-        User user = userRepository.findByKakaoId(kakaoUserInfo.getKakaoId()).orElseThrow();
+        User user = userRepository.findByKakaoId(kakaoUserInfo.getKakaoId()).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         // 재 가입하는 사람을 위해 refreshToken update
         user.refreshKakaoTokens(kakaoUserInfo.getAccessToken(), kakaoUserInfo.getRefreshToken());
+        redisTemplate.delete(REDIS_LOGOUT_TIME_KEY_PREFIX + user.getId());
         return user.getId();
     }
 
