@@ -66,7 +66,7 @@ export default function MapView({
         <button
           type="button"
           onClick={() => setView('list')} // 버튼 클릭 시 'list'로 상태 변경
-          className="ml-auto flex items-center bg-[#371B1B] rounded-full px-3 py-2 text-white text-xs"
+          className="ml-auto m-3 flex items-center bg-[#371B1B] rounded-full px-3 py-2 text-white text-xs"
         >
           <FiList className="mr-1.5" size={14} />
           <span>리스트 뷰</span>
