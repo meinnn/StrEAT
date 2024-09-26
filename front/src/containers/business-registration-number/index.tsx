@@ -3,7 +3,7 @@ import { HiArrowLongRight } from 'react-icons/hi2'
 import { useForm } from 'react-hook-form'
 
 export default function BusinessRegistrationNumber() {
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+  const [isCorrect] = useState<boolean | null>(null)
   const { register, handleSubmit, watch } = useForm()
 
   const onSubmit = (data: { businessRegistrationNumber?: string }) => {
