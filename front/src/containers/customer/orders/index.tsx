@@ -60,7 +60,9 @@ export default function Orders() {
             return (
               <div key={order.id}>
                 {isVisibleDate && (
-                  <h2 className="font-medium pb-5 pt-7">{order.date}</h2>
+                  <h2 className="font-medium pb-5 pt-7 text-text">
+                    {order.date}
+                  </h2>
                 )}
                 <OrderItem
                   key={order.id}
