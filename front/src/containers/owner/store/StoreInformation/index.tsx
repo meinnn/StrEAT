@@ -44,6 +44,7 @@ export default function StoreInformation() {
             </p>
           </div>
           <button
+            type="button"
             onClick={() => setIsBusinessStart(!isBusinessStart)}
             className={`rounded-full font-semibold py-1 px-5 border ${isBusinessStart ? 'border-green-500 text-green-500' : 'border-[#3e3e3e] text-[#3e3e3e] hover:text-primary-500 hover:border-primary-500'}`}
           >
@@ -58,7 +59,10 @@ export default function StoreInformation() {
             역삼역 1번 출구 앞 큰 건물 뒤에 있습니다! 오늘 주방장 폼 미침
           </p>
         </div>
-        <button className="rounded-md text-xs font-normal bg-primary-500 py-2 w-full text-secondary-light">
+        <button
+          type="button"
+          className="rounded-md text-xs font-normal bg-primary-500 py-2 w-full text-secondary-light"
+        >
           사장님 한 마디 수정
         </button>
       </div>

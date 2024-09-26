@@ -15,7 +15,7 @@ export default function LocationPicker() {
             <h4>현재 선택된 위치</h4>
             <p>선택된 위치가 없습니다.</p>
           </div>
-          <button>위치 등록하기</button>
+          <button type="button">위치 등록하기</button>
         </div>
       </div>
     </div>
