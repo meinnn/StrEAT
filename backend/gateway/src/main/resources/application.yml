@@ -9,3 +9,25 @@ spring:
           uri: http://streat-user:8080
           predicates:
             - Path=/api/users/**
+        - id: store
+          uri: http://streat-store:8080
+          predicates:
+            - Path=/api/stores/**
+    config:
+      uri: http://localhost:8888
+      label: main
+  config:
+    import: "configserver:"
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    use-root-path: true
+    urls:
+      - name: Store API
+        url: http://localhost:8080/api/stores/v3/api-docs
+      - name: user API
+        url: http://localhost:8080/api/users/v3/api-docs

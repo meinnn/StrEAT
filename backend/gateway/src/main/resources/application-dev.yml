@@ -2,5 +2,24 @@ spring:
   application:
     name: gateway
 
+  cloud:
+    gateway:
+      routes:
+        - id: user
+          uri: http://localhost:8882
+          predicates:
+            - Path=/api/users/**
+        - id: store
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/stores/**
 server:
   port: 8787
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Store API
+        url: http://localhost:8787/api/stores/v3/api-docs
+      - name: user API
+        url: http://localhost:8787/api/users/v3/api-docs

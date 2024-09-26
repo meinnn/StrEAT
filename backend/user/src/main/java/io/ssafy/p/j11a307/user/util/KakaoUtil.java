@@ -3,6 +3,7 @@ package io.ssafy.p.j11a307.user.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.ssafy.p.j11a307.user.entity.User;
 import io.ssafy.p.j11a307.user.vo.KakaoInfoVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -74,6 +75,28 @@ public class KakaoUtil {
         // responseBody에 있는 정보 꺼내기
         String responseBody = response.getBody();
         return parseKakaoUserInfo(responseBody, kakaoAccessToken, kakaoRefreshToken);
+    }
+
+    public void refreshAccessToken(String kakaoRefreshToken, User user) throws JsonProcessingException {
+        // Http header 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // HTTP body 생성
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("client_id", appKey);
+        body.add("refresh_token", kakaoRefreshToken);
+        // HTTP 요청 보내기
+        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = getResponseFromExternalApi(
+                kakaoUserInfoRequest, HttpMethod.POST, KAKAO_TOKEN_URL);
+
+        String responseBody = response.getBody();
+        String kakaoAccessToken = extractToken(responseBody, ACCESS_TOKEN);
+        kakaoRefreshToken = extractToken(responseBody, REFRESH_TOKEN);
+
+        user.refreshKakaoTokens(kakaoAccessToken, kakaoRefreshToken);
     }
 
     private ResponseEntity<String> getResponseFromExternalApi(HttpEntity<MultiValueMap<String, String>> requestHttpEntity,

@@ -10,5 +10,4 @@ spring:
           uri: ENC(xT/we1KdLXHK5ExFzZO9R1gYKhLjI/y9j0dqUUQWsDMvbNdLHYDzmz4d3YfjhKsFC5BhHeBftqk=)
           username: ENC(9AyAMpZbL3hky2/znLfnwzRN9Qv/oRex)
           password: ENC(uST65mCQhhKFRup/JJs7HzIu3BL8is4X4VYsGght3NxO9auO9Dg43kUppX9dXX/koqKLILC4c8Y=)
-          search-paths: "/backend"
-          default-label: backend
+          default-label: main

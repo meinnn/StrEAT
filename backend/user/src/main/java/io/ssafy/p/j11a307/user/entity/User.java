@@ -1,13 +1,11 @@
 package io.ssafy.p.j11a307.user.entity;
 
 import io.ssafy.p.j11a307.user.vo.KakaoInfoVo;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -30,6 +28,14 @@ public class User {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @ColumnDefault("true")
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean orderStatusAlert = true;
+
+    @ColumnDefault("true")
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean dibsStoreAlert = true;
+
     public User(KakaoInfoVo kakaoInfoVo) {
         this.kakaoId = kakaoInfoVo.getKakaoId();
         this.username = kakaoInfoVo.getNickname();
@@ -43,5 +49,18 @@ public class User {
         if (kakaoRefreshToken != null) { // 경우에 따라 kakao token은 refresh 되지 않을 수 있음
             this.kakaoRefreshToken = kakaoRefreshToken;
         }
+    }
+
+    public void logout() {
+        this.kakaoAccessToken = null;
+        this.kakaoRefreshToken = null;
+    }
+
+    public void toggleOrderStatusAlert(boolean alertOn) {
+        this.orderStatusAlert = alertOn;
+    }
+
+    public void toggleDibsStoreAlert(boolean alertOn) {
+        this.dibsStoreAlert = alertOn;
     }
 }
