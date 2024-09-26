@@ -1,9 +1,9 @@
 'use client'
 
-import LocationPicker from '@/components/LocationPicker'
-import StoreBusinessSchedulePicker from '@/components/StoreBusinessSchedulePicker'
 import React, { useState } from 'react'
 import { HiArrowLongLeft } from 'react-icons/hi2'
+import LocationPicker from '@/components/LocationPicker'
+import StoreBusinessSchedulePicker from '@/components/StoreBusinessSchedulePicker'
 
 const STORE_TYPE = [
   {
@@ -41,7 +41,7 @@ export default function StoreRegist() {
                 >
                   점포 이미지 등록
                 </label>
-                <input type="file" id="storeImage" className="hidden"></input>
+                <input type="file" id="storeImage" className="hidden" />
               </div>
               <input
                 type="text"
@@ -73,7 +73,10 @@ export default function StoreRegist() {
           </div>
           <div className="flex flex-col gap-2">
             <h3 className="text-xl">위치</h3>
-            <button className="border border-gray-dark text-gray-dark py-3 px-3 rounded-lg text-left">
+            <button
+              type="button"
+              className="border border-gray-dark text-gray-dark py-3 px-3 rounded-lg text-left"
+            >
               위치를 선택해주세요
             </button>
           </div>

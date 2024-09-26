@@ -14,6 +14,7 @@ export default function AcceptFinishBtn({ onAccept }: AcceptFinishBtnProps) {
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       className={`px-2 py-2 font-bold rounded-md border-2 h-20 w-14 text-sm ${
         isAccepted
