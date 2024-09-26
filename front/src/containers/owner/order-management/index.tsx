@@ -29,7 +29,7 @@ export default function OrderManagement() {
   const [selectedTab, setSelectedTab] = useState(TAB_LIST[0].id)
 
   return (
-    <div className="bg-white flex justify-center">
+    <div className="bg-white flex justify-center max-w-full">
       <div className="bg-white w-full max-w-full mx-auto flex flex-col">
         <OwnerTabList
           tabList={TAB_LIST}
