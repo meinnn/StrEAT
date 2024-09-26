@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { TbPencil } from 'react-icons/tb'
 import { GoChevronDown, GoChevronUp } from 'react-icons/go'
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function StoreMenuItem({
   name,
@@ -23,11 +24,19 @@ export default function StoreMenuItem({
           className="object-cover"
         />
       </p>
-      <div className="flex flex-col w-full pt-2">
-        <div className="flex justify-between mb-2">
-          <div className="flex items-center gap-1">
+      <div className="flex flex-col w-full pt-1">
+        <div className="flex flex-col mb-2 w-full">
+          <div className="flex justify-between items-center gap-1 w-full">
             <h5 className="font-semibold">{name}</h5>
-            <TbPencil className="text-primary-500" />
+            <Link
+              href="/owner/store/menu/menu-edit"
+              className="flex items-center justify-between border cursor-pointer border-primary-500 gap-[2px] rounded-full py-[2px] pl-1 pr-2"
+            >
+              <TbPencil className="text-primary-500 w-3 h-3" />
+              <button type="button" className="text-primary-500 text-xs">
+                메뉴 수정
+              </button>
+            </Link>
           </div>
           <p className="font-semibold">1,000,000,000원</p>
         </div>
