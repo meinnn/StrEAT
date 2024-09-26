@@ -6,6 +6,7 @@ import io.ssafy.p.j11a307.user.repository.UserRepository;
 import io.ssafy.p.j11a307.user.util.KakaoUtil;
 import io.ssafy.p.j11a307.user.vo.KakaoInfoVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LoginService {
 
+    private final String REDIS_LOGOUT_TIME_KEY_PREFIX = "logout-time:";
+
     private final UserRepository userRepository;
 
     private final KakaoUtil kakaoUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
     public Integer kakaoLogin(String kakaoTokens) throws JsonProcessingException {
@@ -35,6 +39,7 @@ public class LoginService {
     @Transactional
     public void logout(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow();
+        registerLogoutTime(userId);
         user.logout();
     }
 
@@ -45,5 +50,10 @@ public class LoginService {
     private void join(KakaoInfoVo kakaoInfo) {
         User user = new User(kakaoInfo);
         userRepository.save(user);
+    }
+
+    private void registerLogoutTime(Integer userId) {
+        Long logoutTime = System.currentTimeMillis();
+        redisTemplate.opsForValue().set(REDIS_LOGOUT_TIME_KEY_PREFIX + userId, logoutTime);
     }
 }
