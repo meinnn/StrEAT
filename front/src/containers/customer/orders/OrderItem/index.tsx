@@ -25,7 +25,10 @@ export default function OrderItem({
         <div className="flex gap-2 items-center pb-3 justify-between">
           <p className="text-xs  text-text">{date}</p>
           <Link href={`/customer/orders/${id}`}>
-            <button className="text-xs border border-primary-500 py-0 px-2 h-6 rounded-full text-primary-500">
+            <button
+              type="button"
+              className="text-xs border border-primary-500 py-0 px-2 h-6 rounded-full text-primary-500"
+            >
               주문 상세
             </button>
           </Link>
@@ -85,6 +88,7 @@ export default function OrderItem({
       {progress === 4 ? (
         <div className="w-full px-2">
           <button
+            type="button"
             className={`${review ? ' bg-gray-medium text-text opacity-50' : ' bg-primary-500 text-secondary-light'} font-normal py-2 w-full rounded-lg`}
           >
             {review ? '리뷰 작성완료' : '리뷰 작성하기'}
