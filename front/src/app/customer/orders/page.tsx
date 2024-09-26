@@ -1,9 +1,9 @@
-import Orders from '@/containers/customer/orders'
+import Link from 'next/link'
 
 export default function CustomerOrders() {
   return (
     <div>
-      <Orders />
+      <Link href="/customer/orders/1">1번 오더 보기 -&gt;</Link>
     </div>
   )
 }
