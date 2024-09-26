@@ -4,7 +4,15 @@ import { useState } from 'react'
 import MenuCategoryModal from '@/containers/customer/home/MenuCategoryModal'
 import { useRouter } from 'next/navigation'
 
-export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
+type StoreSearchHeaderProps = {
+  view: 'map' | 'list'
+  currentAddress: string
+}
+
+export default function StoreSearchHeader({
+  view,
+  currentAddress,
+}: StoreSearchHeaderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedMenu, setSelectedMenu] = useState<string | null>(null) // 선택된 메뉴 저장
   const router = useRouter()
@@ -15,7 +23,7 @@ export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
   }
 
   return (
-    <div className="p-6 fixed top-0 inset-x-0">
+    <div className="p-6">
       <button
         type="button"
         onClick={() => {
@@ -23,7 +31,7 @@ export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
         }}
         className="w-full flex items-center justify-between rounded-xl h-12 px-5 border border-gray-medium drop-shadow-md bg-white"
       >
-        <span>현재 주소</span>
+        <span>{currentAddress || '위치 검색'}</span>
         <GoChevronRight size="18" />
       </button>
       <div className="mt-4 flex overflow-x-auto whitespace-nowrap gap-2">

@@ -6,14 +6,16 @@ import { useState } from 'react'
 
 export default function ListView({
   setView,
+  currentAddress,
 }: {
   setView: (view: 'map' | 'list') => void
+  currentAddress: string
 }) {
   const [isFavoriteOnly, setIsFavoriteOnly] = useState(false)
 
   return (
     <>
-      <StoreSearchHeader view="list" />
+      <StoreSearchHeader view="list" currentAddress={currentAddress} />
 
       {/* 지도 뷰로 전환하는 버튼 */}
       <button
