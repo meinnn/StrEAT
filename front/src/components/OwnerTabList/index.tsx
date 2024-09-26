@@ -21,7 +21,7 @@ export default function OwnerTabList({
         return (
           <li
             key={tab.id}
-            className={`${tab.id === selectedTab ? 'bg-primary-400 text-secondary-light' : 'bg-gray-medium text-[#6D6D6D]'} flex justify-center  px-6 pt-3 pb-2 min-w-28 rounded-t-[10px] `}
+            className={`${tab.id === selectedTab ? 'bg-primary-400 text-secondary-light' : 'bg-gray-medium text-[#6D6D6D]'} flex justify-center  px-6 pt-3 pb-2 min-w-28 rounded-t-[10px] cursor-pointer`}
             onClick={() => {
               setSelectedTab(tab.id)
             }}
