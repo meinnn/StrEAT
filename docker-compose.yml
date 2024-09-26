@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   streat-eureka:
     image: junbeomson/streat-eureka:latest
