@@ -35,6 +35,7 @@ public class LoginService {
         User user = userRepository.findByKakaoId(kakaoUserInfo.getKakaoId()).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         // 재 가입하는 사람을 위해 refreshToken update
         user.refreshKakaoTokens(kakaoUserInfo.getAccessToken(), kakaoUserInfo.getRefreshToken());
+        redisTemplate.delete(REDIS_LOGOUT_TIME_KEY_PREFIX + user.getId());
         return user.getId();
     }
 
