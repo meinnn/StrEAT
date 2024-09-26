@@ -17,7 +17,7 @@ export default function ReviewImageUploader() {
     const file = e.target.files?.[0]
     if (file) {
       const preview = URL.createObjectURL(file)
-      let nImageList = [...imageList]
+      const nImageList = [...imageList]
       nImageList.push({
         preview,
         file,
@@ -31,7 +31,7 @@ export default function ReviewImageUploader() {
     index: number
   ) => {
     e.preventDefault()
-    let nImageList = [...imageList]
+    const nImageList = [...imageList]
     nImageList.splice(index, 1)
     setImageList(nImageList)
   }
@@ -40,8 +40,9 @@ export default function ReviewImageUploader() {
     <section className="flex gap-3">
       {imageList.map((image, index) => {
         return (
-          <div key={index} className="relative inline-block">
+          <div key={image.preview} className="relative inline-block">
             <button
+              type="button"
               onClick={(e) => handleClickDeleteImageButton(e, index)}
               className="absolute z-10 border border-gray-medium -top-2 -right-2 shadow-lg bg-white rounded-full w-6 h-6 flex justify-center items-center"
             >

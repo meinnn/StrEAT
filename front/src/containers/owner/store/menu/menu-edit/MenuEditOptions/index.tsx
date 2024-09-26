@@ -133,6 +133,7 @@ export default function MenuEditOptions() {
                   className="border border-gray-300 p-2 rounded-xl ml-2 w-24 h-8 text-sm"
                 />
                 <button
+                  type="button"
                   onClick={() => handleDeleteOption(groupIndex, optionIndex)}
                   className="ml-2 text-black"
                 >
@@ -141,6 +142,7 @@ export default function MenuEditOptions() {
               </div>
             ))}
             <button
+              type="button"
               onClick={() => handleAddOption(groupIndex)}
               className="mt-2 text-gray-500 flex items-center"
             >
@@ -207,6 +209,7 @@ export default function MenuEditOptions() {
           {/* 옵션 그룹 삭제하기 버튼 */}
           <div className="mt-6 flex justify-center">
             <button
+              type="button"
               onClick={() => handleDeleteOptionGroup(groupIndex)}
               className="bg-primary-500 text-white font-bold py-2 px-6 rounded-md w-full"
             >
@@ -222,6 +225,7 @@ export default function MenuEditOptions() {
       {/* 옵션 그룹 추가하기 버튼 */}
       <div className="mb-6 flex justify-center">
         <button
+          type="button"
           onClick={handleAddOptionGroup}
           className=" text-gray-400 py-2 px-6"
         >
@@ -234,7 +238,10 @@ export default function MenuEditOptions() {
 
       {/* 저장하기 버튼 */}
       <div className="mt-4 flex justify-center">
-        <button className="bg-primary-500 text-white font-bold py-2 px-6 rounded-md w-full">
+        <button
+          type="button"
+          className="bg-primary-500 text-white font-bold py-2 px-6 rounded-md w-full"
+        >
           저장하기
         </button>
       </div>

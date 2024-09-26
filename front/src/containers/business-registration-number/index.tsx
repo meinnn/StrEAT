@@ -25,6 +25,7 @@ export default function BusinessRegistrationNumber() {
             onSubmit={handleSubmit(onSubmit)}
           >
             <input
+              // eslint-disable-next-line react/jsx-props-no-spreading
               {...register('businessRegistrationNumber', {
                 required: true,
                 maxLength: {
