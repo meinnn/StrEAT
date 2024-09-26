@@ -9,7 +9,7 @@ export default function AppBar({
 }: {
   title: string
   // eslint-disable-next-line react/require-default-props
-  option: string
+  option?: string
 }) {
   const router = useRouter()
 
