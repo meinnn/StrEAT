@@ -8,15 +8,21 @@ services:
       - streat-network
 
   nginx:
+    user: root
     image: nginx:1.21.4-alpine
     container_name: nginx
     networks:
       - streat-network
+    volumes:
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
     build:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "443:443"
 
   streat-eureka:
     image: junbeomson/streat-eureka:latest
@@ -122,4 +128,5 @@ services:
 
 networks:
   streat-network:
-    driver: bridge
+    external: true
+
