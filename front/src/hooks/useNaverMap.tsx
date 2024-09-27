@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useMap } from '@/contexts/MapContext'
 
 export default function useNaverMap(
   mapElementId: string,
@@ -11,6 +12,8 @@ export default function useNaverMap(
 
   const mapRef = useRef<naver.maps.Map | null>(null)
   const markerRef = useRef<naver.maps.Marker | null>(null)
+
+  const { setCenter } = useMap()
 
   // 현재 위치 추적 및 실시간 업데이트
   useEffect(() => {
@@ -76,15 +79,23 @@ export default function useNaverMap(
         `,
         },
       })
+
+      // Context에 초기 지도 center 저장
+      const mapCenter = mapRef.current.getCenter()
+      if (mapCenter) {
+        setCenter(mapCenter)
+      }
     }
 
     // 스크립트 로드 후 지도 초기화
-    if (window.naver && window.naver.maps) {
+    if (window.naver && window.naver.maps && window.naver.maps.Service) {
       initMap() // 이미 스크립트가 로드된 경우 바로 지도 초기화
     } else {
       const mapScript = document.createElement('script')
       mapScript.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}&submodules=geocoder`
-      mapScript.onload = () => initMap()
+      mapScript.onload = () => {
+        naver.maps.onJSContentLoaded = () => initMap()
+      }
       document.head.appendChild(mapScript)
     }
   }, [mapElementId, currentLocation, options])
