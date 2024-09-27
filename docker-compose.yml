@@ -131,6 +131,23 @@ services:
       streat-config:
         condition: service_healthy
 
+  streat-push-alert:
+    image: junbeomson/streat-push-alert:latest
+    container_name: streat-push-alert
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://streat-config:8080 # config server
+    ports:
+      - "8080:8080"
+    networks:
+      - streat-network
+    depends_on: # 다른 서비스가 먼저 실행되도록 설정
+      streat-config:
+        condition: service_healthy
+      streat-eureka:
+        condition: service_healthy
+    
+
+
 networks:
   streat-network:
     external: true
