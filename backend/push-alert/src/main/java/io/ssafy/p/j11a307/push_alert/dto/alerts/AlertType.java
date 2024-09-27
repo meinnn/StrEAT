@@ -8,7 +8,8 @@ import java.util.Arrays;
 
 @Getter
 public enum AlertType {
-    ORDER_ACCEPTED("주문 수락! 맛있게 만들고 있어요", "order-accept");
+    ORDER_ACCEPTED("주문 수락! 맛있게 만들고 있어요", "order-accept"),
+    ORDER_REQUESTED("주문 요청 완료! 사장님 수락 후 조리가 시작돼요", "order-requested"),;
 
     private final String message;
     private final String requestUri;
