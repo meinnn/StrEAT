@@ -4,6 +4,7 @@ import { FiList } from 'react-icons/fi'
 import useNaverMap from '@/hooks/useNaverMap'
 import { useCallback, useEffect, useState } from 'react'
 import { useMap } from '@/contexts/MapContext'
+import { TbCurrentLocation } from 'react-icons/tb'
 
 export default function MapView({
   setView,
@@ -16,7 +17,7 @@ export default function MapView({
 }) {
   const { center, setCenter } = useMap()
   // 지도 생성 및 초기화
-  const map = useNaverMap('map', { zoom: 16 })
+  const { map, currentLocation } = useNaverMap('map', { zoom: 16 })
 
   // 좌표로부터 주소를 가져오는 함수
   const fetchAddressFromCoords = useCallback((coords: naver.maps.Coord) => {
@@ -34,6 +35,18 @@ export default function MapView({
       console.error('Naver maps Service is not available.')
     }
   }, [])
+
+  // 현 위치 버튼 클릭했을 때
+  const handleCurrentLocationClick = () => {
+    if (currentLocation) {
+      const current = new naver.maps.LatLng(
+        currentLocation.lat,
+        currentLocation.lng
+      )
+      map?.setCenter(current)
+      setCenter(current)
+    }
+  }
 
   useEffect(() => {
     if (map) {
@@ -58,6 +71,7 @@ export default function MapView({
         naver.maps.Event.removeListener(listener)
       }
     }
+    return () => {}
   }, [map, fetchAddressFromCoords, setCenter, center])
 
   return (
@@ -71,6 +85,14 @@ export default function MapView({
       <div className="fixed top-0 inset-x-0">
         <StoreSearchHeader view="map" currentAddress={currentAddress} />
       </div>
+      {/* 현 위치 버튼 */}
+      <button
+        type="button"
+        className="absolute bottom-52 ms-4 mb-0.5 z-50 bg-white rounded-full p-2 border border-gray-medium shadow-lg flex items-center justify-center text-primary-500"
+        onClick={handleCurrentLocationClick}
+      >
+        <TbCurrentLocation size={24} />
+      </button>
 
       <div className="absolute bottom-20 w-full">
         <button

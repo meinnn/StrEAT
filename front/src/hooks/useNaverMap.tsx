@@ -13,7 +13,7 @@ export default function useNaverMap(
   const mapRef = useRef<naver.maps.Map | null>(null)
   const markerRef = useRef<naver.maps.Marker | null>(null)
 
-  const { setCenter } = useMap()
+  const { center, setCenter } = useMap()
 
   // 현재 위치 추적 및 실시간 업데이트
   useEffect(() => {
@@ -46,9 +46,12 @@ export default function useNaverMap(
       if (mapRef.current || !currentLocation) return
 
       // 사용자가 전달한 center 값을 사용하거나 기본 값 사용
-      const initialCenter = options.center
-        ? options.center
-        : new naver.maps.LatLng(currentLocation.lat, currentLocation.lng)
+      let initialCenter
+      if (options.center) initialCenter = options.center
+      else
+        initialCenter =
+          center ||
+          new naver.maps.LatLng(currentLocation.lat, currentLocation.lng)
 
       // 지도 생성
       mapRef.current = new naver.maps.Map(mapElementId, {
@@ -112,5 +115,5 @@ export default function useNaverMap(
     }
   }, [currentLocation])
 
-  return mapRef.current
+  return { map: mapRef.current, currentLocation }
 }
