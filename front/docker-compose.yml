@@ -2,6 +2,10 @@ services:
   streat-frontend:
     image: junbeomson/streat-frontend:latest
     container_name: streat-frontend
+    environment:
+      - NEXT_PUBLIC_NAVER_CLIENT_ID=${NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}
+      - NEXT_PUBLIC_NAVER_SEARCH_CLIENT_ID=${NEXT_PUBLIC_NAVER_SEARCH_CLIENT_ID}
+      - NEXT_PUBLIC_NAVER_SEARCH_CLIENT_SECRET=${NEXT_PUBLIC_NAVER_SEARCH_CLIENT_SECRET}
     ports:
       - '3000:3000'
     networks:
