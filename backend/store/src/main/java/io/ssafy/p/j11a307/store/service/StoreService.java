@@ -1,60 +1,98 @@
 package io.ssafy.p.j11a307.store.service;
 
-import io.ssafy.p.j11a307.store.dto.OwnerResponse;
 import io.ssafy.p.j11a307.store.dto.StoreResponse;
 import io.ssafy.p.j11a307.store.dto.StoreUpdateRequest;
 import io.ssafy.p.j11a307.store.entity.Store;
+import io.ssafy.p.j11a307.store.exception.BusinessException;
+import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StoreService{
 
     private final StoreRepository storeRepository;
-    private final OwnerClient ownerClient; // Feign Client 주입
+    private final OwnerClient ownerClient;
 
-    public StoreResponse getStoreWithOwner(Long storeId) {
-        Store store = storeRepository.findById(storeId).orElseThrow();
-        OwnerResponse owner = ownerClient.getOwnerById(store.getOwnerId()); // Feign Client 사용
+    @Value("{streat.internal-request}")
+    private String internalRequestKey;
 
-        // Store와 Owner 정보를 결합하여 반환
-        return new StoreResponse(store, owner);
+    public Integer getOwnerIdByStoreId(Integer storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        return store.getUserId();
     }
 
-    public Store createStore(Store store) {
-        return storeRepository.save(store);
+    public StoreResponse getStoreInfo(Integer storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        return new StoreResponse(store);
     }
 
-    public String getStoreType(Long id) {
-        Store store = storeRepository.findById(id).orElseThrow();
+    public StoreResponse createStore(StoreUpdateRequest request, String token) {
+        // JWT 토큰에서 userID 추출
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+
+        if (userId == null) {
+            // 조회된 owner 정보가 없으면 예외 발생
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+
+        Store store = Store.builder()
+                .name(request.name())
+                .address(request.address())
+                .latitude(request.latitude())
+                .longitude(request.longitude())
+                .type(request.type())
+                .bankAccount(request.bankAccount())
+                .bankName(request.bankName())
+                .ownerWord(request.ownerWord())
+                .status(request.status())
+                .userId(userId)
+                .build();
+
+        Store savedStore = storeRepository.save(store);
+        return new StoreResponse(savedStore);
+    }
+
+    public String getStoreType(Integer id) {
+        Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getType();
     }
 
-    public List<Store> getAllStores() {
-        return storeRepository.findAll();
+    public List<StoreResponse> getAllStores() {
+        return storeRepository.findAll()
+                .stream()
+                .map(StoreResponse::new)  // Store -> StoreResponse 변환
+                .collect(Collectors.toList());
     }
 
 
-    public Store updateStore(Long id, StoreUpdateRequest request) {
-        Store store = storeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Store not found"));
+    public StoreResponse updateStore(Integer id, StoreUpdateRequest request) {
+        Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // 기존 Store 엔티티를 빌더 패턴으로 업데이트
         Store updatedStore = store.updateWith(request);
 
-        return storeRepository.save(updatedStore);
+        return new StoreResponse(storeRepository.save(updatedStore));
     }
 
-    public void deleteStore(Long id) {
-        storeRepository.deleteById(id);
+    public void deleteStore(Integer id) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        storeRepository.delete(store);
     }
 
-    public Store updateStoreAddress(Long id, String newAddress) {
-        Store store = storeRepository.findById(id).orElseThrow();
+    public StoreResponse  updateStoreAddress(Integer id, String newAddress) {
+        Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.changeAddress(newAddress);
-        return storeRepository.save(store);
+        return new StoreResponse(storeRepository.save(store));
     }
 }
