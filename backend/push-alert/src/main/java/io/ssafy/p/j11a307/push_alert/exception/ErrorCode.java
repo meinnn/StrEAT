@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 접근입니다.");
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 접근입니다."),
+    PUSH_ALERT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "푸시 알림 전송에 실패했습니다.");
 
     private final HttpStatus status;
     private final String message;
