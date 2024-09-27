@@ -17,7 +17,7 @@ export default function RecentSearch() {
   }
 
   return (
-    <>
+    <div>
       {recentSearches.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold mb-2">최근 검색 위치</h2>
@@ -43,6 +43,6 @@ export default function RecentSearch() {
           </ul>
         </div>
       )}
-    </>
+    </div>
   )
 }
