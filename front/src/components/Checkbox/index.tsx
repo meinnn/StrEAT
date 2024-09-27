@@ -14,7 +14,7 @@ export default function Checkbox({
   checked,
   onChange,
   label,
-  size,
+  size = 18,
 }: CheckboxProps) {
   return (
     <label htmlFor={id} className="flex items-center cursor-pointer">
@@ -36,9 +36,4 @@ export default function Checkbox({
       <span className="ms-2">{label}</span> {/* 라벨 텍스트 */}
     </label>
   )
-}
-
-Checkbox.defaultProps = {
-  size: 18,
-  label: null,
 }
