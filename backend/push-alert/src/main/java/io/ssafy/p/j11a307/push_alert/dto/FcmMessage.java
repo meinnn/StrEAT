@@ -9,6 +9,6 @@ import lombok.Getter;
 public class FcmMessage {
 
     private String token;
-    private FcmAlertData alertData;
+    private FcmAlertData data;
     private FcmNotification notification;
 }
