@@ -20,7 +20,7 @@ public class AlertController {
 
     private final AlertService alertService;
 
-    @GetMapping(value = {"/order-accept", "/order-requested"})
+    @GetMapping(value = {"/order-accept", "/order-requested", "/cooking-completed"})
     public void sendOrderStatusChangeAlert(
             Integer customerId, Integer orderId, String storeName,
             @RequestHeader(value = "X-Internal-Request") String internalRequest,
