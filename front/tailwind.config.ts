@@ -51,6 +51,9 @@ const config: Config = {
         'slide-up': 'slide-up 0.2s ease-out forwards',
         'slide-down': 'slide-down 0.2s ease-out forwards',
       },
+      boxShadow: {
+        'inner-strong': 'inset 10px 10px 20px rgba(255, 236, 199, 0.3)',
+      },
     },
   },
   plugins: [],
