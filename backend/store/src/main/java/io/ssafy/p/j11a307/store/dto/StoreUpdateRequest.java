@@ -32,5 +32,5 @@ public record StoreUpdateRequest(
         String status,
 
         @Schema(description = "사장님 ID", example = "1")
-        Long ownerId
+        Integer userId
 ) {}
