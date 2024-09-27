@@ -12,7 +12,10 @@ interface MenuOptionsProps {
   menuInfo: MenuItem | CartItem
 }
 
-export default function MenuOptions({ type, menuInfo }: MenuOptionsProps) {
+export default function MenuOptions({
+  type = 'default',
+  menuInfo,
+}: MenuOptionsProps) {
   // CartItem일 경우 이미 quantity가 있으므로, CartItem을 사용한다면 해당 값을 설정
   const initialQuantity = 'quantity' in menuInfo ? menuInfo.quantity : 1
   const [selectedOptions, setSelectedOptions] = useState<
@@ -275,8 +278,4 @@ export default function MenuOptions({ type, menuInfo }: MenuOptionsProps) {
       )}
     </div>
   )
-}
-
-MenuOptions.defaultProps = {
-  type: 'default',
 }

@@ -7,7 +7,11 @@ interface DrawerProps {
   children: ReactNode
 }
 
-export default function Drawer({ title, onClose, children }: DrawerProps) {
+export default function Drawer({
+  title = 'default',
+  onClose,
+  children,
+}: DrawerProps) {
   const [isClosing, setIsClosing] = useState(false)
 
   const handleClose = () => {
@@ -51,8 +55,4 @@ export default function Drawer({ title, onClose, children }: DrawerProps) {
       </div>
     </>
   )
-}
-
-Drawer.defaultProps = {
-  title: 'default',
 }

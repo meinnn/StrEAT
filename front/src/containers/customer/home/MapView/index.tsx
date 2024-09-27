@@ -3,6 +3,8 @@ import StoreCard from '@/containers/customer/home/StoreCard'
 import { FiList } from 'react-icons/fi'
 import useNaverMap from '@/hooks/useNaverMap'
 import { useCallback, useEffect, useState } from 'react'
+import { useMap } from '@/contexts/MapContext'
+import { TbCurrentLocation } from 'react-icons/tb'
 
 export default function MapView({
   setView,
@@ -13,42 +15,64 @@ export default function MapView({
   currentAddress: string
   setCurrentAddress: (address: string) => void
 }) {
+  const { center, setCenter } = useMap()
   // 지도 생성 및 초기화
-  const map = useNaverMap('map', { zoom: 16 })
+  const { map, currentLocation } = useNaverMap('map', { zoom: 16 })
 
   // 좌표로부터 주소를 가져오는 함수
-  const fetchAddressFromCoords = useCallback(
-    (coords: naver.maps.Coord) => {
+  const fetchAddressFromCoords = useCallback((coords: naver.maps.Coord) => {
+    if (window.naver.maps.Service) {
       naver.maps.Service.reverseGeocode({ coords }, (status, response) => {
         if (status === naver.maps.Service.Status.OK) {
-          const { jibunAddress } = response.v2.address
-          const { roadAddress } = response.v2.address
-          setCurrentAddress(roadAddress || jibunAddress)
+          const { jibunAddress, roadAddress } = response.v2.address
+          const address = roadAddress || jibunAddress
+          setCurrentAddress(address) // 주소 상태 업데이트
         } else {
-          console.error('Failed to reverse geocode center coordinates')
+          console.error('Failed to reverse geocode coordinates')
         }
       })
-    },
-    [setCurrentAddress]
-  )
+    } else {
+      console.error('Naver maps Service is not available.')
+    }
+  }, [])
+
+  // 현 위치 버튼 클릭했을 때
+  const handleCurrentLocationClick = () => {
+    if (currentLocation) {
+      const current = new naver.maps.LatLng(
+        currentLocation.lat,
+        currentLocation.lng
+      )
+      map?.setCenter(current)
+      setCenter(current)
+    }
+  }
 
   useEffect(() => {
     if (map) {
       // 처음 로드 시 초기 중심 좌표의 주소 가져오기
-      const initialCenter = map.getCenter()
-      if (initialCenter) {
-        fetchAddressFromCoords(initialCenter) // 주소 가져오기 함수 호출
-      }
+      if (center) fetchAddressFromCoords(center)
 
       // 지도 드래그 이벤트 처리
-      naver.maps.Event.addListener(map, 'center_changed', () => {
-        const newCenter = map?.getCenter()
-        if (newCenter) {
-          fetchAddressFromCoords(newCenter) // 중심 좌표를 주소로 변환
+      const listener = naver.maps.Event.addListener(
+        map,
+        'center_changed',
+        () => {
+          const newCenter = map?.getCenter()
+          if (newCenter) {
+            fetchAddressFromCoords(newCenter) // 중심 좌표를 주소로 변환
+            setCenter(newCenter) // 중심 좌표를 Context에 저장
+          }
         }
-      })
+      )
+
+      // Cleanup 함수로 기존 이벤트 리스너 제거
+      return () => {
+        naver.maps.Event.removeListener(listener)
+      }
     }
-  }, [fetchAddressFromCoords, map])
+    return () => {}
+  }, [map, fetchAddressFromCoords, setCenter, center])
 
   return (
     <div className="relative h-screen w-full">
@@ -61,12 +85,20 @@ export default function MapView({
       <div className="fixed top-0 inset-x-0">
         <StoreSearchHeader view="map" currentAddress={currentAddress} />
       </div>
+      {/* 현 위치 버튼 */}
+      <button
+        type="button"
+        className="absolute bottom-52 ms-4 mb-0.5 z-50 bg-white rounded-full p-2 border border-gray-medium shadow-lg flex items-center justify-center text-primary-500"
+        onClick={handleCurrentLocationClick}
+      >
+        <TbCurrentLocation size={24} />
+      </button>
 
       <div className="absolute bottom-20 w-full">
         <button
           type="button"
           onClick={() => setView('list')} // 버튼 클릭 시 'list'로 상태 변경
-          className="ml-auto flex items-center bg-[#371B1B] rounded-full px-3 py-2 text-white text-xs"
+          className="ml-auto m-3 flex items-center bg-[#371B1B] rounded-full px-3 py-2 text-white text-xs"
         >
           <FiList className="mr-1.5" size={14} />
           <span>리스트 뷰</span>
