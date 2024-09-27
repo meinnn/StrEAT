@@ -19,7 +19,7 @@ public class AlertController {
 
     private final AlertService alertService;
 
-    @GetMapping("/order-reject")
+    @GetMapping("/order-accept")
     public void sendOrderRejectAlert(Integer customerId, Integer orderId, String storeName, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (!internalRequestKey.equals(internalRequest)) {
             // MSA 내부 접속이 아닌 경우 에러 발생
