@@ -11,3 +11,6 @@ eureka:
 
 server:
   port: 8848
+
+firebase:
+  config-path: C:/config/fcm-config.json
