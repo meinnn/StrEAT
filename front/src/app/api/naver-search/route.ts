@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get('query')
 
   const response = await fetch(
-    `https://openapi.naver.com/v1/search/local.json?query=${query}&display=20`,
+    `https://openapi.naver.com/v1/search/local.json?query=${query}&display=5`,
     {
       headers: {
         'X-Naver-Client-Id': process.env.NEXT_PUBLIC_NAVER_SEARCH_CLIENT_ID!,
