@@ -21,6 +21,7 @@ export default function OwnerNav() {
     '/owner/store/setting/business-hours',
     '/owner/store/setting/business-location',
     '/owner/store/review',
+    '/owner/store/regist',
   ]
 
   const isHiddenPath = HIDDEN_PATHS.some((hiddenPath) =>
