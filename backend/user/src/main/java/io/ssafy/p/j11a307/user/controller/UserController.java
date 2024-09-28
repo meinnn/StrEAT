@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    @Value("{streat.internal-request}")
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
     private String HEADER_AUTH = "Authorization";
 
