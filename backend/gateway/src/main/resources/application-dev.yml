@@ -18,9 +18,6 @@ spring:
           predicates:
             - Path=/api/orders/**
 server:
-<<<<<<< Updated upstream
-  port: 8787
-=======
   port: 8787
 
 springdoc:
@@ -32,4 +29,4 @@ springdoc:
         url: http://localhost:8787/api/users/v3/api-docs
       - name: Order API
         url: http://localhost:8787/api/orders/v3/api-docs
->>>>>>> Stashed changes
+

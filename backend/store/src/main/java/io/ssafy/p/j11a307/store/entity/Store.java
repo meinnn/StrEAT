@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private Long ownerId; // Owner ID만 저장
+    private Integer userId; // Owner ID만 저장
     private String name;
     private String address;
     private String latitude;
@@ -47,7 +47,7 @@ public class Store {
     public Store updateWith(StoreUpdateRequest request) {
         return Store.builder()
                 .id(this.id)  // ID는 변경하지 않음
-                .ownerId(this.ownerId)  // Owner ID는 그대로 유지
+                .userId(this.userId)  // Owner ID는 그대로 유지
                 .name(request.name() != null ? request.name() : this.name)
                 .address(request.address() != null ? request.address() : this.address)
                 .latitude(request.latitude() != null ? request.latitude() : this.latitude)

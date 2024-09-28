@@ -9,8 +9,6 @@ spring:
           uri: http://streat-user:8080
           predicates:
             - Path=/api/users/**
-<<<<<<< Updated upstream
-=======
         - id: store
           uri: http://streat-store:8080
           predicates:
@@ -19,7 +17,6 @@ spring:
           uri: http://streat-order:8080
           predicates:
             - Path=/api/orders/**
->>>>>>> Stashed changes
     config:
       uri: http://localhost:8888
       label: main
@@ -35,12 +32,9 @@ springdoc:
     use-root-path: true
     urls:
       - name: Store API
-<<<<<<< Updated upstream
-        url: http://localhost:8787/api/stores/v3/api-docs
-=======
         url: http://localhost:8080/api/stores/v3/api-docs
       - name: user API
         url: http://localhost:8080/api/users/v3/api-docs
       - name: Order API
         url: http://localhost:8080/api/orders/v3/api-docs
->>>>>>> Stashed changes
+

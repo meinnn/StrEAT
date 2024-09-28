@@ -34,6 +34,11 @@ public class JwtUtil {
         return headers;
     }
 
+    public long getIssuedAt(String accessToken) {
+        Claims claims = Jwts.parser().setSigningKey(generateKey()).parseClaimsJws(extractAccessToken(accessToken)).getBody();
+        return claims.getIssuedAt().getTime();
+    }
+
     private String create(Integer userId, String subject, long expireTime) {
 //		Payload 설정 : 생성일 (IssuedAt), 유효기간 (Expiration),
 //		토큰 제목 (Subject), 데이터 (Claim) 등 정보 세팅.
