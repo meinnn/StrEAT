@@ -13,4 +13,8 @@ public class OrdersId implements Serializable {
     private Orders id;
 
     public OrdersId() {}
+
+    public OrdersId(Orders id) {
+        this.id = id;
+    }
 }

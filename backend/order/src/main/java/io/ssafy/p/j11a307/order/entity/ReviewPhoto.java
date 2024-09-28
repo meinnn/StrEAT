@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.order.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,4 +19,10 @@ public class ReviewPhoto {
     private Review reviewId;
 
     private String src;
+
+    @Builder
+    public ReviewPhoto(Review reviewId, String src) {
+        this.reviewId = reviewId;
+        this.src = src;
+    }
 }
