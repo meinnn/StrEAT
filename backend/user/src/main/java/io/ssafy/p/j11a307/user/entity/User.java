@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
     @Id
