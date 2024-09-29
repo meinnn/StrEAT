@@ -101,7 +101,7 @@ export default function useNaverMap(
       }
       document.head.appendChild(mapScript)
     }
-  }, [mapElementId, currentLocation, options])
+  }, [mapElementId, currentLocation, options, center, setCenter])
 
   // 사용자의 위치가 업데이트될 때 마커만 이동
   useEffect(() => {

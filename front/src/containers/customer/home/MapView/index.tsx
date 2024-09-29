@@ -20,21 +20,24 @@ export default function MapView({
   const { map, currentLocation } = useNaverMap('map', { zoom: 16 })
 
   // 좌표로부터 주소를 가져오는 함수
-  const fetchAddressFromCoords = useCallback((coords: naver.maps.Coord) => {
-    if (window.naver.maps.Service) {
-      naver.maps.Service.reverseGeocode({ coords }, (status, response) => {
-        if (status === naver.maps.Service.Status.OK) {
-          const { jibunAddress, roadAddress } = response.v2.address
-          const address = roadAddress || jibunAddress
-          setCurrentAddress(address) // 주소 상태 업데이트
-        } else {
-          console.error('Failed to reverse geocode coordinates')
-        }
-      })
-    } else {
-      console.error('Naver maps Service is not available.')
-    }
-  }, [])
+  const fetchAddressFromCoords = useCallback(
+    (coords: naver.maps.Coord) => {
+      if (window.naver.maps.Service) {
+        naver.maps.Service.reverseGeocode({ coords }, (status, response) => {
+          if (status === naver.maps.Service.Status.OK) {
+            const { jibunAddress, roadAddress } = response.v2.address
+            const address = roadAddress || jibunAddress
+            setCurrentAddress(address) // 주소 상태 업데이트
+          } else {
+            console.error('Failed to reverse geocode coordinates')
+          }
+        })
+      } else {
+        console.error('Naver maps Service is not available.')
+      }
+    },
+    [setCurrentAddress]
+  )
 
   // 현 위치 버튼 클릭했을 때
   const handleCurrentLocationClick = () => {
