@@ -70,9 +70,6 @@ public class LoginController {
             @ApiResponse(responseCode = "404", description = "User ID가 없어 로그인 실패"),
             @ApiResponse(responseCode = "401", description = "토큰 기간 만료, 재 로그인 필요")
     })
-    @Parameters({
-            @Parameter(name = "code", description = "카카오에서 받은 인가코드(직접 생성 x)")
-    })
     public ResponseEntity<Void> autoLogin(@RequestHeader(HEADER_AUTH) String accessToken) {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         loginService.autoLogin(userId);
