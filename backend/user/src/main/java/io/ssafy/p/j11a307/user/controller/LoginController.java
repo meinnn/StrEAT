@@ -49,7 +49,7 @@ public class LoginController {
     @Operation(summary = "인가코드 부여", description = "카카오에서 받은 인가코드를 요청할 때 사용")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "인가코드 요청 성공",
-                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string")))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserTypeResponse.class)))
     })
     @Parameters({
             @Parameter(name = "code", description = "카카오에서 받은 인가코드(직접 생성 x)")
