@@ -2,11 +2,14 @@ package io.ssafy.p.j11a307.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.ssafy.p.j11a307.user.service.LoginService;
+import io.ssafy.p.j11a307.user.service.UserService;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
 import io.ssafy.p.j11a307.user.util.KakaoUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class LoginController {
     private final String HEADER_AUTH = "Authorization";
 
     private final LoginService loginService;
+    private final UserService userService;
 
     private final KakaoUtil kakaoUtil;
     private final JwtUtil jwtUtil;
@@ -42,18 +46,18 @@ public class LoginController {
     @GetMapping("/login/kakao/auth")
     @Operation(summary = "인가코드 부여", description = "카카오에서 받은 인가코드를 요청할 때 사용")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "인가코드 요청 성공")
+            @ApiResponse(responseCode = "200", description = "인가코드 요청 성공",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string")))
     })
     @Parameters({
             @Parameter(name = "code", description = "카카오에서 받은 인가코드(직접 생성 x)")
     })
-    public ResponseEntity<Void> kakaoAuth(String code) throws JsonProcessingException {
+    public ResponseEntity<String> kakaoAuth(String code) throws JsonProcessingException {
         String kakaoTokens = kakaoUtil.getKakaoTokens(code);
         Integer userId = loginService.kakaoLogin(kakaoTokens);
         HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
-
-        return ResponseEntity.ok()
-                .headers(headers).build();
+        String userType = userService.getUserType(userId);
+        return new ResponseEntity<>(userType, headers, HttpStatus.OK);
     }
 
     @PostMapping("/login-auto")
