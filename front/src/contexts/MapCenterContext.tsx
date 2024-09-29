@@ -10,7 +10,7 @@ import {
 } from 'react'
 
 // Context 생성
-const MapContext = createContext<
+const MapCenterContext = createContext<
   | {
       center: naver.maps.Coord | null // 초기값을 null로 설정
       setCenter: (center: naver.maps.Coord) => void
@@ -19,7 +19,7 @@ const MapContext = createContext<
 >(undefined)
 
 // Context Provider 생성
-export function MapProvider({ children }: { children: ReactNode }) {
+export function MapCenterProvider({ children }: { children: ReactNode }) {
   const [center, setCenter] = useState<naver.maps.Coord | null>(null) // 초기에는 null로 설정
 
   // 클라이언트 사이드에서만 naver 객체 접근
@@ -32,12 +32,16 @@ export function MapProvider({ children }: { children: ReactNode }) {
   // useMemo로 value 객체를 캐싱
   const value = useMemo(() => ({ center, setCenter }), [center, setCenter])
 
-  return <MapContext.Provider value={value}>{children}</MapContext.Provider>
+  return (
+    <MapCenterContext.Provider value={value}>
+      {children}
+    </MapCenterContext.Provider>
+  )
 }
 
 // Context 사용을 위한 커스텀 Hook
-export function useMap() {
-  const context = useContext(MapContext)
+export function useMapCenter() {
+  const context = useContext(MapCenterContext)
   if (!context) {
     throw new Error('useMap must be used within a MapProvider')
   }

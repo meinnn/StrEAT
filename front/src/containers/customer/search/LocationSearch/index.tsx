@@ -3,7 +3,7 @@
 import { RiSearchLine } from 'react-icons/ri'
 import { ChangeEvent, useState } from 'react'
 import RecentSearch from '@/containers/customer/search/RecentSearch'
-import { useMap } from '@/contexts/MapContext'
+import { useMapCenter } from '@/contexts/MapCenterContext'
 import { useRouter } from 'next/navigation'
 
 interface Location {
@@ -19,7 +19,7 @@ interface Location {
 }
 
 export default function LocationSearch() {
-  const { setCenter } = useMap()
+  const { setCenter } = useMapCenter()
   const router = useRouter()
 
   const [searchQuery, setSearchQuery] = useState('')
@@ -39,7 +39,6 @@ export default function LocationSearch() {
         `/api/naver-search?query=${encodeURIComponent(query)}`
       )
       const data = await res.json()
-      console.log(data.items)
       setSearchResults(data.items || [])
       setIsSearching(false) // 검색 완료 상태
     } else {
@@ -60,7 +59,6 @@ export default function LocationSearch() {
     const lng = parseFloat(mapx) / 1e7
     const newCenter = new naver.maps.LatLng(lat, lng)
     setCenter(newCenter)
-    console.log(`Center updated to: lat=${lat}, lng=${lng}`)
     router.push('/customer')
   }
 
