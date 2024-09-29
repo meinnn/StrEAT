@@ -2,8 +2,8 @@ import StoreSearchHeader from '@/components/StoreSearchHeader'
 import StoreCard from '@/containers/customer/home/StoreCard'
 import { FiList } from 'react-icons/fi'
 import useNaverMap from '@/hooks/useNaverMap'
-import { useCallback, useEffect, useState } from 'react'
-import { useMap } from '@/contexts/MapContext'
+import { useCallback, useEffect } from 'react'
+import { useMapCenter } from '@/contexts/MapCenterContext'
 import { TbCurrentLocation } from 'react-icons/tb'
 
 export default function MapView({
@@ -15,7 +15,7 @@ export default function MapView({
   currentAddress: string
   setCurrentAddress: (address: string) => void
 }) {
-  const { center, setCenter } = useMap()
+  const { center, setCenter } = useMapCenter()
   // 지도 생성 및 초기화
   const { map, currentLocation } = useNaverMap('map', { zoom: 16 })
 
@@ -82,27 +82,30 @@ export default function MapView({
         style={{ height: 'calc(100vh - 4rem)' }}
       />
 
-      <div className="fixed top-0 inset-x-0">
+      <div className="fixed top-0 inset-x-0 z-[200]">
         <StoreSearchHeader view="map" currentAddress={currentAddress} />
       </div>
-      {/* 현 위치 버튼 */}
-      <button
-        type="button"
-        className="absolute bottom-52 ms-4 mb-0.5 z-50 bg-white rounded-full p-2 border border-gray-medium shadow-lg flex items-center justify-center text-primary-500"
-        onClick={handleCurrentLocationClick}
-      >
-        <TbCurrentLocation size={24} />
-      </button>
 
       <div className="absolute bottom-20 w-full">
-        <button
-          type="button"
-          onClick={() => setView('list')} // 버튼 클릭 시 'list'로 상태 변경
-          className="ml-auto m-3 flex items-center bg-[#371B1B] rounded-full px-3 py-2 text-white text-xs"
-        >
-          <FiList className="mr-1.5" size={14} />
-          <span>리스트 뷰</span>
-        </button>
+        <div className="flex items-end m-3">
+          {/* 현 위치 버튼 */}
+          <button
+            type="button"
+            className="absolute bg-white rounded-full p-2 border border-gray-medium shadow-lg flex items-center justify-center text-primary-500"
+            onClick={handleCurrentLocationClick}
+          >
+            <TbCurrentLocation size={24} />
+          </button>
+          {/* 리스트 뷰 버튼 */}
+          <button
+            type="button"
+            onClick={() => setView('list')} // 버튼 클릭 시 'list'로 상태 변경
+            className="ml-auto flex items-center bg-[#371B1B] rounded-full px-3 py-2 text-white text-xs"
+          >
+            <FiList className="mr-1.5" size={14} />
+            <span>리스트 뷰</span>
+          </button>
+        </div>
 
         <div className="px-4 my-2 flex overflow-x-auto whitespace-nowrap gap-4">
           <StoreCard />
