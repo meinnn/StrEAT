@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,7 @@ public class UserController {
     @Parameters({
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
+    @Tag(name = "내부 서비스 간 요청")
     public Integer getUserId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             return userService.getUserId(accessToken);
@@ -47,6 +49,7 @@ public class UserController {
     @Parameters({
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
+    @Tag(name = "내부 서비스 간 요청")
     public Integer getOwnerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
@@ -64,6 +67,7 @@ public class UserController {
     @Parameters({
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
+    @Tag(name = "내부 서비스 간 요청")
     public Integer getCustomerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
