@@ -87,9 +87,6 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "이미 손님으로 등록된 유저"),
             @ApiResponse(responseCode = "400", description = "이미 사장님으로 등록된 유저")
     })
-    @Parameters({
-            @Parameter(name = "alertOn", description = "알림 설정 여부", example = "true: 켜기, false: 끄기")
-    })
     public ResponseEntity<Void> registerCustomer(@RequestHeader(HEADER_AUTH) String accessToken) {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         userService.registerNewCustomer(userId);
