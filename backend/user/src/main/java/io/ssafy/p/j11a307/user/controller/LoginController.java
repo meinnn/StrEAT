@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.service.LoginService;
 import io.ssafy.p.j11a307.user.service.UserService;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
@@ -56,8 +57,8 @@ public class LoginController {
         String kakaoTokens = kakaoUtil.getKakaoTokens(code);
         Integer userId = loginService.kakaoLogin(kakaoTokens);
         HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
-        String userType = userService.getUserType(userId);
-        return new ResponseEntity<>(userType, headers, HttpStatus.OK);
+        UserType userType = userService.getUserType(userId);
+        return new ResponseEntity<>(userType.name(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/login-auto")

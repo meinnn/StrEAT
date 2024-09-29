@@ -50,17 +50,17 @@ public class UserService {
         user.toggleDibsStoreAlert(alertOn);
     }
 
-    public String getUserType(Integer userId) {
+    public UserType getUserType(Integer userId) {
         if (!userRepository.existsById(userId)) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         if (customerRepository.existsById(userId)) {
-            return UserType.CUSTOMER.name();
+            return UserType.CUSTOMER;
         }
         if (ownerRepository.existsById(userId)) {
-            return UserType.OWNER.name();
+            return UserType.OWNER;
         }
-        return UserType.NOT_SELECTED.name();
+        return UserType.NOT_SELECTED;
     }
 
     @Transactional
