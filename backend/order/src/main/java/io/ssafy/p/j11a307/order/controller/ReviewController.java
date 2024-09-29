@@ -38,18 +38,25 @@ public class ReviewController {
                         .body(MessageResponse.of("리뷰 등록을 완료했습니다."));
     }
 
-    //리뷰 수정
-
-
-
-
-
-
     //리뷰 삭제
+    @DeleteMapping("/{id}/review")
+    public ResponseEntity<MessageResponse> deleteReview(@PathVariable Integer id,
+                                                        @RequestHeader("Authorization") String token) {
+        reviewService.deleteReview(id, token);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("리뷰 삭제를 완료했습니다."));
+    }
+
+
+    //내가 쓴 리뷰 조회
+
+
+
 
     //점포별 리뷰 조회
 
-    //내가 쓴 리뷰 조회
+
+
 
     //2. 이미 해당 주문 내역에 대한 리뷰를 달았다면?(내 주문내역 조회에서 처리해줘야 함!!)
 }

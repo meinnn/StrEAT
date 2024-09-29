@@ -80,8 +80,32 @@ public class ReviewService {
 
             reviewPhotoRepository.save(reviewPhoto);
         }
-
     }
+
+    @Transactional
+    public void deleteReview(Integer id, String token) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+        Orders orders = ordersRepository.findById(id).orElse(null);
+
+        //1. 해당 리뷰가 존재하지 않는다면?
+        Review review = reviewRepository.searchReview(id);
+        if(review == null) throw new BusinessException(ErrorCode.REVIEW_NOT_FOUND);
+
+        //2. 삭제할 권한이 없다면?
+        if(orders.getUserId() != userId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+        //사진은 cascade를 통해 삭제됨
+        reviewRepository.delete(review);
+    }
+
+
+
+
+
+
+
+
+
 
     private String uploadImage(MultipartFile image) {
         //image 파일 확장자 검사

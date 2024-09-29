@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     @Transactional
-    @Query(value = "SELECT * FROM review WHERE review_id= id", nativeQuery = true)
+    @Query(value = "SELECT * FROM review WHERE review_id= :id", nativeQuery = true)
     Review searchReview(Integer id);
-
 }
