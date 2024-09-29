@@ -1,5 +1,7 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.exception.BusinessException;
+import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.service.UserService;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +40,40 @@ public class UserController {
             return userService.getUserId(accessToken);
         }
         return null;
+    }
+
+    @GetMapping("/owner-id")
+    @Operation(summary = "owner id 요청", description = "서비스내부에서 엑세스토큰으로 user id 요청, 클라이언트 요청 불가")
+    @Parameters({
+            @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
+    })
+    public Integer getOwnerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+        if (internalRequestKey.equals(internalRequest)) {
+            Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+            boolean isOwner = userService.isOwner(userId);
+            if (isOwner) {
+                return userId;
+            }
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+        throw new BusinessException(ErrorCode.BAD_INNER_SERVICE_REQUEST);
+    }
+
+    @GetMapping("/owner-id")
+    @Operation(summary = "owner id 요청", description = "서비스내부에서 엑세스토큰으로 user id 요청, 클라이언트 요청 불가")
+    @Parameters({
+            @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
+    })
+    public Integer getCustomerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+        if (internalRequestKey.equals(internalRequest)) {
+            Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+            boolean isCustomer = userService.isCustomer(userId);
+            if (isCustomer) {
+                return userId;
+            }
+            throw new BusinessException(ErrorCode.CUSTOMER_NOT_FOUND);
+        }
+        throw new BusinessException(ErrorCode.BAD_INNER_SERVICE_REQUEST);
     }
 
     @DeleteMapping("/withdraw")

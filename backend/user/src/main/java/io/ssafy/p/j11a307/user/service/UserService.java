@@ -30,6 +30,14 @@ public class UserService {
         return jwtUtil.getUserIdFromAccessToken(accessToken);
     }
 
+    public boolean isOwner(Integer userId) {
+        return ownerRepository.existsById(userId);
+    }
+
+    public boolean isCustomer(Integer userId) {
+        return customerRepository.existsById(userId);
+    }
+
     @Transactional
     public void withdraw(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
