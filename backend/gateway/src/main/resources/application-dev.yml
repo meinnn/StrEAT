@@ -31,3 +31,7 @@ springdoc:
         url: http://localhost:8787/api/stores/v3/api-docs
       - name: user API
         url: http://localhost:8787/api/users/v3/api-docs
+      - name: Order API
+        url: http://localhost:8787/api/orders/v3/api-docs
+      - name: Product API
+        url: http://localhost:8787/api/products/v3/api-docs
