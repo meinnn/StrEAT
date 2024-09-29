@@ -1,11 +1,13 @@
 package io.ssafy.p.j11a307.product.entity;
 
-import io.ssafy.p.j11a307.product.dto.ProductUpdateRequest;
+import io.ssafy.p.j11a307.product.dto.UpdateProductDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,16 +19,16 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer userId; // Owner ID만 저장
+    private Integer storeId;
     private String name;
-    private String address;
-    private String latitude;
-    private String longitude;
-    private String type;
-    private String bankAccount;
-    private String bankName;
-    private String ownerWord;
-    private String status;
+    private Integer price;
+    private String src;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductCategory> categories;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductOptionCategory> optionCategories;
 
     // 이름 변경 메서드
     public void changeName(String name) {
@@ -36,28 +38,30 @@ public class Product {
         this.name = name;
     }
 
-    // 주소 변경 메서드
-    public void changeAddress(String address) {
-        if (address == null || address.isEmpty()) {
-            throw new IllegalArgumentException("Address cannot be empty.");
+    // src 변경 메서드
+    public void changeSrc(String src) {
+        if (src == null || src.isEmpty()) {
+            throw new IllegalArgumentException("Src cannot be empty.");
         }
-        this.address = address;
+        this.src = src;
     }
 
-    public Product updateWith(ProductUpdateRequest request) {
+    // 가격 변경 메서드
+    public void changePrice(Integer price) {
+        if (price == null || price < 0) {
+            throw new IllegalArgumentException("Price must be positive.");
+        }
+        this.price = price;
+    }
+
+    // 업데이트 메서드
+    public Product updateWith(UpdateProductDTO request) {
         return Product.builder()
                 .id(this.id)  // ID는 변경하지 않음
-                .userId(this.userId)  // Owner ID는 그대로 유지
+                .storeId(this.storeId)  // storeId는 변경하지 않음
                 .name(request.name() != null ? request.name() : this.name)
-                .address(request.address() != null ? request.address() : this.address)
-                .latitude(request.latitude() != null ? request.latitude() : this.latitude)
-                .longitude(request.longitude() != null ? request.longitude() : this.longitude)
-                .type(request.type() != null ? request.type() : this.type)
-                .bankAccount(request.bankAccount() != null ? request.bankAccount() : this.bankAccount)
-                .bankName(request.bankName() != null ? request.bankName() : this.bankName)
-                .ownerWord(request.ownerWord() != null ? request.ownerWord() : this.ownerWord)
-                .status(request.status() != null ? request.status() : this.status)
+                .price(request.price() != null ? request.price() : this.price)
+                .src(request.src() != null ? request.src() : this.src)
                 .build();
     }
-
 }
