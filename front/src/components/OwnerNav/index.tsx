@@ -17,11 +17,10 @@ export default function OwnerNav() {
   const path = usePathname()
 
   const HIDDEN_PATHS = [
-    '/owner/store/setting/announcement',
-    '/owner/store/setting/business-hours',
-    '/owner/store/setting/business-location',
+    '/owner/store/setting',
     '/owner/store/review',
     '/owner/store/regist',
+    '/owner/store/business-location',
   ]
 
   const isHiddenPath = HIDDEN_PATHS.some((hiddenPath) =>

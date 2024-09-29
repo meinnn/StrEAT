@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { GoChevronRight } from 'react-icons/go'
 import { HiOutlineLocationMarker, HiOutlineSpeakerphone } from 'react-icons/hi'
+import { IoSettingsOutline } from 'react-icons/io5'
 
 export default function StoreInformation() {
   const [isBusinessStart, setIsBusinessStart] = useState(false)
@@ -10,7 +11,15 @@ export default function StoreInformation() {
   return (
     <section className="flex flex-col px-6 pt-6">
       <div className="flex flex-col gap-1 mb-2">
-        <span className="text-xs font-normal pl-1">#치킨</span>
+        <div className="flex items-end justify-between ">
+          <span className="text-xs font-normal pl-1">#치킨</span>
+          <Link href="/owner/store/setting">
+            <div className="flex gap-1 items-center">
+              <IoSettingsOutline className="shrink-0" />
+              <p>점포설정</p>
+            </div>
+          </Link>
+        </div>
         <h1 className="text-2xl font-bold">옐로우 키친 치킨</h1>
       </div>
       <div className="flex flex-col gap-3 mb-5">
@@ -59,12 +68,14 @@ export default function StoreInformation() {
             역삼역 1번 출구 앞 큰 건물 뒤에 있습니다! 오늘 주방장 폼 미침
           </p>
         </div>
-        <button
-          type="button"
-          className="rounded-md text-xs font-normal bg-primary-500 py-2 w-full text-secondary-light"
-        >
-          사장님 한 마디 수정
-        </button>
+        <Link href="/owner/store/setting/announcement">
+          <button
+            type="button"
+            className="rounded-md text-xs font-normal bg-primary-500 py-2 w-full text-secondary-light"
+          >
+            사장님 한 마디 수정
+          </button>
+        </Link>
       </div>
     </section>
   )

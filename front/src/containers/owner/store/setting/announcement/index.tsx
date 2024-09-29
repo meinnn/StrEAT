@@ -3,7 +3,7 @@ import AppBar from '@/components/AppBar'
 export default function OwnerStoreSettingAnnouncement() {
   return (
     <div>
-      <AppBar title="내 점포" />
+      <AppBar title="점포 설정" />
       <form className="flex flex-col gap-4 px-4 py-8">
         <h3 className="text-xl font-medium pl-3">사장님 한마디</h3>
         <textarea className="p-3 resize-none w-full border border-gray-dark rounded h-44 outline-none" />

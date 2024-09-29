@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { IoSettingsOutline } from 'react-icons/io5'
 
 const DAY_LIST = ['월', '화', '수', '목', '금', '토', '일']
@@ -39,7 +40,9 @@ export default function StoreBusinessHours() {
     <section className="mt-11 px-6 flex flex-col gap-6">
       <div className="flex items-center gap-1">
         <h3 className="text-xl font-medium">영업일 및 영업시간</h3>
-        <IoSettingsOutline className="cursor-pointer" />
+        <Link href="/owner/store/setting/business-hours">
+          <IoSettingsOutline className="cursor-pointer" />
+        </Link>
       </div>
 
       <div className="flex flex-col gap-4">

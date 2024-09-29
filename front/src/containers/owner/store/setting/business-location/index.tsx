@@ -17,7 +17,7 @@ export default function OwnerStoreSettingBusinessLocation() {
 
   return (
     <section>
-      <AppBar title="내 점포" />
+      <AppBar title="점포 설정" />
       <main className="flex flex-col gap-3 px-6 py-5">
         <h3 className="pl-2 text-xl font-medium ">영업 위치</h3>
         <div className="flex justify-center items-start w-full">
