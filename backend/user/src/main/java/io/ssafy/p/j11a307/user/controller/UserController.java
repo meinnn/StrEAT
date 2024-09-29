@@ -83,7 +83,9 @@ public class UserController {
     @Operation(summary = "회원가입 시 손님 선택", description = "회원가입 시 손님 선택")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "손님으로 가입 성공"),
-            @ApiResponse(responseCode = "404", description = "유저 id 기반 유저 없음")
+            @ApiResponse(responseCode = "404", description = "유저 id 기반 유저 없음"),
+            @ApiResponse(responseCode = "400", description = "이미 손님으로 등록된 유저"),
+            @ApiResponse(responseCode = "400", description = "이미 사장님으로 등록된 유저")
     })
     @Parameters({
             @Parameter(name = "alertOn", description = "알림 설정 여부", example = "true: 켜기, false: 끄기")
