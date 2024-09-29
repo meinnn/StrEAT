@@ -64,4 +64,8 @@ public class User {
     public void toggleDibsStoreAlert(boolean alertOn) {
         this.dibsStoreAlert = alertOn;
     }
+
+    protected void joinSubclass(Integer id) {
+        this.id = id;
+    }
 }

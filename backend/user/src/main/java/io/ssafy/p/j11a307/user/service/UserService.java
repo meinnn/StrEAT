@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.service;
 
+import io.ssafy.p.j11a307.user.entity.Customer;
 import io.ssafy.p.j11a307.user.entity.LeftUser;
 import io.ssafy.p.j11a307.user.entity.User;
 import io.ssafy.p.j11a307.user.entity.UserType;
@@ -60,5 +61,12 @@ public class UserService {
             return UserType.OWNER.name();
         }
         return UserType.NOT_SELECTED.name();
+    }
+
+    @Transactional
+    public void registerNewCustomer(Integer userId) {
+        userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        Customer customer = Customer.builder().userId(userId).build();
+        customerRepository.save(customer);
     }
 }

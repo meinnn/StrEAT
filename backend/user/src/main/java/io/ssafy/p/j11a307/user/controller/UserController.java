@@ -78,4 +78,19 @@ public class UserController {
         userService.toggleDibsStoreAlert(userId, alertOn);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/customers/register")
+    @Operation(summary = "회원가입 시 손님 선택", description = "회원가입 시 손님 선택")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "손님으로 가입 성공"),
+            @ApiResponse(responseCode = "404", description = "유저 id 기반 유저 없음")
+    })
+    @Parameters({
+            @Parameter(name = "alertOn", description = "알림 설정 여부", example = "true: 켜기, false: 끄기")
+    })
+    public ResponseEntity<Void> registerCustomer(@RequestHeader(HEADER_AUTH) String accessToken) {
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+        userService.registerNewCustomer(userId);
+        return ResponseEntity.ok().build();
+    }
 }
