@@ -2,7 +2,7 @@ import { RiSearchLine } from 'react-icons/ri'
 
 export default function LocationPicker() {
   return (
-    <div className="fixed px-3 pt-4 max-w-96 top-0 left-0 overflow-hidden bg-gray-dark max-h-[36rem] h-full w-full rounded-xl">
+    <div className="relative px-3 pt-4 max-w-96 top-0 left-0 overflow-hidden bg-gray-dark max-h-[36rem] h-full w-full rounded-xl">
       <div className="flex items-center w-full shadow-md rounded-xl overflow-hidden pl-4 bg-white">
         <RiSearchLine className="text-primary-400 w-6 h-6" />
         <input
