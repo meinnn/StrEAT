@@ -23,13 +23,13 @@ public class StoreService{
     @Value("{streat.internal-request}")
     private String internalRequestKey;
 
-    public Integer getOwnerIdByStoreId(Long storeId) {
+    public Integer getOwnerIdByStoreId(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getUserId();
     }
 
-    public StoreResponse getStoreInfo(Long storeId) {
+    public StoreResponse getStoreInfo(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
@@ -62,7 +62,7 @@ public class StoreService{
         return new StoreResponse(savedStore);
     }
 
-    public String getStoreType(Long id) {
+    public String getStoreType(Integer id) {
         Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getType();
     }
@@ -75,7 +75,7 @@ public class StoreService{
     }
 
 
-    public StoreResponse updateStore(Long id, StoreUpdateRequest request) {
+    public StoreResponse updateStore(Integer id, StoreUpdateRequest request) {
         Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         Store updatedStore = store.updateWith(request);
@@ -83,14 +83,14 @@ public class StoreService{
         return new StoreResponse(storeRepository.save(updatedStore));
     }
 
-    public void deleteStore(Long id) {
+    public void deleteStore(Integer id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         storeRepository.delete(store);
     }
 
-    public StoreResponse  updateStoreAddress(Long id, String newAddress) {
+    public StoreResponse  updateStoreAddress(Integer id, String newAddress) {
         Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.changeAddress(newAddress);
         return new StoreResponse(storeRepository.save(store));

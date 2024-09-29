@@ -29,7 +29,7 @@ public record StoreResponse(
         String bankName,
         String ownerWord,
         String status,
-        Integer ownerId
+        Integer userId
 ) {
         // Store 객체를 받는 생성자
         public StoreResponse(Store store) {

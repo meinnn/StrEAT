@@ -32,7 +32,7 @@ public class StoreController {
     // 2. 점포 타입 조회
     @GetMapping("/{id}/type")
     @Operation(summary = "점포 타입(이동형/고정형) 조회")
-    public ResponseEntity<DataResponse<String>> getStoreType(@PathVariable Long id) {
+    public ResponseEntity<DataResponse<String>> getStoreType(@PathVariable Integer id) {
         String storeType = storeService.getStoreType(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("점포 타입 조회 성공", storeType));
     }
@@ -40,7 +40,7 @@ public class StoreController {
     // 3. 점포 상세 정보 조회
     @GetMapping("/{id}")
     @Operation(summary = "점포 상세 정보 조회")
-    public ResponseEntity<DataResponse<StoreResponse>> getStoreInfo(@PathVariable Long id) {
+    public ResponseEntity<DataResponse<StoreResponse>> getStoreInfo(@PathVariable Integer id) {
         StoreResponse storeResponse = storeService.getStoreInfo(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeResponse));
@@ -58,7 +58,7 @@ public class StoreController {
     // 5. 가게 사장님 ID 조회
     @GetMapping("/{id}/ownerId")
     @Operation(summary = "점포 사장님 ID 조회")
-    public ResponseEntity<DataResponse<Integer>> getOwnerId(@PathVariable Long id) {
+    public ResponseEntity<DataResponse<Integer>> getOwnerId(@PathVariable Integer id) {
         Integer userId = storeService.getOwnerIdByStoreId(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 사장님 ID 조회 성공", userId));
@@ -66,7 +66,7 @@ public class StoreController {
     // 6. 점포 정보 수정
     @PutMapping("/{id}")
     @Operation(summary = "점포 정보 수정")
-    public ResponseEntity<MessageResponse> updateStore(@PathVariable Long id, @RequestBody StoreUpdateRequest request) {
+    public ResponseEntity<MessageResponse> updateStore(@PathVariable Integer id, @RequestBody StoreUpdateRequest request) {
         StoreResponse updatedStore = storeService.updateStore(id, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 정보 수정 성공"));
@@ -75,7 +75,7 @@ public class StoreController {
     // 7. 점포 주소 변경
     @PatchMapping("/{id}/address")
     @Operation(summary = "점포 주소 변경")
-    public ResponseEntity<MessageResponse> updateStoreAddress(@PathVariable Long id, @RequestBody String newAddress) {
+    public ResponseEntity<MessageResponse> updateStoreAddress(@PathVariable Integer id, @RequestBody String newAddress) {
         StoreResponse updatedStore = storeService.updateStoreAddress(id, newAddress);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 주소 변경 성공"));
@@ -84,7 +84,7 @@ public class StoreController {
     // 8. 점포 삭제
     @DeleteMapping("/{id}")
     @Operation(summary = "점포 삭제 api")
-    public ResponseEntity<MessageResponse> deleteStore(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> deleteStore(@PathVariable Integer id) {
         storeService.deleteStore(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 정보 삭제 성공"));
