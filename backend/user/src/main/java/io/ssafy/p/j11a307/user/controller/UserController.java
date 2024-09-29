@@ -7,12 +7,14 @@ import io.ssafy.p.j11a307.user.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -122,14 +124,15 @@ public class UserController {
     @PostMapping("/customers/register")
     @Operation(summary = "회원가입 시 손님 선택", description = "회원가입 시 손님 선택")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "손님으로 가입 성공"),
+            @ApiResponse(responseCode = "200", description = "손님으로 가입 성공, header에 새로운 토큰 발급"),
             @ApiResponse(responseCode = "404", description = "유저 id 기반 유저 없음"),
             @ApiResponse(responseCode = "400", description = "이미 손님으로 등록된 유저"),
             @ApiResponse(responseCode = "400", description = "이미 사장님으로 등록된 유저")
     })
     public ResponseEntity<Void> registerCustomer(@RequestHeader(HEADER_AUTH) String accessToken) {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
-        userService.registerNewCustomer(userId);
-        return ResponseEntity.ok().build();
+        userId = userService.registerNewCustomer(userId);
+        HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
+        return ResponseEntity.ok().headers(headers).build();
     }
 }

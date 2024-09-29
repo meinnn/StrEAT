@@ -72,8 +72,8 @@ public class UserService {
     }
 
     @Transactional
-    public void registerNewCustomer(Integer userId) {
-        userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    public Integer registerNewCustomer(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         UserType userType = getUserType(userId);
         if (userType == UserType.CUSTOMER) {
             throw new BusinessException(ErrorCode.ALREADY_REGISTERED_CUSTOMER);
@@ -81,7 +81,9 @@ public class UserService {
         if (userType == UserType.OWNER) {
             throw new BusinessException(ErrorCode.ALREADY_REGISTERED_OWNER);
         }
-        Customer customer = Customer.builder().userId(userId).build();
-        customerRepository.save(customer);
+        Customer customer = new Customer(user);
+        customer = customerRepository.save(customer);
+        userRepository.deleteById(userId);
+        return customer.getId();
     }
 }

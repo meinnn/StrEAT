@@ -46,6 +46,17 @@ public class User {
         this.kakaoRefreshToken = kakaoInfoVo.getRefreshToken();
     }
 
+    public User(User user) {
+        this.kakaoId = user.kakaoId;
+        this.username = user.username;
+        this.kakaoAccessToken = user.kakaoAccessToken;
+        this.kakaoRefreshToken = user.kakaoRefreshToken;
+        this.profileImgSrc = user.profileImgSrc;
+        this.createdAt = user.createdAt;
+        this.orderStatusAlert = user.orderStatusAlert;
+        this.dibsStoreAlert = user.dibsStoreAlert;
+    }
+
     public void refreshKakaoTokens(String kakaoAccessToken, String kakaoRefreshToken) {
         this.kakaoAccessToken = kakaoAccessToken;
         if (kakaoRefreshToken != null) { // 경우에 따라 kakao token은 refresh 되지 않을 수 있음
@@ -64,9 +75,5 @@ public class User {
 
     public void toggleDibsStoreAlert(boolean alertOn) {
         this.dibsStoreAlert = alertOn;
-    }
-
-    protected void joinSubclass(Integer id) {
-        this.id = id;
     }
 }

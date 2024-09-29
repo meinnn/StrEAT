@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Customer extends User {
 
     @Builder
-    public Customer(Integer userId) {
-        joinSubclass(userId);
+    public Customer(User user) {
+        super(user);
     }
 }
