@@ -135,4 +135,15 @@ public class UserController {
         HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
         return ResponseEntity.ok().headers(headers).build();
     }
+
+    @GetMapping("/createToken")
+    @Operation(summary = "테스트용 토큰 생성", description = "테스트용 토큰 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "토큰 생성 완료")
+    })
+    @Tag(name = "토큰 생성")
+    public ResponseEntity<String> createToken(@Parameter(name = "유저 아이디", in = ParameterIn.QUERY) Integer userId) {
+        String token = jwtUtil.createAccessToken(userId);
+        return ResponseEntity.ok(token);
+    }
 }
