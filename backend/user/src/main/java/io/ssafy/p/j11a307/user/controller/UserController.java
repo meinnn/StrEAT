@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/customer-id")
-    @Operation(summary = "owner id 요청", description = "서비스내부에서 엑세스토큰으로 user id 요청, 클라이언트 요청 불가")
+    @Operation(summary = "customer id 요청", description = "서비스내부에서 엑세스토큰으로 user id 요청, 클라이언트 요청 불가")
     @Parameters({
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
