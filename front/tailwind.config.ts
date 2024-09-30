@@ -37,6 +37,10 @@ const config: Config = {
       height: {
         tabbar: '4rem',
       },
+      backgroundImage: {
+        'navbar-all-gradient':
+          'linear-gradient(180deg, #FFFBF3 0%, #FFF 28.5%)',
+      },
       keyframes: {
         'slide-up': {
           '0%': { transform: 'translateY(100%)' },

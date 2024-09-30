@@ -13,7 +13,7 @@ const LINKS = [
   { name: '내 점포 정보', href: '/store', icon: BiStoreAlt },
   { name: '주문 접수', href: '/order-management', icon: BiReceipt },
   { name: '매장 관리', href: '/manage', icon: LuFilePieChart },
-  { name: '전체', href: '/announcement', icon: FiGrid },
+  { name: '전체', href: '/all', icon: FiGrid },
 ]
 
 interface NavLink {
