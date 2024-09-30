@@ -24,7 +24,10 @@ export default function OwnerAll() {
         <div className="text-text pt-5 pb-7 px-5 flex bg-secondary-medium flex-col gap-6 border rounded-lg border-gray-medium">
           <div className="flex justify-between">
             <h4 className="font-medium">등록된 계좌 정보</h4>
-            <button className="flex items-center text-xs font-normal">
+            <button
+              type="button"
+              className="flex items-center text-xs font-normal"
+            >
               수정하기
               <GoChevronRight />
             </button>
@@ -44,7 +47,10 @@ export default function OwnerAll() {
       <section className="px-8 pt-6 pb-10">
         <div className="flex justify-between items-center mb-5 pr-4">
           <h4 className="font-medium text-gray-dark text-sm">푸드트럭 공고</h4>
-          <button className="flex items-center text-xs font-normal">
+          <button
+            type="button"
+            className="flex items-center text-xs font-normal"
+          >
             전체보기
             <GoChevronRight />
           </button>
@@ -87,8 +93,12 @@ export default function OwnerAll() {
       <section className="flex flex-col items-start pt-6 px-8 text-text">
         <h4 className="font-medium text-gray-dark mb-6 ">회원 관리</h4>
         <div className="flex flex-col gap-8">
-          <button className="font-normal">로그아웃</button>
-          <button className="font-normal">회원 탈퇴</button>
+          <button type="button" className="font-normal">
+            로그아웃
+          </button>
+          <button type="button" className="font-normal">
+            회원 탈퇴
+          </button>
         </div>
       </section>
     </div>
