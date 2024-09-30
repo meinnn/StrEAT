@@ -1,5 +1,7 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import io.ssafy.p.j11a307.store.exception.BusinessException;
+import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,5 +33,19 @@ public class StoreLocationPhoto {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    // 위도 값 변경 메서드
+    public void updateLatitude(String newLatitude) {
+        if (newLatitude == null || newLatitude.isEmpty()) {
+            throw new BusinessException(ErrorCode.STORE_LOCATION_PHOTO_LATITUDE_NULL);
+        }
+        this.latitude = newLatitude;
+    }
 
+    // 경도 값 변경 메서드
+    public void updateLongitude(String newLongitude) {
+        if (newLongitude == null || newLongitude.isEmpty()) {
+            throw new BusinessException(ErrorCode.STORE_LOCATION_PHOTO_LONGITUDE_NULL);
+        }
+        this.longitude = newLongitude;
+    }
 }

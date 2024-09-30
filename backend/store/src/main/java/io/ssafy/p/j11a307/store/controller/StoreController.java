@@ -1,7 +1,8 @@
 package io.ssafy.p.j11a307.store.controller;
 
-import io.ssafy.p.j11a307.store.dto.StoreResponse;
-import io.ssafy.p.j11a307.store.dto.StoreUpdateRequest;
+import io.ssafy.p.j11a307.store.dto.CreateStoreDTO;
+import io.ssafy.p.j11a307.store.dto.ReadStoreDTO;
+import io.ssafy.p.j11a307.store.dto.UpdateStoreDTO;
 import io.ssafy.p.j11a307.store.global.DataResponse;
 import io.ssafy.p.j11a307.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,19 +15,19 @@ import io.ssafy.p.j11a307.store.global.MessageResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/stores")
 @CrossOrigin
 @Slf4j
 @RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
+
     // 1. 점포 생성
     @PostMapping
     @Operation(summary = "가게 생성")
-    public ResponseEntity<MessageResponse> createStore(@RequestBody StoreUpdateRequest storeRequest, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<MessageResponse> createStore(@RequestBody CreateStoreDTO storeRequest, @RequestHeader("Authorization") String token) {
         storeService.createStore(storeRequest, token);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(MessageResponse.of("가게가 성공적으로 생성되었습니다."));
+                .body(MessageResponse.of("가게 생성 성공"));
     }
 
     // 2. 점포 타입 조회
@@ -34,14 +35,14 @@ public class StoreController {
     @Operation(summary = "점포 타입(이동형/고정형) 조회")
     public ResponseEntity<DataResponse<String>> getStoreType(@PathVariable Integer id) {
         String storeType = storeService.getStoreType(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("점포 타입 조회 성공", storeType));
+        return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("점포 타입 조회 성공", storeType));
     }
 
     // 3. 점포 상세 정보 조회
     @GetMapping("/{id}")
     @Operation(summary = "점포 상세 정보 조회")
-    public ResponseEntity<DataResponse<StoreResponse>> getStoreInfo(@PathVariable Integer id) {
-        StoreResponse storeResponse = storeService.getStoreInfo(id);
+    public ResponseEntity<DataResponse<ReadStoreDTO>> getStoreInfo(@PathVariable Integer id) {
+        ReadStoreDTO storeResponse = storeService.getStoreInfo(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeResponse));
     }
@@ -49,8 +50,8 @@ public class StoreController {
     // 4. 점포 리스트 조회
     @GetMapping
     @Operation(summary = "점포 리스트 조회")
-    public ResponseEntity<DataResponse<List<StoreResponse>>> getAllStores() {
-        List<StoreResponse> storeResponses = storeService.getAllStores();
+    public ResponseEntity<DataResponse<List<ReadStoreDTO>>> getAllStores() {
+        List<ReadStoreDTO> storeResponses = storeService.getAllStores();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 리스트 조회 성공", storeResponses));
     }
@@ -63,11 +64,12 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 사장님 ID 조회 성공", userId));
     }
+
     // 6. 점포 정보 수정
     @PutMapping("/{id}")
     @Operation(summary = "점포 정보 수정")
-    public ResponseEntity<MessageResponse> updateStore(@PathVariable Integer id, @RequestBody StoreUpdateRequest request) {
-        StoreResponse updatedStore = storeService.updateStore(id, request);
+    public ResponseEntity<MessageResponse> updateStore(@PathVariable Integer id, @RequestBody UpdateStoreDTO request) {
+        storeService.updateStore(id, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 정보 수정 성공"));
     }
@@ -76,7 +78,7 @@ public class StoreController {
     @PatchMapping("/{id}/address")
     @Operation(summary = "점포 주소 변경")
     public ResponseEntity<MessageResponse> updateStoreAddress(@PathVariable Integer id, @RequestBody String newAddress) {
-        StoreResponse updatedStore = storeService.updateStoreAddress(id, newAddress);
+        storeService.updateStoreAddress(id, newAddress);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 주소 변경 성공"));
     }
@@ -89,6 +91,4 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 정보 삭제 성공"));
     }
-
-
 }

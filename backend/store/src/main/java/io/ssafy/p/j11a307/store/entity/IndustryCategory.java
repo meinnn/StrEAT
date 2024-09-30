@@ -1,5 +1,7 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import io.ssafy.p.j11a307.store.exception.BusinessException;
+import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,4 +24,11 @@ public class IndustryCategory {
 
     @OneToMany(mappedBy = "industryCategory", cascade = CascadeType.ALL)
     private List<StoreIndustryCategory> storeIndustryCategories;
+
+    public void changeName(String newName) {
+        if (newName == null || newName.isEmpty()) {
+            throw new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NAME_NULL); // 이름이 유효하지 않으면 예외 처리
+        }
+        this.name = newName;
+    }
 }

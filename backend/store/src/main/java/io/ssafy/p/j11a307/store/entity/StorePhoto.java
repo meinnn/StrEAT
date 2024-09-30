@@ -22,4 +22,12 @@ public class StorePhoto {
 
     @Column(nullable = false)
     private String src;  // 사진 경로
+
+    // 사진 경로를 변경하는 메서드
+    public void changeSrc(String newSrc) {
+        if (newSrc == null || newSrc.isEmpty()) {
+            throw new IllegalArgumentException("사진 경로는 비어 있을 수 없습니다.");
+        }
+        this.src = newSrc;
+    }
 }
