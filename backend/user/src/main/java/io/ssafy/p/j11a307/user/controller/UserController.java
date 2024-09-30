@@ -39,7 +39,7 @@ public class UserController {
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
     @Tag(name = "내부 서비스 간 요청")
-    public Integer getUserId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+    public Integer getUserId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             return userService.getUserId(accessToken);
         }
@@ -52,7 +52,7 @@ public class UserController {
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
     @Tag(name = "내부 서비스 간 요청")
-    public Integer getOwnerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+    public Integer getOwnerId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
             boolean isOwner = userService.isOwner(userId);
@@ -70,7 +70,7 @@ public class UserController {
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
     @Tag(name = "내부 서비스 간 요청")
-    public Integer getCustomerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+    public Integer getCustomerId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
             boolean isCustomer = userService.isCustomer(userId);
