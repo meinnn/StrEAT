@@ -1,11 +1,15 @@
 package io.ssafy.p.j11a307.store.entity;
 
 import io.ssafy.p.j11a307.store.dto.StoreUpdateRequest;
+import io.ssafy.p.j11a307.store.exception.BusinessException;
+import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,21 +21,56 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer userId; // Owner ID만 저장
+    @Column(nullable = false)
+    private Integer userId;
+
+    @Column(nullable = false, length = 20)
+    private String businessRegistrationNumber;
+
+    @Column(nullable = false, length = 40)
     private String name;
+
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false, length = 20)
     private String latitude;
+
+    @Column(nullable = false, length = 20)
     private String longitude;
+
+    @Column(nullable = false, length = 10)
     private String type;
+
+    @Column(nullable = false, length = 50)
     private String bankAccount;
+
+    @Column(nullable = false, length = 20)
     private String bankName;
+
     private String ownerWord;
+
+    @Column(length = 20)
     private String status;
+
+    // 관계 설정
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<StorePhoto> storePhotos;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<StoreLocationPhoto> storeLocationPhotos;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<StoreIndustryCategory> industryCategories;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<BusinessDay> businessDays;
+
 
     // 이름 변경 메서드
     public void changeName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty.");
+              throw new BusinessException(ErrorCode.STORE_NAME_NULL);
         }
         this.name = name;
     }
@@ -39,7 +78,7 @@ public class Store {
     // 주소 변경 메서드
     public void changeAddress(String address) {
         if (address == null || address.isEmpty()) {
-            throw new IllegalArgumentException("Address cannot be empty.");
+            throw new BusinessException(ErrorCode.STORE_ADDRESS_NULL);
         }
         this.address = address;
     }
