@@ -1,6 +1,8 @@
 package io.ssafy.p.j11a307.store.entity;
 
 import io.ssafy.p.j11a307.store.dto.StoreUpdateRequest;
+import io.ssafy.p.j11a307.store.exception.BusinessException;
+import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +33,7 @@ public class Store {
     // 이름 변경 메서드
     public void changeName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty.");
+              throw new BusinessException(ErrorCode.STORE_NAME_NULL);
         }
         this.name = name;
     }
@@ -39,7 +41,7 @@ public class Store {
     // 주소 변경 메서드
     public void changeAddress(String address) {
         if (address == null || address.isEmpty()) {
-            throw new IllegalArgumentException("Address cannot be empty.");
+            throw new BusinessException(ErrorCode.STORE_ADDRESS_NULL);
         }
         this.address = address;
     }
