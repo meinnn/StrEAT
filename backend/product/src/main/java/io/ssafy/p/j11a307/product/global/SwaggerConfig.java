@@ -9,16 +9,12 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import java.util.List;
 
 @OpenAPIDefinition
 @Configuration
 public class SwaggerConfig {
-    @Bean
-    public OpenAPI publicAPI() {
 
-        return new OpenAPI()
-                .addServersItem(new Server().url("/"));
-    }
     @Bean
     public OpenAPI openAPI() {
         String jwt = "JWT";
@@ -30,15 +26,16 @@ public class SwaggerConfig {
                 .bearerFormat("JWT")
         );
         return new OpenAPI()
-                .components(new Components())
                 .info(apiInfo())
+                .servers(List.of(new Server().url("/api/products")))
                 .addSecurityItem(securityRequirement)
                 .components(components);
     }
+
     private Info apiInfo() {
         return new Info()
-                .title("API Test") // API의 제목
-                .description("Let's practice Swagger UI") // API에 대한 설명
+                .title("API test") // API의 제목
+                .description("streat project") // API에 대한 설명
                 .version("1.0.0"); // API의 버전
     }
 }
