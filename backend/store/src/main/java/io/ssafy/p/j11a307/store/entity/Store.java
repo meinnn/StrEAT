@@ -1,6 +1,6 @@
 package io.ssafy.p.j11a307.store.entity;
 
-import io.ssafy.p.j11a307.store.dto.StoreUpdateRequest;
+import io.ssafy.p.j11a307.store.dto.UpdateStoreDTO;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Entity
@@ -83,7 +82,15 @@ public class Store {
         this.address = address;
     }
 
-    public Store updateWith(StoreUpdateRequest request) {
+    // 사용자 ID 설정 메서드
+    public void assignOwner(Integer userId) {
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+        this.userId = userId;
+    }
+
+    public Store updateWith(UpdateStoreDTO request) {
         return Store.builder()
                 .id(this.id)  // ID는 변경하지 않음
                 .userId(this.userId)  // Owner ID는 그대로 유지

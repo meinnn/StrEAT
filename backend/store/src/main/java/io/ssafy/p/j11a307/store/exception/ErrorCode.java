@@ -9,6 +9,12 @@ public enum ErrorCode {
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게가 없습니다."),
     STORE_NAME_NULL(HttpStatus.BAD_REQUEST, "가게이름은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     STORE_ADDRESS_NULL(HttpStatus.BAD_REQUEST, "가게주소는 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
+    // Store Location Photo
+    STORE_LOCATION_PHOTO_LATITUDE_NULL(HttpStatus.BAD_REQUEST, "위도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
+    STORE_LOCATION_PHOTO_LONGITUDE_NULL(HttpStatus.BAD_REQUEST, "경도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
+    STORE_LOCATION_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 위치 사진이 없습니다."),
+    // Store Photo
+    STORE_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 사진이 없습니다."),
     // Product
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 d 없습니다."),
     PRODUCT_NAME_NULL(HttpStatus.BAD_REQUEST, "상품명은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
@@ -24,10 +30,17 @@ public enum ErrorCode {
     PRODUCT_OPTION_CATEGORY_NAME_NULL(HttpStatus.BAD_REQUEST, "상품 옵션 카테고리명은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     // Product Option
     PRODUCT_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 제품 옵션이 없습니다."),
+    // Industry Category
+    INDUSTRY_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 산업 카테고리가 없습니다."),
+    INDUSTRY_CATEGORY_NAME_NULL(HttpStatus.BAD_REQUEST, "산업 카테고리명은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
+    // Store Industry Category
+    STORE_INDUSTRY_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "가게에 해당하는 ID의 산업 카테고리가 없습니다."),
     // Owner
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 Owner가 없습니다."),
     // Internal Server Error
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
+    // Business Day
+    BUSINESS_DAY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 영업일 정보가 없습니다.");
 
     private final HttpStatus status;
     private final String message;
