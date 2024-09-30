@@ -20,6 +20,7 @@ import io.ssafy.p.j11a307.order.repository.ReviewPhotoRepository;
 import io.ssafy.p.j11a307.order.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final OrdersRepository ordersRepository;
@@ -108,13 +110,14 @@ public class ReviewService {
 
         //현재 로그인한 유저 아이디와 맞는 리뷰들을 모두 가져오기
         List<Orders> orders = ordersRepository.findByUserId(userId);
+        log.info("orders length: {}", orders.size());
         List<GetMyReviewsDTO> getMyReviewsDTOs = new ArrayList<>();
 
         for (Orders order : orders) {
             Review review = reviewRepository.searchReview(order.getId());
 
             if(review == null) continue;
-
+            log.info("order id : {}", order.getId());
             List<ReviewPhoto> photoList = reviewPhotoRepository.findByReviewId(review);
             List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
             DataResponse<StoreResponse> dataResponse = storeClient.getStoreInfo(order.getStoreId());
@@ -138,9 +141,11 @@ public class ReviewService {
 
             getMyReviewsDTOs.add(getMyReviewsDTO);
         }
+        log.info("Reviews length: {}", getMyReviewsDTOs.size());
         return getMyReviewsDTOs;
     }
 
+    @Transactional
     public List<GetStoreReviewsDTO> getStoreReviews(Integer storeId) {
         //해당 점포에 맞는 리뷰들 모두 가져오기
         List<Orders> orders = ordersRepository.findByStoreId(storeId);
