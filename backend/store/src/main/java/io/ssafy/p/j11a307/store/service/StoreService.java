@@ -9,7 +9,7 @@ import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,12 +23,14 @@ public class StoreService{
     @Value("{streat.internal-request}")
     private String internalRequestKey;
 
+    @Transactional(readOnly = true)
     public Integer getOwnerIdByStoreId(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getUserId();
     }
 
+    @Transactional(readOnly = true)
     public StoreResponse getStoreInfo(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
@@ -36,6 +38,7 @@ public class StoreService{
         return new StoreResponse(store);
     }
 
+    @Transactional
     public StoreResponse createStore(StoreUpdateRequest request, String token) {
         // JWT 토큰에서 userID 추출
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
@@ -62,11 +65,13 @@ public class StoreService{
         return new StoreResponse(savedStore);
     }
 
+    @Transactional(readOnly = true)
     public String getStoreType(Integer id) {
         Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getType();
     }
 
+    @Transactional(readOnly = true)
     public List<StoreResponse> getAllStores() {
         return storeRepository.findAll()
                 .stream()
@@ -74,7 +79,7 @@ public class StoreService{
                 .collect(Collectors.toList());
     }
 
-
+    @Transactional
     public StoreResponse updateStore(Integer id, StoreUpdateRequest request) {
         Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
@@ -83,6 +88,7 @@ public class StoreService{
         return new StoreResponse(storeRepository.save(updatedStore));
     }
 
+    @Transactional
     public void deleteStore(Integer id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
@@ -90,6 +96,7 @@ public class StoreService{
         storeRepository.delete(store);
     }
 
+    @Transactional
     public StoreResponse  updateStoreAddress(Integer id, String newAddress) {
         Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.changeAddress(newAddress);
