@@ -38,7 +38,7 @@ public class Store {
     @Column(nullable = false, length = 20)
     private String longitude;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 20)
     private String type;
 
     @Column(nullable = false, length = 50)
