@@ -1,6 +1,6 @@
 spring:
   application:
-    name: store
+    name: product
   cloud:
     config:
       uri: http://localhost:8888
@@ -15,7 +15,7 @@ eureka:
 
 server:
   servlet:
-    context-path: /api/stores
+    context-path: /api/products
 
 springdoc:
   api-docs:

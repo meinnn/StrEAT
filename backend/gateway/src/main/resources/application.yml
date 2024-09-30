@@ -13,6 +13,14 @@ spring:
           uri: http://streat-store:8080
           predicates:
             - Path=/api/stores/**
+        - id: order
+          uri: http://streat-order:8080
+          predicates:
+            - Path=/api/orders/**
+        - id: product
+          uri: http://streat-product:8080
+          predicates:
+            - Path=/api/products/**
     config:
       uri: http://localhost:8888
       label: main
@@ -31,3 +39,7 @@ springdoc:
         url: http://localhost:8080/api/stores/v3/api-docs
       - name: user API
         url: http://localhost:8080/api/users/v3/api-docs
+      - name: Order API
+        url: http://localhost:8080/api/orders/v3/api-docs
+      - name: Product API
+        url: http://localhost:8080/api/products/v3/api-docs

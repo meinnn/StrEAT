@@ -17,6 +17,9 @@ import java.util.List;
 @Component
 public class JwtFilter implements WebFilter {
 
+    @Value("${streat.internal-request}")
+    private String internalRequest;
+
     private final String HEADER_AHTU = "Authorization";
     private final JwtUtil jwtUtil;
     private final FilterProperties filterProperties;
@@ -29,7 +32,10 @@ public class JwtFilter implements WebFilter {
         boolean shouldFilter = filterProperties.getIncludePaths().stream().anyMatch(path::startsWith)
                 && filterProperties.getExcludePaths().stream().noneMatch(path::startsWith);
 
-        if (shouldFilter) {
+        String innerRequestValue = exchange.getRequest().getHeaders().getFirst("X-Internal-Request");
+        boolean isInnerRequest = internalRequest.equals(innerRequestValue);
+
+        if (shouldFilter && !isInnerRequest) {
             String token = exchange.getRequest().getHeaders().getFirst(HEADER_AHTU);
             if (!isValidToken(token)) {
                 throw new BusinessException(ErrorCode.INVALID_TOKEN);
