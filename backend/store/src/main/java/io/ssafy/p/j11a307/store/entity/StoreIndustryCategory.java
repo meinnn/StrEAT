@@ -6,14 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StoreLocationPhoto {
+public class StoreIndustryCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -22,14 +21,7 @@ public class StoreLocationPhoto {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @Column(nullable = false, length = 20)
-    private String latitude;
-
-    @Column(nullable = false, length = 20)
-    private String longitude;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-
+    @ManyToOne
+    @JoinColumn(name = "industry_category_id", nullable = false)
+    private IndustryCategory industryCategory;
 }
