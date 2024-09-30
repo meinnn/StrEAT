@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { GoChevronRight } from 'react-icons/go'
@@ -6,6 +7,7 @@ import { HiOutlineLocationMarker, HiOutlineSpeakerphone } from 'react-icons/hi'
 import { IoSettingsOutline } from 'react-icons/io5'
 
 export default function StoreInformation() {
+  const router = useRouter()
   const [isBusinessStart, setIsBusinessStart] = useState(false)
 
   return (
@@ -54,7 +56,12 @@ export default function StoreInformation() {
           </div>
           <button
             type="button"
-            onClick={() => setIsBusinessStart(!isBusinessStart)}
+            onClick={() => {
+              if (!isBusinessStart) {
+                router.push('/owner/store/open')
+              }
+              setIsBusinessStart(!isBusinessStart)
+            }}
             className={`rounded-full font-semibold py-1 px-5 border ${isBusinessStart ? 'border-green-500 text-green-500' : 'border-[#3e3e3e] text-[#3e3e3e] hover:text-primary-500 hover:border-primary-500'}`}
           >
             {isBusinessStart ? '영업 종료하기' : '영업 시작하기'}
