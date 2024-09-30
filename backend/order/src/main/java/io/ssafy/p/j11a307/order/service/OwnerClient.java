@@ -10,4 +10,6 @@ public interface OwnerClient {
     @GetMapping("/api/users/user-id")
     Integer getUserId(@RequestParam("accessToken") String accessToken, @RequestHeader("X-Internal-Request") String internalRequestHeader);
 
+    //User 정보 불러오는 API 필요
+
 }

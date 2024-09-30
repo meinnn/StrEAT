@@ -1,15 +1,15 @@
 package io.ssafy.p.j11a307.order.repository;
 
+import io.ssafy.p.j11a307.order.entity.OrderProduct;
 import io.ssafy.p.j11a307.order.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface OrdersRepository extends JpaRepository<Orders, Integer> {
-    List<Orders> findByUserId(Integer userId);
+public interface OrderProductRepository extends JpaRepository<OrderProduct, Integer> {
+    //해당 주문에 따른 주문 상품들
+    List<OrderProduct> findByOrdersId(Orders ordersId);
 
-    List<Orders> findByStoreId(Integer storeId);
 }

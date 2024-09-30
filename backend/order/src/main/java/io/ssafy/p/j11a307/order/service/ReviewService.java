@@ -1,17 +1,20 @@
 package io.ssafy.p.j11a307.order.service;
 
+import ch.qos.logback.core.CoreConstants;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import io.ssafy.p.j11a307.order.dto.CreateReviewDTO;
-import io.ssafy.p.j11a307.order.entity.Orders;
-import io.ssafy.p.j11a307.order.entity.OrdersId;
-import io.ssafy.p.j11a307.order.entity.Review;
-import io.ssafy.p.j11a307.order.entity.ReviewPhoto;
+import io.ssafy.p.j11a307.order.dto.GetMyReviewsDTO;
+import io.ssafy.p.j11a307.order.dto.GetStoreReviewsDTO;
+import io.ssafy.p.j11a307.order.dto.StoreResponse;
+import io.ssafy.p.j11a307.order.entity.*;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
+import io.ssafy.p.j11a307.order.global.DataResponse;
+import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import io.ssafy.p.j11a307.order.repository.ReviewPhotoRepository;
 import io.ssafy.p.j11a307.order.repository.ReviewRepository;
@@ -24,10 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,10 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final OrdersRepository ordersRepository;
     private final ReviewPhotoRepository reviewPhotoRepository;
+    private final OrderProductRepository orderProductRepository;
     private final OwnerClient ownerClient;
+    private final StoreClient storeClient;
+
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucketName}")
@@ -98,12 +102,79 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
+    @Transactional
+    public List<GetMyReviewsDTO> getMyReviews(String token) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
 
+        //현재 로그인한 유저 아이디와 맞는 리뷰들을 모두 가져오기
+        List<Orders> orders = ordersRepository.findByUserId(userId);
+        List<GetMyReviewsDTO> getMyReviewsDTOs = new ArrayList<>();
 
+        for (Orders order : orders) {
+            Review review = reviewRepository.searchReview(order.getId());
 
+            if(review == null) continue;
 
+            List<ReviewPhoto> photoList = reviewPhotoRepository.findByReviewId(review);
+            List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
+            DataResponse<StoreResponse> dataResponse = storeClient.getStoreInfo(order.getStoreId());
+            //사진 받느라 DTO가 달라질 수 있음
+            
+            //주문상품목록 조회(상품 아이디를 가져와야 함)
+            List<Integer> OrderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
 
+            //상품 아이디에 대한 리스트를 던지면 그 상품의 이름들이 와야 함!!
+            //storeClient로 던지면, 상품 이름 리스트가 온다. 이걸 빌더에 넣으면 됨
 
+            GetMyReviewsDTO getMyReviewsDTO= GetMyReviewsDTO.builder()
+                    .score(review.getScore())
+                    .content(review.getContent())
+                    .createdAt(review.getCreatedAt())
+                    .srcList(srcList)
+                    .storeName(dataResponse.getData().getName())
+                    //.orderProducts()
+                    //.storePhoto(dataResponse.getData().getImages().get(0))
+                    .build();
+
+            getMyReviewsDTOs.add(getMyReviewsDTO);
+        }
+        return getMyReviewsDTOs;
+    }
+
+    public List<GetStoreReviewsDTO> getStoreReviews(Integer storeId) {
+        //해당 점포에 맞는 리뷰들 모두 가져오기
+        List<Orders> orders = ordersRepository.findByStoreId(storeId);
+        List<GetStoreReviewsDTO> getStoreReviewsDTOs = new ArrayList<>();
+
+        for (Orders order : orders) {
+            Review review = reviewRepository.searchReview(order.getId());
+
+            if(review == null) continue;
+
+            List<ReviewPhoto> photoList = reviewPhotoRepository.findByReviewId(review);
+            List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
+
+            //주문상품목록 조회(상품 아이디를 가져와야 함)
+            List<Integer> OrderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
+            //상품 이름들 가져온 후 삽입 필요
+
+            //User 정보 조회 API 구현된 후 호출해서 삽입 필요
+
+            GetStoreReviewsDTO getStoreReviewsDTO = GetStoreReviewsDTO.builder()
+                    .content(review.getContent())
+                    .score(review.getScore())
+                    .createdAt(review.getCreatedAt())
+                    //.orderProducts()
+                    .srcList(srcList)
+//                    .userName()
+//                    .userPhoto()
+                    .build();
+
+            getStoreReviewsDTOs.add(getStoreReviewsDTO);
+        }
+
+        return getStoreReviewsDTOs;
+    }  
 
 
 

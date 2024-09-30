@@ -1,20 +1,19 @@
 package io.ssafy.p.j11a307.order.controller;
 
 import io.ssafy.p.j11a307.order.dto.CreateReviewDTO;
-import io.ssafy.p.j11a307.order.exception.ErrorCode;
+import io.ssafy.p.j11a307.order.dto.GetMyReviewsDTO;
+import io.ssafy.p.j11a307.order.dto.GetStoreReviewsDTO;
+import io.ssafy.p.j11a307.order.global.DataResponse;
 import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,8 +37,8 @@ public class ReviewController {
                         .body(MessageResponse.of("리뷰 등록을 완료했습니다."));
     }
 
-    //리뷰 삭제
     @DeleteMapping("/{id}/review")
+    @Operation(summary = "리뷰 삭제")
     public ResponseEntity<MessageResponse> deleteReview(@PathVariable Integer id,
                                                         @RequestHeader("Authorization") String token) {
         reviewService.deleteReview(id, token);
@@ -48,15 +47,21 @@ public class ReviewController {
     }
 
 
-    //내가 쓴 리뷰 조회
+    @GetMapping("/mine/reviews")
+    @Operation(summary = "내가 쓴 리뷰 조회")
+    public ResponseEntity<DataResponse<List<GetMyReviewsDTO>>> getMyReviews(@RequestHeader("Authorization") String token) {
+        List<GetMyReviewsDTO> getMyReviewsDTOs = reviewService.getMyReviews(token);
 
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("내 리뷰 조회에 성공했습니다.", getMyReviewsDTOs));
+    }
 
+    @GetMapping("/stores/{id}/reviews")
+    @Operation(summary = "점포별 리뷰 조회")
+    public ResponseEntity<DataResponse<List<GetStoreReviewsDTO>>> getStoreReviews(@PathVariable Integer id) {
+        List<GetStoreReviewsDTO> getStoreReviewsDTO = reviewService.getStoreReviews(id);
 
-
-    //점포별 리뷰 조회
-
-
-
-
-    //2. 이미 해당 주문 내역에 대한 리뷰를 달았다면?(내 주문내역 조회에서 처리해줘야 함!!)
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("점포별 리뷰 조회에 성공했습니다.", getStoreReviewsDTO));
+    }
 }

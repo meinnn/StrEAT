@@ -13,7 +13,8 @@ public class OrderProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer storeId; //외부 마이크로서비스
+    private Integer productId; //외부 마이크로서비스
+    private Integer count;
 
     @ManyToOne
     @JoinColumn(name="orders_id")
