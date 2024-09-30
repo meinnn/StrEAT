@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product-categories")
+@RequestMapping("/categories")
 @CrossOrigin
 @RequiredArgsConstructor
 public class ProductCategoryController {
