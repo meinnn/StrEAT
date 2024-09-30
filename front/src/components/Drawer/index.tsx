@@ -7,11 +7,7 @@ interface DrawerProps {
   children: ReactNode
 }
 
-export default function Drawer({
-  title = 'default',
-  onClose,
-  children,
-}: DrawerProps) {
+export default function Drawer({ title, onClose, children }: DrawerProps) {
   const [isClosing, setIsClosing] = useState(false)
 
   const handleClose = () => {
@@ -32,7 +28,7 @@ export default function Drawer({
 
       {/* 슬라이드 인/아웃 모달 */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-lg overflow-hidden transition-transform duration-300 ${
+        className={`fixed inset-x-0 bottom-0 z-[200] bg-white rounded-t-2xl shadow-lg overflow-hidden transition-transform duration-300 ${
           isClosing ? 'animate-slide-down' : 'animate-slide-up'
         }`}
         style={{ maxHeight: 'calc(100vh - 6em)' }}

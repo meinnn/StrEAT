@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useMap } from '@/contexts/MapContext'
+import { useMapCenter } from '@/contexts/MapCenterContext'
 
 export default function useNaverMap(
   mapElementId: string,
@@ -13,7 +13,7 @@ export default function useNaverMap(
   const mapRef = useRef<naver.maps.Map | null>(null)
   const markerRef = useRef<naver.maps.Marker | null>(null)
 
-  const { center, setCenter } = useMap()
+  const { center, setCenter } = useMapCenter()
 
   // 현재 위치 추적 및 실시간 업데이트
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function useNaverMap(
       })
 
       // 현재 위치에 마커 표시
-      const marker = new naver.maps.Marker({
+      markerRef.current = new naver.maps.Marker({
         position: new naver.maps.LatLng(
           currentLocation.lat,
           currentLocation.lng
@@ -101,7 +101,7 @@ export default function useNaverMap(
       }
       document.head.appendChild(mapScript)
     }
-  }, [mapElementId, currentLocation, options])
+  }, [mapElementId, currentLocation, options, center, setCenter])
 
   // 사용자의 위치가 업데이트될 때 마커만 이동
   useEffect(() => {
