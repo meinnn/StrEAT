@@ -37,6 +37,10 @@ const config: Config = {
       height: {
         tabbar: '4rem',
       },
+      backgroundImage: {
+        'navbar-all-gradient':
+          'linear-gradient(180deg, #FFFBF3 0%, #FFF 28.5%)',
+      },
       keyframes: {
         'slide-up': {
           '0%': { transform: 'translateY(100%)' },
@@ -50,6 +54,9 @@ const config: Config = {
       animation: {
         'slide-up': 'slide-up 0.2s ease-out forwards',
         'slide-down': 'slide-down 0.2s ease-out forwards',
+      },
+      boxShadow: {
+        'inner-strong': 'inset 10px 10px 20px rgba(255, 236, 199, 0.3)',
       },
     },
   },

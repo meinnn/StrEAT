@@ -17,13 +17,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode
+  modal: React.ReactNode
 }>) {
   return (
     <html lang="ko" className={pretendard.className}>
       <body className="font-pretendard antialiased">
         <MapCenterProvider>
+          {modal}
           <main className="min-h-screen h-full">{children}</main>
         </MapCenterProvider>
         <Script
