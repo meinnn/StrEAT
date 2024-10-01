@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 public class UserRegistrationFactory {
 
     private final CustomerRegistrationStrategy customerRegistrationStrategy;
+    private final OwnerRegistrationStrategy ownerRegistrationStrategy;
 
     public UserRegistrationStrategy getUserRegistrationStrategy(UserType userType) {
-        switch (userType) {
-            case CUSTOMER:
-                return customerRegistrationStrategy;
-            default:
-                throw new BusinessException(ErrorCode.BAD_USER_TYPE_REQUEST);
-        }
+        return switch (userType) {
+            case CUSTOMER -> customerRegistrationStrategy;
+            case OWNER -> ownerRegistrationStrategy;
+            default -> throw new BusinessException(ErrorCode.BAD_USER_TYPE_REQUEST);
+        };
     }
 }

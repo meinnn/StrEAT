@@ -4,7 +4,6 @@ import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.service.UserService;
-import io.ssafy.p.j11a307.user.service.userregistration.CustomerRegistrationStrategy;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -133,7 +131,22 @@ public class UserController {
     })
     public ResponseEntity<Void> registerCustomer(@RequestHeader(HEADER_AUTH) String accessToken) {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
-        userId = userService.registerNewCustomer(userId, UserType.CUSTOMER);
+        userId = userService.registerNewUserType(userId, UserType.CUSTOMER);
+        HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
+        return ResponseEntity.ok().headers(headers).build();
+    }
+
+    @PostMapping("/owners/register")
+    @Operation(summary = "회원가입 시 사장 선택", description = "회원 시 사장 선택")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사장으로 가입 성공, header에 새로운 토큰 발급"),
+            @ApiResponse(responseCode = "404", description = "유저 id 기반 유저 없음"),
+            @ApiResponse(responseCode = "400", description = "이미 손님으로 등록된 유저"),
+            @ApiResponse(responseCode = "400", description = "이미 사장님으로 등록된 유저")
+    })
+    public ResponseEntity<Void> registerOwner(@RequestHeader(HEADER_AUTH) String accessToken) {
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+        userId = userService.registerNewUserType(userId, UserType.OWNER);
         HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
         return ResponseEntity.ok().headers(headers).build();
     }

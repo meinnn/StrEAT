@@ -1,6 +1,5 @@
 package io.ssafy.p.j11a307.user.service;
 
-import io.ssafy.p.j11a307.user.entity.Customer;
 import io.ssafy.p.j11a307.user.entity.LeftUser;
 import io.ssafy.p.j11a307.user.entity.User;
 import io.ssafy.p.j11a307.user.entity.UserType;
@@ -75,7 +74,7 @@ public class UserService {
     }
 
     @Transactional
-    public Integer registerNewCustomer(Integer userId, UserType registerUserType) {
+    public Integer registerNewUserType(Integer userId, UserType registerUserType) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         UserType userType = getUserType(userId);
         if (userType == UserType.CUSTOMER) {
