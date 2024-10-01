@@ -45,7 +45,6 @@ export async function GET(request: Request) {
     })
 
     const data = await response.json()
-    console.log(data.userType)
     if (data.userType === 'NOT_SELECTED') {
       // 신규 가입
       return NextResponse.redirect(new URL('/sign-up', request.url))

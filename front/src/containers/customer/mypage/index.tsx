@@ -15,7 +15,7 @@ export default function MyPage() {
   const router = useRouter()
 
   const handleLogout = async () => {
-    const response = await fetch('/api/logout', {
+    const response = await fetch('/services/users/logout', {
       method: 'POST',
     })
 
@@ -27,7 +27,7 @@ export default function MyPage() {
   }
 
   const handleWithdrawal = async () => {
-    const response = await fetch('/api/withdraw', {
+    const response = await fetch('/services/users/withdraw', {
       method: 'DELETE',
     })
 

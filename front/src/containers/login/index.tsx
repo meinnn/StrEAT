@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default function Login() {
   const handleKakaoLogin = async () => {
-    window.location.href = '/api/login/kakao'
+    window.location.href = '/services/users/login/kakao'
   }
 
   return (
