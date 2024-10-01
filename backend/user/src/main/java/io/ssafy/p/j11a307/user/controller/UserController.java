@@ -141,8 +141,11 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "토큰 생성 완료")
     })
+    @Parameters({
+            @Parameter(name = "userId", in = ParameterIn.QUERY)
+    })
     @Tag(name = "토큰 생성")
-    public ResponseEntity<String> createToken(@Parameter(name = "유저 아이디", in = ParameterIn.QUERY) Integer userId) {
+    public ResponseEntity<String> createToken(@RequestParam Integer userId) {
         String token = jwtUtil.createAccessToken(userId);
         return ResponseEntity.ok(token);
     }
