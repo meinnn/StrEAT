@@ -10,10 +10,10 @@ public record CreateProductDTO(
         @Schema(description = "가게 ID", example = "1")
         Integer storeId,
 
-        @Schema(description = "상품명", example = "노트북")
+        @Schema(description = "상품명", example = "타코야끼")
         String name,
 
-        @Schema(description = "가격", example = "1000000")
+        @Schema(description = "가격", example = "2800")
         Integer price,
 
         @Schema(description = "이미지 URL", example = "/images/laptop.png")

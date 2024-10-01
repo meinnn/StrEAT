@@ -41,7 +41,7 @@ public class ProductController {
     }
 
     // 3. 상품 목록 조회
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "전체 상품 목록 조회")
     public ResponseEntity<DataResponse<List<ReadProductDTO>>> getAllProducts() {
         List<ReadProductDTO> productResponses = productService.getAllProducts();
@@ -76,6 +76,13 @@ public class ProductController {
                 .body(MessageResponse.of("상품 삭제 성공"));
     }
 
+    @GetMapping("/product-names")
+    @Operation(summary = "상품 아이디 리스트로 상품 이름 리스트 조회")
+    public ResponseEntity<DataResponse<List<String>>> getProductNamesByProductIds(@RequestParam List<Integer> ids) {
+        List<String> productNames = productService.getProductNamesByProductIds(ids);  // productOptionService -> productService
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("상품 이름 리스트 조회 성공", productNames));
+    }
 
 
 }

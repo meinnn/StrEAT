@@ -11,7 +11,7 @@ public record ReadProductCategoryDTO(
         @Schema(description = "카테고리명", example = "분식류")
         String name,
 
-        @Schema(description = "상위 카테고리 ID", example = "3")
+        @Schema(description = "상위 카테고리 ID", example = "1")
         Integer parentCategoryId
 ) {
     // ProductCategory 엔티티를 받아서 DTO로 변환하는 생성자

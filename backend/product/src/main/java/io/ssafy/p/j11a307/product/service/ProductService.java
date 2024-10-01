@@ -68,4 +68,13 @@ public class ProductService {
 
         productRepository.delete(product);
     }
+
+    @Transactional(readOnly = true)
+    public List<String> getProductNamesByProductIds(List<Integer> productIds) {
+        return productIds.stream()
+                .map(id -> productRepository.findById(id)
+                        .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, "=> 해당하지 않는 상품 ID: " + id)))
+                .map(Product::getName)
+                .collect(Collectors.toList());
+    }
 }

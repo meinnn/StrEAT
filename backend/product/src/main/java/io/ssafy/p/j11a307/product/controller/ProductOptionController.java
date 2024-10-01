@@ -6,6 +6,7 @@ import io.ssafy.p.j11a307.product.dto.UpdateProductOptionDTO;
 import io.ssafy.p.j11a307.product.global.DataResponse;
 import io.ssafy.p.j11a307.product.global.MessageResponse;
 import io.ssafy.p.j11a307.product.service.ProductOptionService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class ProductOptionController {
 
     // 1. 상품 옵션 생성
     @PostMapping
+    @Operation(summary = "상품 옵션 생성")
     public ResponseEntity<MessageResponse> createProductOption(@RequestBody CreateProductOptionDTO createProductOption) {
         productOptionService.createProductOption(createProductOption);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -33,6 +35,7 @@ public class ProductOptionController {
 
     // 2. 특정 상품 옵션 조회
     @GetMapping("/{optionId}")
+    @Operation(summary = "특정 상품 옵션 조회")
     public ResponseEntity<DataResponse<ReadProductOptionDTO>> getProductOptionById(@PathVariable Integer optionId) {
         ReadProductOptionDTO productOption = productOptionService.getProductOptionById(optionId);
         return ResponseEntity.status(HttpStatus.OK)
@@ -41,6 +44,7 @@ public class ProductOptionController {
 
     // 3. 모든 상품 옵션 조회
     @GetMapping
+    @Operation(summary = "모든 상품 옵션 조회")
     public ResponseEntity<DataResponse<List<ReadProductOptionDTO>>> getAllProductOptions() {
         List<ReadProductOptionDTO> productOptions = productOptionService.getAllProductOptions();
         return ResponseEntity.status(HttpStatus.OK)
@@ -49,6 +53,7 @@ public class ProductOptionController {
 
     // 4. 상품 옵션 업데이트
     @PutMapping("/{optionId}")
+    @Operation(summary = "상품 옵션 업데이트")
     public ResponseEntity<MessageResponse> updateProductOption(@PathVariable Integer optionId, @RequestBody UpdateProductOptionDTO updateProductOption) {
         productOptionService.updateProductOption(optionId, updateProductOption);
         return ResponseEntity.status(HttpStatus.OK)
@@ -57,17 +62,10 @@ public class ProductOptionController {
 
     // 5. 상품 옵션 삭제
     @DeleteMapping("/{optionId}")
+    @Operation(summary = "상품 옵션 삭제")
     public ResponseEntity<MessageResponse> deleteProductOption(@PathVariable Integer optionId) {
         productOptionService.deleteProductOption(optionId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 옵션 삭제 성공"));
-    }
-
-
-    @GetMapping("/product-names")
-    public ResponseEntity<DataResponse<List<String>>> getProductNamesByOptionIds(@RequestParam List<Integer> ids) {
-        List<String> productNames = productOptionService.getProductNamesByProductOptionIds(ids);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(DataResponse.of("상품 이름 리스트 조회 성공", productNames));
     }
 }
