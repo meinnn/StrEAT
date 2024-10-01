@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.service;
 
+import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
 import io.ssafy.p.j11a307.user.entity.LeftUser;
 import io.ssafy.p.j11a307.user.entity.User;
 import io.ssafy.p.j11a307.user.entity.UserType;
@@ -88,5 +89,10 @@ public class UserService {
         User typeSelectedUser = userRegistrationStrategy.registerUser(user);
         userRepository.deleteById(userId);
         return typeSelectedUser.getId();
+    }
+
+    public UserInfoResponse getUserInfoById(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return UserInfoResponse.builder().name(user.getUsername()).profileImgSrc(user.getProfileImgSrc()).build();
     }
 }

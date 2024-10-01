@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
 import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -149,6 +152,18 @@ public class UserController {
         userId = userService.registerNewUserType(userId, UserType.OWNER);
         HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
         return ResponseEntity.ok().headers(headers).build();
+    }
+
+    @GetMapping("/{userId}")
+    @Operation(summary = "유저 정보 조회", description = "유저 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "유저 조회 성공",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserInfoResponse.class))),
+            @ApiResponse(responseCode = "404", description = "해당 id 유저 없음")
+    })
+    public ResponseEntity<UserInfoResponse> getUserInformation(@PathVariable Integer userId) {
+        UserInfoResponse userInfoResponse = userService.getUserInfoById(userId);
+        return ResponseEntity.ok(userInfoResponse);
     }
 
     @GetMapping("/createToken")
