@@ -80,7 +80,6 @@ public class StoreLocationPhotoController {
             @RequestParam("latitude") String latitude,
             @RequestParam("longitude") String longitude) {
 
-        // UpdateStoreLocationPhotoDTO 생성 (id는 DTO에 포함하지 않음)
         UpdateStoreLocationPhotoDTO updateDTO = new UpdateStoreLocationPhotoDTO(latitude, longitude, image);
 
         // 서비스 호출 시 id를 별도로 전달
