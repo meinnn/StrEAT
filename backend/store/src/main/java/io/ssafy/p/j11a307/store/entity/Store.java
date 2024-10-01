@@ -38,8 +38,9 @@ public class Store {
     @Column(nullable = false, length = 20)
     private String longitude;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String type;
+    private StoreType type;
 
     @Column(nullable = false, length = 50)
     private String bankAccount;
@@ -59,8 +60,9 @@ public class Store {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<StoreLocationPhoto> storeLocationPhotos;
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
-    private List<StoreIndustryCategory> industryCategories;
+    @ManyToOne
+    @JoinColumn(name = "industry_category_id", nullable = false)
+    private StoreIndustryCategory industryCategory;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<BusinessDay> businessDays;
@@ -98,7 +100,7 @@ public class Store {
                 .address(request.address() != null ? request.address() : this.address)
                 .latitude(request.latitude() != null ? request.latitude() : this.latitude)
                 .longitude(request.longitude() != null ? request.longitude() : this.longitude)
-                .type(request.type() != null ? request.type() : this.type)
+                .type(request.type() != null ? StoreType.valueOf(request.type()) : this.type)
                 .bankAccount(request.bankAccount() != null ? request.bankAccount() : this.bankAccount)
                 .bankName(request.bankName() != null ? request.bankName() : this.bankName)
                 .ownerWord(request.ownerWord() != null ? request.ownerWord() : this.ownerWord)

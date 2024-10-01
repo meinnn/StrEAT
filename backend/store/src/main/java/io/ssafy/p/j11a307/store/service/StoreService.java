@@ -2,8 +2,10 @@ package io.ssafy.p.j11a307.store.service;
 
 import io.ssafy.p.j11a307.store.dto.*;
 import io.ssafy.p.j11a307.store.entity.Store;
+import io.ssafy.p.j11a307.store.entity.StoreIndustryCategory;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
+import io.ssafy.p.j11a307.store.repository.StoreIndustryCategoryRepository;
 import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class StoreService{
 
     private final StoreRepository storeRepository;
+    private final StoreIndustryCategoryRepository storeIndustryCategoryRepository;
     private final OwnerClient ownerClient;
 
     @Value("${streat.internal-request}")  // "${}"로 수정
@@ -54,21 +57,27 @@ public class StoreService{
             throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
         }
 
-        // CreateStoreDTO에서 Store 엔티티로 변환
-        Store store = createStoreDTO.toEntity();
-        store.assignOwner(userId);
+        // storeIndustryCategoryId로 StoreIndustryCategory 엔티티 조회
+        StoreIndustryCategory industryCategory = storeIndustryCategoryRepository
+                .findById(createStoreDTO.storeIndustryCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
 
+        // CreateStoreDTO에서 Store 엔티티로 변환
+        Store store = createStoreDTO.toEntity(industryCategory);
+        store.assignOwner(userId);  // 소유자 설정
+
+        // Store 엔티티 저장
         storeRepository.save(store);
     }
 
     /**
-     * 가게 타입 조회
+     * 가게 타입 조회 (Enum 타입 처리)
      */
     @Transactional(readOnly = true)
     public String getStoreType(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        return store.getType();
+        return store.getType().name();  // Enum 타입의 name() 사용
     }
 
     /**
