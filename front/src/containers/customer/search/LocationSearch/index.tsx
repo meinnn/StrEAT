@@ -64,7 +64,7 @@ export default function LocationSearch() {
       setSearchResults([]) // 검색 결과 리셋
 
       const res = await fetch(
-        `/api/naver-search?query=${encodeURIComponent(query)}`
+        `/services/naver-search?query=${encodeURIComponent(query)}`
       )
       const data = await res.json()
       // 검색 결과에서 roadAddress가 있으면 address로 저장
