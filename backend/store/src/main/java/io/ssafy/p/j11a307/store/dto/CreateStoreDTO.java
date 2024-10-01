@@ -27,7 +27,7 @@ public record CreateStoreDTO(
         String longitude,
 
         @Schema(description = "업종 타입", example = "이동형")
-        StoreType type,
+        String type,
 
         @Schema(description = "계좌번호", example = "1234-5678-9012-3456")
         String bankAccount,
@@ -39,7 +39,7 @@ public record CreateStoreDTO(
         String ownerWord,
 
         @Schema(description = "영업 상태", example = "영업중")
-        StoreStatus status,
+        String status,
 
         @Schema(description = "업종 카테고리 ID", example = "1")
         Integer industryCategoryId
@@ -49,15 +49,17 @@ public record CreateStoreDTO(
     // DTO에서 Store 엔티티로 변환하는 메서드
     public Store toEntity(IndustryCategory industryCategory) {
         return Store.builder()
+                .userId(this.userId)
+                .businessRegistrationNumber(this.businessRegistrationNumber)
                 .name(this.name)
                 .address(this.address)
                 .latitude(this.latitude)
                 .longitude(this.longitude)
-                .type(this.type)
+                .type(StoreType.fromDescription(this.type))  // StoreType 변환
                 .bankAccount(this.bankAccount)
                 .bankName(this.bankName)
                 .ownerWord(this.ownerWord)
-                .status(this.status)
+                .status(StoreStatus.fromDescription(this.status))  // StoreStatus 변환
                 .industryCategory(industryCategory)  // IndustryCategory 설정
                 .build();
     }
