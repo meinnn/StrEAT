@@ -10,6 +10,8 @@ import io.ssafy.p.j11a307.user.repository.CustomerRepository;
 import io.ssafy.p.j11a307.user.repository.LeftUserRepository;
 import io.ssafy.p.j11a307.user.repository.OwnerRepository;
 import io.ssafy.p.j11a307.user.repository.UserRepository;
+import io.ssafy.p.j11a307.user.service.userregistration.UserRegistrationFactory;
+import io.ssafy.p.j11a307.user.service.userregistration.UserRegistrationStrategy;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class UserService {
     private final OwnerRepository ownerRepository;
     private final CustomerRepository customerRepository;
 
+    private final UserRegistrationFactory userRegistrationFactory;
     private final JwtUtil jwtUtil;
 
     public Integer getUserId(String accessToken) {
@@ -72,7 +75,7 @@ public class UserService {
     }
 
     @Transactional
-    public Integer registerNewCustomer(Integer userId) {
+    public Integer registerNewCustomer(Integer userId, UserType registerUserType) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         UserType userType = getUserType(userId);
         if (userType == UserType.CUSTOMER) {
@@ -81,9 +84,10 @@ public class UserService {
         if (userType == UserType.OWNER) {
             throw new BusinessException(ErrorCode.ALREADY_REGISTERED_OWNER);
         }
-        Customer customer = new Customer(user);
-        customer = customerRepository.save(customer);
+        UserRegistrationStrategy userRegistrationStrategy =
+                userRegistrationFactory.getUserRegistrationStrategy(registerUserType);
+        User typeSelectedUser = userRegistrationStrategy.registerUser(user);
         userRepository.deleteById(userId);
-        return customer.getId();
+        return typeSelectedUser.getId();
     }
 }

@@ -1,8 +1,10 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.service.UserService;
+import io.ssafy.p.j11a307.user.service.userregistration.CustomerRegistrationStrategy;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -121,7 +123,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/customers/register")
+    @PostMapping("/user-type")
     @Operation(summary = "회원가입 시 손님 선택", description = "회원가입 시 손님 선택")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "손님으로 가입 성공, header에 새로운 토큰 발급"),
@@ -131,7 +133,7 @@ public class UserController {
     })
     public ResponseEntity<Void> registerCustomer(@RequestHeader(HEADER_AUTH) String accessToken) {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
-        userId = userService.registerNewCustomer(userId);
+        userId = userService.registerNewCustomer(userId, UserType.CUSTOMER);
         HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
         return ResponseEntity.ok().headers(headers).build();
     }
