@@ -77,6 +77,7 @@ public class ProductController {
     }
 
     @GetMapping("/product-names")
+    @Operation(summary = "상품 아이디 리스트로 상품 이름 리스트 조회")
     public ResponseEntity<DataResponse<List<String>>> getProductNamesByProductIds(@RequestParam List<Integer> ids) {
         List<String> productNames = productService.getProductNamesByProductIds(ids);  // productOptionService -> productService
         return ResponseEntity.status(HttpStatus.OK)
