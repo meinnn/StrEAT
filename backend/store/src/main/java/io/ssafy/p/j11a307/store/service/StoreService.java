@@ -29,7 +29,7 @@ public class StoreService{
      * 특정 가게의 owner ID 반환
      */
     @Transactional(readOnly = true)
-    public Integer getOwnerIdByStoreId(Integer storeId) {
+    public Integer getUserIdByStoreId(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getUserId();
