@@ -1,6 +1,8 @@
 package io.ssafy.p.j11a307.store.dto;
 
 import io.ssafy.p.j11a307.store.entity.Store;
+import io.ssafy.p.j11a307.store.entity.StoreIndustryCategory;
+import io.ssafy.p.j11a307.store.entity.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "가게를 생성하기 위한 DTO")
@@ -23,8 +25,8 @@ public record CreateStoreDTO(
         @Schema(description = "경도", example = "127.123456")
         String longitude,
 
-        @Schema(description = "업종 타입", example = "카페")
-        String type,
+        @Schema(description = "업종 타입", example = "이동형")
+        StoreType type,
 
         @Schema(description = "계좌번호", example = "1234-5678-9012-3456")
         String bankAccount,
@@ -36,10 +38,14 @@ public record CreateStoreDTO(
         String ownerWord,
 
         @Schema(description = "영업 상태", example = "영업 중")
-        String status
+        String status,
+
+        @Schema(description = "업종 카테고리 ID", example = "1")
+        Integer storeIndustryCategoryId
+
 ) {
     // DTO에서 Store 엔티티로 변환하는 메서드
-    public Store toEntity() {
+    public Store toEntity(StoreIndustryCategory industryCategory) {
         return Store.builder()
                 .userId(this.userId)
                 .businessRegistrationNumber(this.businessRegistrationNumber)
@@ -52,6 +58,7 @@ public record CreateStoreDTO(
                 .bankName(this.bankName)
                 .ownerWord(this.ownerWord)
                 .status(this.status)
+                .industryCategory(industryCategory)
                 .build();
     }
 }
