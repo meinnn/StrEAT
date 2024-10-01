@@ -13,7 +13,7 @@ public record CreateProductOptionDTO(
         @Schema(description = "상품 옵션 카테고리 ID", example = "1")
         Integer productOptionCategoryId,
 
-        @Schema(description = "옵션 설명", example = "사이즈 옵션")
+        @Schema(description = "옵션 설명", example = "매운맛")
         String description
 ) {
     // DTO에서 ProductOption 엔티티로 변환하는 메서드

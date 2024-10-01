@@ -16,10 +16,10 @@ public record ReadProductDTO(
         @Schema(description = "가게 ID", example = "101")
         Integer storeId,
 
-        @Schema(description = "상품명", example = "Apple iPhone 14")
+        @Schema(description = "상품명", example = "떡볶이")
         String name,
 
-        @Schema(description = "가격", example = "999")
+        @Schema(description = "가격", example = "2800")
         Integer price,
 
         @Schema(description = "이미지 경로", example = "/images/iphone14.jpg")
