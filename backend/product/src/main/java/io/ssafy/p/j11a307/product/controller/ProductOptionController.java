@@ -62,12 +62,4 @@ public class ProductOptionController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 옵션 삭제 성공"));
     }
-
-
-    @GetMapping("/product-names")
-    public ResponseEntity<DataResponse<List<String>>> getProductNamesByOptionIds(@RequestParam List<Integer> ids) {
-        List<String> productNames = productOptionService.getProductNamesByProductOptionIds(ids);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(DataResponse.of("상품 이름 리스트 조회 성공", productNames));
-    }
 }

@@ -75,13 +75,4 @@ public class ProductOptionService {
 
         productOptionRepository.delete(productOption);
     }
-
-    public List<String> getProductNamesByProductOptionIds(List<Integer> productOptionIds) {
-        return productOptionIds.stream()
-                .map(id -> productOptionRepository.findById(id)
-                        .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND, "=> 해당하지 않는 ID: "+id)))
-                .map(productOption -> productOption.getProduct().getName())
-                .collect(Collectors.toList());
-    }
-
 }
