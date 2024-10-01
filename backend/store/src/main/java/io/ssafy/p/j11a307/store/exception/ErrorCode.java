@@ -13,6 +13,11 @@ public enum ErrorCode {
     STORE_LOCATION_PHOTO_LATITUDE_NULL(HttpStatus.BAD_REQUEST, "위도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     STORE_LOCATION_PHOTO_LONGITUDE_NULL(HttpStatus.BAD_REQUEST, "경도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     STORE_LOCATION_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 위치 사진이 없습니다."),
+    STORE_LOCATION_PHOTO_SRC_NULL(HttpStatus.BAD_REQUEST, "가게 위치 사진은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
+    FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "사진 업로드에 실패하였습니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
+    //User
+    INVALID_USER(HttpStatus.BAD_REQUEST, "해당하는 ID의 유저가 없습니다."),
     // Store Photo
     STORE_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 사진이 없습니다."),
     // Product

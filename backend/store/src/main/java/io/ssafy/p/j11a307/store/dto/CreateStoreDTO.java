@@ -8,9 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "가게를 생성하기 위한 DTO")
 public record CreateStoreDTO(
-        @Schema(description = "사용자 ID", example = "1")
-        Integer userId,
-
         @Schema(description = "사업자 등록번호", example = "123-45-67890")
         String businessRegistrationNumber,
 
@@ -49,7 +46,6 @@ public record CreateStoreDTO(
     // DTO에서 Store 엔티티로 변환하는 메서드
     public Store toEntity(IndustryCategory industryCategory) {
         return Store.builder()
-                .userId(this.userId)
                 .businessRegistrationNumber(this.businessRegistrationNumber)
                 .name(this.name)
                 .address(this.address)
