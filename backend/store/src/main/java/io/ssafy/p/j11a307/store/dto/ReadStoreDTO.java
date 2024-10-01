@@ -28,7 +28,7 @@ public record ReadStoreDTO(
         @Schema(description = "경도", example = "127.123456")
         String longitude,
 
-        @Schema(description = "업종 타입", example = "카페")
+        @Schema(description = "업종 타입", example = "이동형")
         StoreType type,
 
         @Schema(description = "계좌번호", example = "1234-5678-9012-3456")
@@ -40,7 +40,7 @@ public record ReadStoreDTO(
         @Schema(description = "사장님 한마디", example = "맛있게 드세요!")
         String ownerWord,
 
-        @Schema(description = "영업 상태", example = "영업 중")
+        @Schema(description = "영업 상태", example = "영업중")
         StoreStatus status,
 
         @Schema(description = "업종 카테고리 ID", example = "1")
