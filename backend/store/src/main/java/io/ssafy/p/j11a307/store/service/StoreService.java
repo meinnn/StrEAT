@@ -1,11 +1,11 @@
 package io.ssafy.p.j11a307.store.service;
 
 import io.ssafy.p.j11a307.store.dto.*;
+import io.ssafy.p.j11a307.store.entity.IndustryCategory;
 import io.ssafy.p.j11a307.store.entity.Store;
-import io.ssafy.p.j11a307.store.entity.StoreIndustryCategory;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
-import io.ssafy.p.j11a307.store.repository.StoreIndustryCategoryRepository;
+import io.ssafy.p.j11a307.store.repository.IndustryCategoryRepository;
 import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class StoreService{
 
     private final StoreRepository storeRepository;
-    private final StoreIndustryCategoryRepository storeIndustryCategoryRepository;
+    private final IndustryCategoryRepository industryCategoryRepository;
     private final OwnerClient ownerClient;
 
     @Value("${streat.internal-request}")  // "${}"로 수정
@@ -50,26 +50,20 @@ public class StoreService{
      */
     @Transactional
     public void createStore(CreateStoreDTO createStoreDTO, String token) {
-        // JWT 토큰에서 userID 추출
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
-
         if (userId == null) {
             throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
         }
 
-        // storeIndustryCategoryId로 StoreIndustryCategory 엔티티 조회
-        StoreIndustryCategory industryCategory = storeIndustryCategoryRepository
-                .findById(createStoreDTO.storeIndustryCategoryId())
+        IndustryCategory industryCategory = industryCategoryRepository
+                .findById(createStoreDTO.industryCategoryId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
 
-        // CreateStoreDTO에서 Store 엔티티로 변환
         Store store = createStoreDTO.toEntity(industryCategory);
-        store.assignOwner(userId);  // 소유자 설정
+        store.assignOwner(userId);
 
-        // Store 엔티티 저장
         storeRepository.save(store);
     }
-
     /**
      * 가게 타입 조회 (Enum 타입 처리)
      */
@@ -99,7 +93,11 @@ public class StoreService{
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        Store updatedStore = store.updateWith(request);
+        IndustryCategory industryCategory = industryCategoryRepository
+                .findById(request.industryCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
+
+        Store updatedStore = store.updateWith(request, industryCategory);
         storeRepository.save(updatedStore);
     }
 
@@ -124,4 +122,7 @@ public class StoreService{
         store.changeAddress(newAddress);
         storeRepository.save(store);
     }
+
+
+
 }

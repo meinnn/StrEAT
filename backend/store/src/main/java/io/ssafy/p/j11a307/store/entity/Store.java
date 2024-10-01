@@ -50,8 +50,9 @@ public class Store {
 
     private String ownerWord;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private String status;
+    private StoreStatus status;
 
     // 관계 설정
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
@@ -62,7 +63,7 @@ public class Store {
 
     @ManyToOne
     @JoinColumn(name = "industry_category_id", nullable = false)
-    private StoreIndustryCategory industryCategory;
+    private IndustryCategory industryCategory;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<BusinessDay> businessDays;
@@ -92,7 +93,7 @@ public class Store {
         this.userId = userId;
     }
 
-    public Store updateWith(UpdateStoreDTO request) {
+    public Store updateWith(UpdateStoreDTO request, IndustryCategory industryCategory) {
         return Store.builder()
                 .id(this.id)  // ID는 변경하지 않음
                 .userId(this.userId)  // Owner ID는 그대로 유지
@@ -100,11 +101,12 @@ public class Store {
                 .address(request.address() != null ? request.address() : this.address)
                 .latitude(request.latitude() != null ? request.latitude() : this.latitude)
                 .longitude(request.longitude() != null ? request.longitude() : this.longitude)
-                .type(request.type() != null ? StoreType.valueOf(request.type()) : this.type)
+                .type(request.type() != null ? request.type() : this.type)
                 .bankAccount(request.bankAccount() != null ? request.bankAccount() : this.bankAccount)
                 .bankName(request.bankName() != null ? request.bankName() : this.bankName)
                 .ownerWord(request.ownerWord() != null ? request.ownerWord() : this.ownerWord)
                 .status(request.status() != null ? request.status() : this.status)
+                .industryCategory(industryCategory)
                 .build();
     }
 

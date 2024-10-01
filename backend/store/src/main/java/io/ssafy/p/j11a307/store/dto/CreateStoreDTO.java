@@ -1,7 +1,8 @@
 package io.ssafy.p.j11a307.store.dto;
 
+import io.ssafy.p.j11a307.store.entity.IndustryCategory;
 import io.ssafy.p.j11a307.store.entity.Store;
-import io.ssafy.p.j11a307.store.entity.StoreIndustryCategory;
+import io.ssafy.p.j11a307.store.entity.StoreStatus;
 import io.ssafy.p.j11a307.store.entity.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -37,18 +38,17 @@ public record CreateStoreDTO(
         @Schema(description = "사장님 한마디", example = "맛있게 드세요!")
         String ownerWord,
 
-        @Schema(description = "영업 상태", example = "영업 중")
-        String status,
+        @Schema(description = "영업 상태", example = "영업중")
+        StoreStatus status,
 
         @Schema(description = "업종 카테고리 ID", example = "1")
-        Integer storeIndustryCategoryId
+        Integer industryCategoryId
 
 ) {
+
     // DTO에서 Store 엔티티로 변환하는 메서드
-    public Store toEntity(StoreIndustryCategory industryCategory) {
+    public Store toEntity(IndustryCategory industryCategory) {
         return Store.builder()
-                .userId(this.userId)
-                .businessRegistrationNumber(this.businessRegistrationNumber)
                 .name(this.name)
                 .address(this.address)
                 .latitude(this.latitude)
@@ -58,7 +58,7 @@ public record CreateStoreDTO(
                 .bankName(this.bankName)
                 .ownerWord(this.ownerWord)
                 .status(this.status)
-                .industryCategory(industryCategory)
+                .industryCategory(industryCategory)  // IndustryCategory 설정
                 .build();
     }
 }
