@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,12 +27,21 @@ public class StorePhotoController {
     private final StorePhotoService storePhotoService;
 
     /**
-     * StorePhoto 생성
+     * StorePhoto 생성 (이미지 파일 업로드)
      */
-    @PostMapping
-    @Operation(summary = "StorePhoto 생성")
-    public ResponseEntity<MessageResponse> createStorePhoto(@RequestBody CreateStorePhotoDTO createDTO) {
-        storePhotoService.createStorePhoto(createDTO);
+    @PostMapping(value = "/{storeId}/photo", consumes = {"multipart/form-data"})
+    @Operation(summary = "StorePhoto 생성 (이미지 파일 업로드)")
+    public ResponseEntity<MessageResponse> createStorePhoto(
+            @PathVariable Integer storeId,
+            @RequestPart("image") MultipartFile image,
+            @RequestHeader("Authorization") String token) throws IOException {
+
+        // CreateStorePhotoDTO 생성
+        CreateStorePhotoDTO createStorePhotoDTO = new CreateStorePhotoDTO(storeId, null); // 이미지 URL은 나중에 설정
+
+        // StorePhoto 생성 서비스 호출
+        storePhotoService.createStorePhoto(createStorePhotoDTO, image);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("StorePhoto 생성 성공"));
     }
@@ -38,7 +49,7 @@ public class StorePhotoController {
     /**
      * StorePhoto 조회 (단일)
      */
-    @GetMapping("/{id}")
+    @GetMapping("/photo/{id}")
     @Operation(summary = "StorePhoto 단일 조회")
     public ResponseEntity<DataResponse<ReadStorePhotoDTO>> getStorePhotoById(@PathVariable Integer id) {
         ReadStorePhotoDTO storePhoto = storePhotoService.getStorePhotoById(id);
@@ -49,7 +60,7 @@ public class StorePhotoController {
     /**
      * StorePhoto 전체 조회
      */
-    @GetMapping
+    @GetMapping("/photos")
     @Operation(summary = "StorePhoto 전체 조회")
     public ResponseEntity<DataResponse<List<ReadStorePhotoDTO>>> getAllStorePhotos() {
         List<ReadStorePhotoDTO> storePhotos = storePhotoService.getAllStorePhotos();
@@ -58,12 +69,20 @@ public class StorePhotoController {
     }
 
     /**
-     * StorePhoto 수정
+     * StorePhoto 수정 (이미지 파일 업로드)
      */
-    @PutMapping("/{id}")
-    @Operation(summary = "StorePhoto 수정")
-    public ResponseEntity<MessageResponse> updateStorePhoto(@PathVariable Integer id, @RequestBody UpdateStorePhotoDTO updateDTO) {
-        storePhotoService.updateStorePhoto(id, updateDTO);
+    @PutMapping(value = "/photo/{id}", consumes = {"multipart/form-data"})
+    @Operation(summary = "StorePhoto 수정 (이미지 파일 업로드)")
+    public ResponseEntity<MessageResponse> updateStorePhoto(
+            @PathVariable Integer id,
+            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+
+        // UpdateStorePhotoDTO 생성
+        UpdateStorePhotoDTO updateStorePhotoDTO = new UpdateStorePhotoDTO(image);
+
+        // StorePhoto 수정 서비스 호출
+        storePhotoService.updateStorePhoto(id, updateStorePhotoDTO, image);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("StorePhoto 수정 성공"));
     }
@@ -71,7 +90,7 @@ public class StorePhotoController {
     /**
      * StorePhoto 삭제
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/photo/{id}")
     @Operation(summary = "StorePhoto 삭제")
     public ResponseEntity<MessageResponse> deleteStorePhoto(@PathVariable Integer id) {
         storePhotoService.deleteStorePhoto(id);
