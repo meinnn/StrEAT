@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,8 @@ public class LoginController {
             @ApiResponse(responseCode = "404", description = "User ID가 없어 로그인 실패"),
             @ApiResponse(responseCode = "401", description = "토큰 기간 만료, 재 로그인 필요")
     })
-    public ResponseEntity<UserTypeResponse> autoLogin(@RequestHeader(HEADER_AUTH) String accessToken) {
+    public ResponseEntity<UserTypeResponse> autoLogin(HttpServletRequest request) {
+        String accessToken = request.getHeader(HEADER_AUTH);
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         loginService.autoLogin(userId);
         UserType userType = userService.getUserType(userId);
@@ -84,7 +86,8 @@ public class LoginController {
             @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     })
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestHeader(HEADER_AUTH) String accessToken) {
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String accessToken = request.getHeader(HEADER_AUTH);
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         loginService.logout(userId);
         return ResponseEntity.ok().build();
