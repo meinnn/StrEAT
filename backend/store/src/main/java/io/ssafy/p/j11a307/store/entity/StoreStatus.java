@@ -1,5 +1,8 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum StoreStatus {
     READY("준비중"),         // 영업 준비 중
     OPEN("영업중"),          // 정상 영업 중
@@ -14,10 +17,12 @@ public enum StoreStatus {
         this.description = description;
     }
 
+    @JsonValue
     public String getDescription() {
         return description;
     }
 
+    @JsonCreator
     public static StoreStatus fromDescription(String description) {
         for (StoreStatus status : StoreStatus.values()) {
             if (status.description.equals(description)) {

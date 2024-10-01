@@ -97,6 +97,7 @@ public class Store {
         return Store.builder()
                 .id(this.id)  // ID는 변경하지 않음
                 .userId(this.userId)  // Owner ID는 그대로 유지
+                .businessRegistrationNumber(request.businessRegistrationNumber() != null ? request.businessRegistrationNumber() : this.businessRegistrationNumber)  // 사업자 등록번호 처리 추가
                 .name(request.name() != null ? request.name() : this.name)
                 .address(request.address() != null ? request.address() : this.address)
                 .latitude(request.latitude() != null ? request.latitude() : this.latitude)
