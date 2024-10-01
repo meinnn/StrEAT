@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "상품 옵션을 업데이트하기 위한 DTO")
 public record UpdateProductOptionDTO(
+        @Schema(description = "상품 옵션 ID", example = "1")
         Integer productId,
+
         @Schema(description = "옵션 카테고리 ID", example = "1")
         Integer productOptionCategoryId,
 

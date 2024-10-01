@@ -7,11 +7,21 @@ import java.util.List;
 
 @Schema(description = "상품 정보를 수정하기 위한 DTO")
 public record UpdateProductDTO(
-        Integer id,                   // 상품 ID
-        Integer storeId,               // 가게 ID
-        String name,                   // 상품명
-        Integer price,                 // 가격
-        String src,                    // 이미지 경로
+        @Schema(description = "상품 ID", example = "1")
+        Integer id,
+
+        @Schema(description = "가게 ID", example = "1")
+        Integer storeId,
+
+        @Schema(description = "상품명", example = "타코야끼")
+        String name,
+
+        @Schema(description = "가격", example = "2800")
+        Integer price,
+
+        @Schema(description = "이미지 URL", example = "/images/laptop.png")
+        String src,
+
         List<UpdateProductCategoryDTO> categories, // 수정될 상품 카테고리 리스트
         List<UpdateProductOptionCategoryDTO> optionCategories // 수정될 옵션 카테고리 리스트
 ) {
