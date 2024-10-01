@@ -1,6 +1,8 @@
 package io.ssafy.p.j11a307.store.dto;
 
 import io.ssafy.p.j11a307.store.entity.Store;
+import io.ssafy.p.j11a307.store.entity.StoreStatus;
+import io.ssafy.p.j11a307.store.entity.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "가게 정보를 수정하기 위한 DTO")
@@ -21,7 +23,7 @@ public record UpdateStoreDTO(
         String longitude,
 
         @Schema(description = "업종 타입", example = "카페")
-        String type,
+        StoreType type,
 
         @Schema(description = "계좌번호", example = "1234-5678-9012-3456")
         String bankAccount,
@@ -33,7 +35,12 @@ public record UpdateStoreDTO(
         String ownerWord,
 
         @Schema(description = "영업 상태", example = "영업 중")
-        String status
+        StoreStatus status,
+
+        @Schema(description = "업종 카테고리 ID", example = "레스토랑")
+        Integer industryCategoryId
+
+
 ) {
     // 기존 Store 엔티티를 받아서 업데이트할 엔티티로 변환하는 메서드
     public Store toEntity(Store existingStore) {
@@ -49,6 +56,7 @@ public record UpdateStoreDTO(
                 .bankName(this.bankName != null ? this.bankName : existingStore.getBankName())
                 .ownerWord(this.ownerWord != null ? this.ownerWord : existingStore.getOwnerWord())
                 .status(this.status != null ? this.status : existingStore.getStatus())
+                .industryCategory(null)
                 .build();
     }
 }

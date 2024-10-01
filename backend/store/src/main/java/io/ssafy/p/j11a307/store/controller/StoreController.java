@@ -48,7 +48,7 @@ public class StoreController {
     }
 
     // 4. 점포 리스트 조회
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "점포 리스트 조회")
     public ResponseEntity<DataResponse<List<ReadStoreDTO>>> getAllStores() {
         List<ReadStoreDTO> storeResponses = storeService.getAllStores();
