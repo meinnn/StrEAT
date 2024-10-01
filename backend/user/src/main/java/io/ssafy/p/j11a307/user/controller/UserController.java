@@ -123,7 +123,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/user-type")
+    @PostMapping("/register/usertype")
     @Operation(summary = "회원가입 시 손님 선택", description = "회원가입 시 손님 선택")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "손님으로 가입 성공, header에 새로운 토큰 발급"),
