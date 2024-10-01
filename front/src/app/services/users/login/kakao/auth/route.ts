@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
+const BASE_URL = 'https://j11a307.p.ssafy.io'
+
 // eslint-disable-next-line import/prefer-default-export
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -47,13 +49,13 @@ export async function GET(request: Request) {
     const data = await response.json()
     if (data.userType === 'NOT_SELECTED') {
       // 신규 가입
-      return NextResponse.redirect(new URL('/sign-up', request.url))
+      return NextResponse.redirect(new URL('/sign-up', BASE_URL))
     }
     if (data.userType === 'CUSTOMER') {
-      return NextResponse.redirect(new URL('/customer', request.url))
+      return NextResponse.redirect(new URL('/customer', BASE_URL))
     }
     if (data.userType === 'OWNER') {
-      return NextResponse.redirect(new URL('/owner', request.url))
+      return NextResponse.redirect(new URL('/owner', BASE_URL))
     }
   } catch (error) {
     // 네트워크 오류 등의 예외 처리
