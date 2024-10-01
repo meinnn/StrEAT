@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { SlCalender } from 'react-icons/sl'
-import CalendarComponent from '@/containers/owner/order-management/OrderInquiry/Calendar' // 절대 경로로 Calendar 불러오기
+import Calendar from '@/containers/owner/order-management/OrderInquiry/Calendar' // 절대 경로로 Calendar 불러오기
 
 export default function ChooseDate() {
   const today = new Date()
@@ -11,8 +11,26 @@ export default function ChooseDate() {
 
   const [modalIsOpen, setModalIsOpen] = useState(false) // 모달 상태
 
-  const openModal = () => setModalIsOpen(true)
-  const closeModal = () => setModalIsOpen(false)
+  // 임시 상태 (모달에서 선택된 값을 저장)
+  const [tempStartDate, setTempStartDate] = useState<Date | null>(startDate)
+  const [tempEndDate, setTempEndDate] = useState<Date | null>(endDate)
+
+  const openModal = () => {
+    setTempStartDate(startDate) // 모달 열릴 때 현재 선택된 값을 임시 상태에 복사
+    setTempEndDate(endDate)
+    setModalIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
+  }
+
+  // 확인 버튼 클릭 시 부모 상태에 값 반영
+  const handleConfirm = () => {
+    setStartDate(tempStartDate) // 선택된 임시 날짜를 부모 상태에 반영
+    setEndDate(tempEndDate)
+    closeModal()
+  }
 
   return (
     <div className="mt-4 mx-2">
@@ -40,13 +58,13 @@ export default function ChooseDate() {
           <div className="bg-white w-full h-1/2 rounded-t-3xl p-4 transition-transform duration-300">
             <div className="flex justify-between pb-4">
               <button
-                onClick={closeModal}
+                onClick={closeModal} // 취소 시 임시 상태만 초기화, 부모 상태는 변경되지 않음
                 className="text-red-500 font-semibold"
               >
                 취소
               </button>
               <button
-                onClick={closeModal}
+                onClick={handleConfirm} // 확인 시 부모 상태에 값 반영
                 className="text-blue-500 font-semibold"
               >
                 확인
@@ -54,15 +72,15 @@ export default function ChooseDate() {
             </div>
 
             {/* Calendar 컴포넌트 사용 */}
-            <div className="px-4">
-              <CalendarComponent
-                startDate={startDate}
-                endDate={endDate}
+            <div>
+              <Calendar
+                startDate={tempStartDate}
+                endDate={tempEndDate}
                 selectsRange
                 onDateChange={(update) => {
                   const [start, end] = update as [Date | null, Date | null]
-                  setStartDate(start)
-                  setEndDate(end)
+                  setTempStartDate(start)
+                  setTempEndDate(end)
                 }}
               />
             </div>

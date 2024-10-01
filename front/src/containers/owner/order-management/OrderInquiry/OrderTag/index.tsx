@@ -6,18 +6,11 @@ interface OrderTagProps {
 }
 
 export default function OrderTag({ onFilterChange }: OrderTagProps) {
-  // 선택된 태그 상태
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-
   // 태그 목록
-  const tags = [
-    '주문정보',
-    '1:1문의',
-    '서비스평가',
-    '스탬프/쿠폰',
-    '포인트',
-    '월간랭킹',
-  ]
+  const tags = ['카드', '계좌이체', '간편결제', '현금', '수령완료', '주문취소']
+
+  // 선택된 태그 상태 (기본값으로 모든 태그 선택)
+  const [selectedTags, setSelectedTags] = useState<string[]>(tags)
 
   // 태그 클릭 시 선택 상태 변경
   const handleTagClick = (tag: string) => {
@@ -32,20 +25,15 @@ export default function OrderTag({ onFilterChange }: OrderTagProps) {
   }
 
   return (
-    <div className="flex flex-wrap justify-start gap-4 mt-4 ml-4 mb-4">
-      {/* 필터 아이콘 */}
-      <div className="flex items-center justify-center mb-2">
-        <CiFilter className="text-2xl" />
-      </div>
-
+    <div className="flex flex-wrap justify-center gap-2 mt-4 mx-2 mb-4">
       {/* 태그 버튼들 */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 w-full">
         {tags.map((tag) => (
           <button
             type="button"
             key={tag}
             onClick={() => handleTagClick(tag)}
-            className={`px-4 py-2 border-2 rounded-lg ${
+            className={`w-full py-2 border-2 rounded-lg ${
               selectedTags.includes(tag)
                 ? 'border-primary-400 text-primary-400'
                 : 'border-gray-300 text-gray-500'
