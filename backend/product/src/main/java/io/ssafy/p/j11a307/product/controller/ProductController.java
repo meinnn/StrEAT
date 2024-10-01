@@ -41,7 +41,7 @@ public class ProductController {
     }
 
     // 3. 상품 목록 조회
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "전체 상품 목록 조회")
     public ResponseEntity<DataResponse<List<ReadProductDTO>>> getAllProducts() {
         List<ReadProductDTO> productResponses = productService.getAllProducts();

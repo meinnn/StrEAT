@@ -11,7 +11,7 @@ public record CreateProductCategoryDTO(
         @Schema(description = "상품 ID", example = "1")
         Integer productId,
 
-        @Schema(description = "카테고리명", example = "전자제품")
+        @Schema(description = "카테고리명", example = "분식")
         String name,
 
         @Schema(description = "상위 카테고리 ID", example = "0")

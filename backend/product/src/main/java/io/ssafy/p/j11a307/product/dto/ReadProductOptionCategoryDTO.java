@@ -14,7 +14,7 @@ public record ReadProductOptionCategoryDTO(
         @Schema(description = "상품 ID", example = "1")
         Integer productId,
 
-        @Schema(description = "옵션 카테고리명", example = "색상")
+        @Schema(description = "옵션 카테고리명", example = "맛고르기")
         String name,
 
         @Schema(description = "필수 여부", example = "true")
