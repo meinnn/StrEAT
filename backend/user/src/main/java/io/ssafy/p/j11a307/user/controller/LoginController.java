@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -66,14 +67,18 @@ public class LoginController {
     @PostMapping("/login-auto")
     @Operation(summary = "토큰 활용 자동 로그인", description = "streat 서비스 토큰을 활용한 자동 로그인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "자동 로그인 성공"),
+            @ApiResponse(responseCode = "200", description = "자동 로그인 성공",
+                    content = @Content(mediaType = "application/json" , schema = @Schema(implementation = UserTypeResponse.class))),
             @ApiResponse(responseCode = "404", description = "User ID가 없어 로그인 실패"),
             @ApiResponse(responseCode = "401", description = "토큰 기간 만료, 재 로그인 필요")
     })
-    public ResponseEntity<Void> autoLogin(@RequestHeader(HEADER_AUTH) String accessToken) {
+    public ResponseEntity<UserTypeResponse> autoLogin(HttpServletRequest request) {
+        String accessToken = request.getHeader(HEADER_AUTH);
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         loginService.autoLogin(userId);
-        return ResponseEntity.ok().build();
+        UserType userType = userService.getUserType(userId);
+        UserTypeResponse userTypeResponse = UserTypeResponse.builder().userType(userType.name()).build();
+        return new ResponseEntity<>(userTypeResponse, HttpStatus.OK);
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃")
@@ -81,7 +86,8 @@ public class LoginController {
             @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     })
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestHeader(HEADER_AUTH) String accessToken) {
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String accessToken = request.getHeader(HEADER_AUTH);
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         loginService.logout(userId);
         return ResponseEntity.ok().build();
