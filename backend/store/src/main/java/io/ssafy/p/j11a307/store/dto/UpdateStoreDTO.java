@@ -34,6 +34,9 @@ public record UpdateStoreDTO(
         @Schema(description = "사장님 한마디", example = "맛있게 드세요!")
         String ownerWord,
 
+        @Schema(description = "가게 전화번호", example = "02-0000-0000")
+        String storePhoneNumber,
+
         @Schema(description = "영업 상태", example = "영업중")
         StoreStatus status,
 
@@ -57,6 +60,7 @@ public record UpdateStoreDTO(
                 .bankAccount(this.bankAccount != null ? this.bankAccount : existingStore.getBankAccount())
                 .bankName(this.bankName != null ? this.bankName : existingStore.getBankName())
                 .ownerWord(this.ownerWord != null ? this.ownerWord : existingStore.getOwnerWord())
+                .storePhoneNumber(this.storePhoneNumber != null ? this.storePhoneNumber : existingStore.getStorePhoneNumber())
                 .status(this.status != null ? this.status : existingStore.getStatus())
                 .businessRegistrationNumber(this.businessRegistrationNumber != null ? this.businessRegistrationNumber : existingStore.getBusinessRegistrationNumber())  // 사업자 등록번호 처리
                 .industryCategory(null)  // industryCategory는 별도 처리

@@ -50,6 +50,8 @@ public class Store {
 
     private String ownerWord;
 
+    private String storePhoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private StoreStatus status;
@@ -106,6 +108,7 @@ public class Store {
                 .bankAccount(request.bankAccount() != null ? request.bankAccount() : this.bankAccount)
                 .bankName(request.bankName() != null ? request.bankName() : this.bankName)
                 .ownerWord(request.ownerWord() != null ? request.ownerWord() : this.ownerWord)
+                .storePhoneNumber(request.storePhoneNumber() != null ? request.storePhoneNumber() : this.storePhoneNumber)  // storePhoneNumber 추가
                 .status(request.status() != null ? request.status() : this.status)
                 .industryCategory(industryCategory)
                 .build();
