@@ -20,4 +20,11 @@ public class SubscriptionService {
         Subscription.SubscriptionId subscriptionId = new Subscription.SubscriptionId(userId, storeId);
         subscriptionRepository.save(new Subscription(subscriptionId));
     }
+
+    @Transactional
+    public void unsubscribe(String accessToken, Integer storeId) {
+        Integer userId = userService.getUserId(accessToken);
+        Subscription.SubscriptionId subscriptionId = new Subscription.SubscriptionId(userId, storeId);
+        subscriptionRepository.deleteById(subscriptionId);
+    }
 }
