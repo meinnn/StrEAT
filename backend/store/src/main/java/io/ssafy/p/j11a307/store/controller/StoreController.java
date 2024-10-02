@@ -67,29 +67,38 @@ public class StoreController {
     }
 
     // 6. 점포 정보 수정
-    @PutMapping("/{id}")
+    @PutMapping("/update")
     @Operation(summary = "점포 정보 수정")
-    public ResponseEntity<MessageResponse> updateStore(@PathVariable Integer id, @RequestBody UpdateStoreDTO request) {
-        storeService.updateStore(id, request);
+    public ResponseEntity<MessageResponse> updateStore(@RequestHeader("Authorization") String token, @RequestBody UpdateStoreDTO request) {
+        storeService.updateStore(token, request);  // token을 통해 점포를 조회하여 수정
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 정보 수정 성공"));
     }
 
     // 7. 점포 주소 변경
-    @PatchMapping("/{id}/address")
+    @PatchMapping("/store/address")
     @Operation(summary = "점포 주소 변경")
-    public ResponseEntity<MessageResponse> updateStoreAddress(@PathVariable Integer id, @RequestBody UpdateAddressDTO updateAddressDTO) {
-        storeService.updateStoreAddress(id, updateAddressDTO.newAddress());
+    public ResponseEntity<MessageResponse> updateStoreAddress(@RequestHeader("Authorization") String token, @RequestBody String newAddress) {
+        storeService.updateStoreAddress(token, newAddress);  // token을 통해 점포 주소 업데이트
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 주소 변경 성공"));
     }
 
     // 8. 점포 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/store")
     @Operation(summary = "점포 삭제")
-    public ResponseEntity<MessageResponse> deleteStore(@PathVariable Integer id) {
-        storeService.deleteStore(id);
+    public ResponseEntity<MessageResponse> deleteStore(@RequestHeader("Authorization") String token) {
+        storeService.deleteStore(token);  // token을 통해 점포 삭제
         return ResponseEntity.status(HttpStatus.OK)
-                .body(MessageResponse.of("점포 정보 삭제 성공"));
+                .body(MessageResponse.of("점포 삭제 성공"));
+    }
+
+    // 9. 점포 휴무일 변경
+    @PatchMapping("/{id}/closedDays")
+    @Operation(summary = "점포 휴무일 변경")
+    public ResponseEntity<MessageResponse> updateClosedDays(@RequestHeader("Authorization") String token, @RequestBody String closedDays) {
+        storeService.updateClosedDays(token, closedDays);  // token을 통해 userId로 점포를 찾고 휴무일 업데이트
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("점포 휴무일 변경 성공"));
     }
 }

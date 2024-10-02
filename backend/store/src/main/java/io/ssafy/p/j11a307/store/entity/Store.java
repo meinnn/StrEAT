@@ -117,4 +117,7 @@ public class Store {
                 .build();
     }
 
+    public void changeClosedDays(String closedDays) {
+        this.closedDays = closedDays;
+    }
 }
