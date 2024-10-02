@@ -3,6 +3,7 @@ package io.ssafy.p.j11a307.payment.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.ssafy.p.j11a307.payment.dto.PaymentResponse;
 import io.ssafy.p.j11a307.payment.dto.TossPaymentBaseRequest;
 import io.ssafy.p.j11a307.payment.entity.CardPayment;
 import io.ssafy.p.j11a307.payment.entity.Payment;
@@ -32,7 +33,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     @Transactional
-    public void tossRequestPayment(TossPaymentBaseRequest tossPaymentBaseRequest) throws JsonProcessingException {
+    public PaymentResponse tossRequestPayment(TossPaymentBaseRequest tossPaymentBaseRequest) throws JsonProcessingException {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set(HEADER_AUTH, "Basic " + tossSecretKey);
@@ -57,5 +58,6 @@ public class PaymentService {
         }
 
         paymentRepository.save(payment);
+        return new PaymentResponse(payment.getId());
     }
 }
