@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.payment.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -57,5 +58,45 @@ public class Payment {
 
     public void addCardPayment(CardPayment cardPayment) {
         this.cardPayment = cardPayment;
+    }
+
+    public Payment(JsonNode jsonNode) {
+        this.mid = jsonNode.get("mid").asText();
+        this.version = jsonNode.get("version").asText();
+        this.paymentKey = jsonNode.get("paymentKey").asText();
+        this.status = jsonNode.get("status").asText();
+        this.lastTransactionKey = jsonNode.get("lastTransactionKey").asText();
+        this.tossOrderId = jsonNode.get("tossOrderId").asText();
+        this.tossOrderName = jsonNode.get("tossOrderName").asText();
+        this.requestedAt = jsonNode.get("requestedAt").asText();
+        this.approvedAt = jsonNode.get("approvedAt").asText();
+        this.useEscrow = jsonNode.get("useEscrow").asBoolean();
+        this.cultureExpense = jsonNode.get("cultureExpense").asBoolean();
+        this.virtualAccount = jsonNode.get("virtualAccount").asText();
+        this.transfer = jsonNode.get("transfer").asText();
+        this.mobilePhone = jsonNode.get("mobilePhone").asText();
+        this.giftCertificate = jsonNode.get("giftCertificate").asText();
+        this.cashReceipt = jsonNode.get("cashReceipt").asText();
+        this.cashReceipts = jsonNode.get("cashReceipts").asText();
+        this.discount = jsonNode.get("discount").asText();
+        this.cancels = jsonNode.get("cancels").asText();
+        this.secret = jsonNode.get("secret").asText();
+        this.type = jsonNode.get("type").asText();
+        this.country = jsonNode.get("country").asText();
+        this.failure = jsonNode.get("failure").asText();
+        this.isPartialCancelable = jsonNode.get("isPartialCancelable").asBoolean();
+
+        // 중첩된 필드 처리
+        this.receiptUrl = jsonNode.get("receipt").get("url").asText();
+        this.checkoutUrl = jsonNode.get("checkout").get("url").asText();
+
+        this.currency = jsonNode.get("currency").asText();
+        this.totalAmount = jsonNode.get("totalAmount").asInt();
+        this.balanceAmount = jsonNode.get("balanceAmount").asInt();
+        this.suppliedAmount = jsonNode.get("suppliedAmount").asInt();
+        this.vat = jsonNode.get("vat").asInt();
+        this.taxFreeAmount = jsonNode.get("taxFreeAmount").asInt();
+        this.taxExemptionAmount = jsonNode.get("taxExemptionAmount").asInt();
+        this.method = jsonNode.get("method").asText();
     }
 }
