@@ -14,13 +14,13 @@ import java.util.List;
 @Setter
 @Schema(description = "내 리뷰 조회 정보를 담기 위한 DTO")
 public class GetMyReviewsDTO {
-    @Schema(description = "가게 이름")
+    @Schema(description = "가게 이름", example = "민지네 카페")
     String storeName;
 
     @Schema(description = "가게 사진")
     String storePhoto;
 
-    @Schema(description = "주문상품 리스트")
+    @Schema(description = "주문상품 리스트" , example = "새우버거, 햄버거")
     List<String> orderProducts;
 
     @Schema(description = "별점", example = "3")
