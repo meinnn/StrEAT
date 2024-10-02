@@ -7,7 +7,7 @@ import io.ssafy.p.j11a307.product.entity.Product;
 import io.ssafy.p.j11a307.product.exception.BusinessException;
 import io.ssafy.p.j11a307.product.exception.ErrorCode;
 import io.ssafy.p.j11a307.product.repository.ProductRepository;
-
+import io.ssafy.p.j11a307.product.entity.ProductCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +29,17 @@ public class ProductService {
                 .src(createProduct.src())
                 .build();
         productRepository.save(product);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getProductCategoriesByStoreId(Integer storeId) {
+        List<Product> products = productRepository.findByStoreId(storeId);
+
+        return products.stream()
+                .flatMap(product -> product.getCategories().stream())  // 각 상품의 카테고리 리스트 추출
+                .map(ProductCategory::getName)  // 카테고리명 추출
+                .distinct()  // 중복 제거
+                .collect(Collectors.toList());
     }
 
     public ReadProductDTO getProductById(Integer productId) {

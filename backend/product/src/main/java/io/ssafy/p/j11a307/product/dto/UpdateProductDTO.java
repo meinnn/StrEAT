@@ -7,9 +7,6 @@ import java.util.List;
 
 @Schema(description = "상품 정보를 수정하기 위한 DTO")
 public record UpdateProductDTO(
-        @Schema(description = "상품 ID", example = "1")
-        Integer id,
-
         @Schema(description = "가게 ID", example = "1")
         Integer storeId,
 
@@ -28,7 +25,6 @@ public record UpdateProductDTO(
         // Product 엔티티를 받아서 record로 변환하는 생성자
         public UpdateProductDTO(Product product) {
                 this(
-                        product.getId(),
                         product.getStoreId(),
                         product.getName(),
                         product.getPrice(),
