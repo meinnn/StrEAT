@@ -53,7 +53,9 @@ public class StoreService{
         return new ReadStoreDTO(store);  // ReadStoreDTO로 변환하여 반환
     }
 
-
+    /**
+     * 가게 정보 조회( 사장님이 내 점포 조회 시 나타나는 정보들 ex) 점포 사진, 점포 위치 사진, 영업일...)
+     */
     public ReadStoreDetailsDTO getStoreDetailInfo(String token) {
         Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token을 사용하여 userId 조회
 
@@ -76,6 +78,21 @@ public class StoreService{
         return new ReadStoreDetailsDTO(store, storePhotos, storeLocationPhotos, categories);
     }
 
+    /**
+     * 가게 사진과 이름 조회
+     */
+    public ReadStoreBasicInfoDTO getStoreBasicInfo(Integer storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // Store 사진 로직 처리 (첫 번째 사진 선택)
+        String src = storePhotoRepository.findByStoreId(storeId)
+                .stream().findFirst().map(StorePhoto::getSrc)
+                .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(storeId)
+                        .stream().findFirst().map(StoreLocationPhoto::getSrc).orElse(null));
+
+        return new ReadStoreBasicInfoDTO(store.getName(), src);
+    }
 
     /**
      * 가게 생성
