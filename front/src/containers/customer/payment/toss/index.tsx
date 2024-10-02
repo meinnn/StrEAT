@@ -48,7 +48,7 @@ export default function PaymentCheckoutPage() {
     try {
       await payment.requestPayment({
         method: selectedPaymentMethod || 'CARD',
-        amount: amount, // amount는 숫자형 값으로 전달
+        amount, // amount는 숫자형 값으로 전달
         orderId: 'YVyBWblH0boLvfy5NgZJU',
         orderName: '토스 티셔츠 외 2건',
         successUrl: `${window.location.origin}/customer/payment/result`,

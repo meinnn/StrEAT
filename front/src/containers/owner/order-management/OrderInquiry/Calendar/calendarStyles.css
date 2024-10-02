@@ -58,6 +58,7 @@
   margin: 0; /* 여백을 없애고 정확하게 정렬 */
   border-radius: 50%;
   transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
 /* 오늘 날짜 스타일 */

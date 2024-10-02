@@ -8,7 +8,7 @@ interface CalendarProps {
   startDate: Date | null
   endDate: Date | null
   selectsRange: boolean // 날짜 범위 선택 여부
-  onDateChange: (dates: [Date | null, Date | null]) => void // 날짜 변경 핸들러
+  onDateChange: (dates: [Date | null, Date | null] | null) => void // 날짜 변경 핸들러
 }
 
 export default function Calendar({
@@ -20,14 +20,15 @@ export default function Calendar({
   return (
     <div>
       <DatePicker
-        selected={startDate || undefined}
-        onChange={(dates) => {
-          const [start, end] = dates as [Date | null, Date | null]
+        selected={startDate ?? undefined} // undefined 처리
+        onChange={(dates: [Date | null, Date | null] | null) => {
+          if (!dates) return
+          const [start, end] = dates
           onDateChange([start, end]) // 부모 컴포넌트로 날짜 반영
         }}
-        startDate={startDate || undefined} // 시작 날짜
-        endDate={endDate || undefined} // 종료 날짜
-        selectsRange={selectsRange || undefined} // 날짜 범위 선택 옵션
+        startDate={startDate ?? undefined} // undefined 처리
+        endDate={endDate ?? undefined} // undefined 처리
+        selectsRange
         dateFormat="yyyy.MM.dd" // 날짜 포맷 설정
         inline // 달력 항상 보이기
         locale={ko} // 한국어 로케일 설정

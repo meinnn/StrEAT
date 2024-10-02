@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tosspayments/tosspayments-sdk": "^2.3.2",
+    "@types/react-datepicker": "^7.0.0",
     "date-fns": "^4.1.0",
     "next": "14.2.11",
     "react": "^18",
