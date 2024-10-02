@@ -89,10 +89,11 @@ public class StoreLocationPhotoService {
      * StoreLocationPhoto 조회 (단건)
      */
     @Transactional(readOnly = true)
-    public ReadStoreLocationPhotoDTO getStoreLocationPhotoById(Integer id) {
-        StoreLocationPhoto storeLocationPhoto = storeLocationPhotoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_LOCATION_PHOTO_NOT_FOUND));
-        return new ReadStoreLocationPhotoDTO(storeLocationPhoto);
+    public List<ReadStoreLocationPhotoDTO> getStoreLocationPhotosByStoreId(Integer storeId) {
+        List<StoreLocationPhoto> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(storeId);
+        return storeLocationPhotos.stream()
+                .map(ReadStoreLocationPhotoDTO::new)
+                .collect(Collectors.toList());
     }
 
     /**

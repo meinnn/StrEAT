@@ -50,7 +50,7 @@ public class StorePhotoController {
      * StorePhoto 조회 (단일)
      */
     @GetMapping("/photo/{storeId}")
-    @Operation(summary = "가게 ID로 검색 시 해당 가게 StorePhoto 조회")
+    @Operation(summary = "가게 ID로 해당 가게의 가게대표사진 목록 조회")
     public ResponseEntity<DataResponse<List<ReadStorePhotoDTO>>> getStorePhotosByStoreId(@PathVariable Integer storeId) {
         List<ReadStorePhotoDTO> storePhotos = storePhotoService.getStorePhotosByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)

@@ -50,12 +50,12 @@ public class StoreLocationPhotoController {
     /**
      * StoreLocationPhoto 조회 (단건)
      */
-    @GetMapping("/location-photos/{id}")
-    @Operation(summary = "StoreLocationPhoto 단일 조회")
-    public ResponseEntity<DataResponse<ReadStoreLocationPhotoDTO>> getStoreLocationPhotoById(@PathVariable Integer id) {
-        ReadStoreLocationPhotoDTO storeLocationPhoto = storeLocationPhotoService.getStoreLocationPhotoById(id);
+    @GetMapping("/{storeId}")
+    @Operation(summary = "가게 ID로 해당 가게의 위치 사진 목록 조회")
+    public ResponseEntity<DataResponse<List<ReadStoreLocationPhotoDTO>>> getStoreLocationPhotosByStoreId(@PathVariable Integer storeId) {
+        List<ReadStoreLocationPhotoDTO> storeLocationPhotos = storeLocationPhotoService.getStoreLocationPhotosByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(DataResponse.of("StoreLocationPhoto 조회 성공", storeLocationPhoto));
+                .body(DataResponse.of("StoreLocationPhoto 목록 조회 성공", storeLocationPhotos));
     }
 
     /**
