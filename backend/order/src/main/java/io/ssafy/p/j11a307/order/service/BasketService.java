@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.AddProductToBasketDTO;
+import io.ssafy.p.j11a307.order.dto.ModifyOptionFromBasketDTO;
 import io.ssafy.p.j11a307.order.dto.ReadProductDTO;
 import io.ssafy.p.j11a307.order.dto.ReadProductOptionDTO;
 import io.ssafy.p.j11a307.order.entity.ShoppingCart;
@@ -98,5 +99,38 @@ public class BasketService {
         if(customerId != shoppingCart.getCustomerId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
         shoppingCartRepository.delete(shoppingCart);
+    }
+
+    @Transactional
+    public void modifyOptionFromBasket(Integer id, ModifyOptionFromBasketDTO modifyOptionFromBasketDTO, String token) {
+        int customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        //1. 장바구니 내역이 존재하지 않는다면?
+        ShoppingCart shoppingCart = shoppingCartRepository.findById(id).orElse(null);
+        if(shoppingCart == null) throw new BusinessException(ErrorCode.SHOPPING_CART_NOT_FOUND);
+
+        //2. 그 내역을 가진 본인이 아니라면?
+        if(customerId != shoppingCart.getCustomerId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+        //가격, 개수 수정
+        shoppingCart.modifyOption(modifyOptionFromBasketDTO.getPrice(), modifyOptionFromBasketDTO.getQuantity());
+        //shoppingCartRepository.save(shoppingCart);
+
+        //옵션 대체
+        List<ShoppingCartOption> shoppingCartOptions = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart);
+        shoppingCartOptionRepository.deleteAll(shoppingCartOptions);
+
+        List<ReadProductOptionDTO> readProductOptionDTOs =  productClient.getProductOptionList(modifyOptionFromBasketDTO.getOptionList(), internalRequestKey);
+
+        for (ReadProductOptionDTO option : readProductOptionDTOs) {
+            if(!option.getProductId().equals(shoppingCart.getProductId())) throw new BusinessException(ErrorCode.WRONG_PRODUCT_OPTION);
+
+            ShoppingCartOption shoppingCartOption = ShoppingCartOption.builder()
+                    .shoppingCartId(shoppingCart)
+                    .productOptionId(option.getId())
+                    .build();
+
+            shoppingCartOptionRepository.save(shoppingCartOption);
+        }
     }
 }

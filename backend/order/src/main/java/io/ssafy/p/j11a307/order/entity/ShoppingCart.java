@@ -20,6 +20,11 @@ public class ShoppingCart {
     private Integer quantity;
     private Integer price;
 
+    public void modifyOption(Integer price, Integer quantity) {
+        this.price = price;
+        this.quantity = quantity;
+    }
+
     // 개수 및 가격 업데이트 메서드
     public void updateQuantityAndPrice(Integer plusQuantity) {
         this.price += plusQuantity * (this.price/this.quantity);

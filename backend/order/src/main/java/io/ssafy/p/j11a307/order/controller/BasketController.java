@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.controller;
 
 import io.ssafy.p.j11a307.order.dto.AddProductToBasketDTO;
+import io.ssafy.p.j11a307.order.dto.ModifyOptionFromBasketDTO;
 import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.service.BasketService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,29 +37,44 @@ public class BasketController {
                 .body(MessageResponse.of("장바구니에 상품 추가를 완료했습니다."));
     }
 
-    //장바구니 조회
+    //장바구니 리스트 조회
+
+    //장바구니 내역 상세조회
+
+
+
 
     //장바구니 옵션 수정
+    @PatchMapping(value = "/{id}/basket")
+    @Operation(summary = "옵션 수정", description = "장바구니 상품내역 id에 해당하는 상품 옵션을 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "옵션 수정 성공"),
+            @ApiResponse(responseCode = "401", description = "수정 권한 없음"),
+            @ApiResponse(responseCode = "404", description = "장바구니 내역 존재하지 않음"),
+            @ApiResponse(responseCode = "400", description = "상품에 들어있지 않은 옵션"),
+    })
+    public ResponseEntity<MessageResponse> modifyOptionFromBasket(@PathVariable Integer id,
+                                                                   @RequestBody ModifyOptionFromBasketDTO modifyOptionFromBasketDTO,
+                                                                   @RequestHeader("Authorization") String token) {
+        basketService.modifyOptionFromBasket(id, modifyOptionFromBasketDTO, token);
 
-    //장바구니에서 삭제
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("장바구니 옵션 수정을 완료했습니다."));
+    }
+
+
     @DeleteMapping(value= "/{id}/basket")
     @Operation(summary = "장바구니에서 삭제", description = "장바구니 상품내역 id에 해당하는 상품을 삭제: 옵션도 함께 삭제")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "201", description = "장바구니에 추가 성공"),
-//            @ApiResponse(responseCode = "404", description = "상품 존재하지 않음"),
-//            @ApiResponse(responseCode = "400", description = "상품에 들어있지 않은 옵션"),
-//    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "장바구니에서 삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "권한 없음"),
+            @ApiResponse(responseCode = "404", description = "장바구니 내역 존재하지 않음"),
+    })
     public ResponseEntity<MessageResponse> deleteProductFromBasket(@PathVariable Integer id,
                                                               @RequestHeader("Authorization") String token) {
         basketService.deleteProductFromBasket(id, token);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("장바구니에서 삭제를 완료했습니다."));
     }
-
-
-
-
-
-
-    }
+}
