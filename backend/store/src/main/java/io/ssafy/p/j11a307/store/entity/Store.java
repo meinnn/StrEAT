@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ssafy.p.j11a307.store.dto.UpdateStoreDTO;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
@@ -50,24 +51,39 @@ public class Store {
 
     private String ownerWord;
 
+    private String storePhoneNumber;
+
+    private String closedDays;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private StoreStatus status;
 
     // 관계 설정
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @JsonIgnore  // 순환 참조 방지
     private List<StorePhoto> storePhotos;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @JsonIgnore  // 순환 참조 방지
     private List<StoreLocationPhoto> storeLocationPhotos;
 
     @ManyToOne
     @JoinColumn(name = "industry_category_id", nullable = false)
+    @JsonIgnore  // 순환 참조 방지
     private IndustryCategory industryCategory;
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
-    private List<BusinessDay> businessDays;
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    @JsonIgnore  // 순환 참조 방지
+    private BusinessDay businessDay;
 
+    // Store 삭제 전 IndustryCategory와의 연관관계를 끊는 메서드 추가
+    public void removeFromCategory() {
+        if (this.industryCategory != null) {
+            this.industryCategory.removeStore(this);
+            this.industryCategory = null;  // 연관관계 제거
+        }
+    }
 
     // 이름 변경 메서드
     public void changeName(String name) {
@@ -75,6 +91,10 @@ public class Store {
               throw new BusinessException(ErrorCode.STORE_NAME_NULL);
         }
         this.name = name;
+    }
+
+    public void changeOwnerWord(String ownerWord) {
+        this.ownerWord = ownerWord;
     }
 
     // 주소 변경 메서드
@@ -106,9 +126,18 @@ public class Store {
                 .bankAccount(request.bankAccount() != null ? request.bankAccount() : this.bankAccount)
                 .bankName(request.bankName() != null ? request.bankName() : this.bankName)
                 .ownerWord(request.ownerWord() != null ? request.ownerWord() : this.ownerWord)
+                .storePhoneNumber(request.storePhoneNumber() != null ? request.storePhoneNumber() : this.storePhoneNumber)  // storePhoneNumber 추가
+                .closedDays(request.closedDays() != null ? request.closedDays() : this.closedDays)
                 .status(request.status() != null ? request.status() : this.status)
                 .industryCategory(industryCategory)
                 .build();
     }
 
+    public void changeClosedDays(String closedDays) {
+        this.closedDays = closedDays;
+    }
+
+    public Integer getStoreId() {
+        return this.id;
+    }
 }

@@ -29,18 +29,20 @@ public class StorePhotoController {
     /**
      * StorePhoto 생성 (이미지 파일 업로드)
      */
-    @PostMapping(value = "/{storeId}/photo", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/photo", consumes = {"multipart/form-data"})
     @Operation(summary = "StorePhoto 생성 (이미지 파일 업로드)")
     public ResponseEntity<MessageResponse> createStorePhoto(
-            @PathVariable Integer storeId,
-            @RequestPart("image") MultipartFile image,
-            @RequestHeader("Authorization") String token) throws IOException {
+            @RequestHeader("Authorization") String token,  // 첫 번째로 token을 받음
+            @RequestPart("image") MultipartFile image){
+
+        // token을 통해 storeId를 조회
+        Integer storeId = storePhotoService.getStoreIdByToken(token);
 
         // CreateStorePhotoDTO 생성
-        CreateStorePhotoDTO createStorePhotoDTO = new CreateStorePhotoDTO(storeId, null); // 이미지 URL은 나중에 설정
+        CreateStorePhotoDTO createStorePhotoDTO = new CreateStorePhotoDTO(storeId, image);
 
         // StorePhoto 생성 서비스 호출
-        storePhotoService.createStorePhoto(createStorePhotoDTO, image);
+        storePhotoService.createStorePhoto(token, createStorePhotoDTO, image);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("StorePhoto 생성 성공"));
@@ -50,7 +52,7 @@ public class StorePhotoController {
      * StorePhoto 조회 (단일)
      */
     @GetMapping("/photo/{storeId}")
-    @Operation(summary = "가게 ID로 검색 시 해당 가게 StorePhoto 조회")
+    @Operation(summary = "가게 ID로 해당 가게의 가게대표사진 목록 조회")
     public ResponseEntity<DataResponse<List<ReadStorePhotoDTO>>> getStorePhotosByStoreId(@PathVariable Integer storeId) {
         List<ReadStorePhotoDTO> storePhotos = storePhotoService.getStorePhotosByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)
@@ -72,8 +74,9 @@ public class StorePhotoController {
      * StorePhoto 수정 (이미지 파일 업로드)
      */
     @PutMapping(value = "/photo/{id}", consumes = {"multipart/form-data"})
-    @Operation(summary = "StorePhoto 수정 (이미지 파일 업로드)")
+    @Operation(summary = "StorePhoto 수정 (이미지 파일 업로드) id는 store-photo-id 입니다.")
     public ResponseEntity<MessageResponse> updateStorePhoto(
+            @RequestHeader("Authorization") String token,  // 첫 번째로 token을 받음
             @PathVariable Integer id,
             @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
 
@@ -81,7 +84,7 @@ public class StorePhotoController {
         UpdateStorePhotoDTO updateStorePhotoDTO = new UpdateStorePhotoDTO(image);
 
         // StorePhoto 수정 서비스 호출
-        storePhotoService.updateStorePhoto(id, updateStorePhotoDTO, image);
+        storePhotoService.updateStorePhoto(token, id, updateStorePhotoDTO, image);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("StorePhoto 수정 성공"));
@@ -90,10 +93,13 @@ public class StorePhotoController {
     /**
      * StorePhoto 삭제
      */
-    @DeleteMapping("/photo/{id}")
+    @DeleteMapping("/photo")
     @Operation(summary = "StorePhoto 삭제")
-    public ResponseEntity<MessageResponse> deleteStorePhoto(@PathVariable Integer id) {
-        storePhotoService.deleteStorePhoto(id);
+    public ResponseEntity<MessageResponse> deleteStorePhoto(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("photoId") Integer photoId) {
+
+        storePhotoService.deleteStorePhotoByToken(token, photoId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("StorePhoto 삭제 성공"));
     }
