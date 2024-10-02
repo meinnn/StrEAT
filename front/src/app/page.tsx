@@ -20,8 +20,14 @@ export default async function Home() {
 
     if (response.ok) {
       // 로그인 성공 시 리다이렉트
-      // TODO : userType 받아서 수정 필요!!!
-      redirect('/customer')
+      const data = await response.json()
+      if (data.userType === 'NOT_SELECTED') {
+        redirect('/sign-up')
+      } else if (data.userType === 'CUSTOMER') {
+        redirect('/customer')
+      } else if (data.userType === 'OWNER') {
+        redirect('/owner')
+      }
     }
     // 실패한 경우는 아무것도 하지 않고 로그인 화면 표시
   }
