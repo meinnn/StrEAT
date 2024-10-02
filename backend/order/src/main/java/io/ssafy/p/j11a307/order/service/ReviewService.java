@@ -55,14 +55,17 @@ public class ReviewService {
         Orders orders =ordersRepository.findById(id).orElse(null);
         if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
 
-
         //2. 해당 주문을 한 유저가 아니라면?
         if(orders.getUserId() != userId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+        //3. 이미 해당 주문에 대한 리뷰가 존재한다면?
+        if(reviewRepository.searchReview(id) != null) throw new BusinessException(ErrorCode.REVIEW_ALREADY_FOUND);
 
         Review review = Review.builder()
                 .id(new OrdersId(orders))
                 .score(score)
                 .content(content).build();
+
 
         reviewRepository.save(review);
 

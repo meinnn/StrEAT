@@ -34,7 +34,8 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "리뷰 등록 성공"),
             @ApiResponse(responseCode = "401", description = "권한 없음"),
-            @ApiResponse(responseCode = "404", description = "주문 존재하지 않음")
+            @ApiResponse(responseCode = "404", description = "주문 존재하지 않음"),
+            @ApiResponse(responseCode = "400", description = "이미 존재하는 리뷰")
     })
     @Parameters({
             @Parameter(name = "score", description = "점수"),
@@ -43,7 +44,6 @@ public class ReviewController {
     public ResponseEntity<MessageResponse> createReview(@PathVariable Integer id,
                                                         @RequestHeader("Authorization") String token,
                                                         @RequestPart(value = "image", required = false) MultipartFile[] images,
-                                                        //@RequestBody CreateReviewDTO createReviewDTO,
                                                         @RequestParam(value="score") Integer score,
                                                         @RequestParam(value="content") String content) {
         CreateReviewDTO createReviewDTO = CreateReviewDTO.builder().score(score).content(content).build();
