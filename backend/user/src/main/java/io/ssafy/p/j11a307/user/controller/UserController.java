@@ -1,5 +1,7 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
+import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.service.UserService;
@@ -8,10 +10,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +42,7 @@ public class UserController {
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
     @Tag(name = "내부 서비스 간 요청")
-    public Integer getUserId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+    public Integer getUserId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             return userService.getUserId(accessToken);
         }
@@ -52,7 +55,7 @@ public class UserController {
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
     @Tag(name = "내부 서비스 간 요청")
-    public Integer getOwnerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+    public Integer getOwnerId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
             boolean isOwner = userService.isOwner(userId);
@@ -70,7 +73,7 @@ public class UserController {
             @Parameter(name = "accessToken", description = "파싱이 필요한 user id")
     })
     @Tag(name = "내부 서비스 간 요청")
-    public Integer getCustomerId(String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+    public Integer getCustomerId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
             boolean isCustomer = userService.isCustomer(userId);
@@ -131,9 +134,36 @@ public class UserController {
     })
     public ResponseEntity<Void> registerCustomer(@RequestHeader(HEADER_AUTH) String accessToken) {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
-        userId = userService.registerNewCustomer(userId);
+        userId = userService.registerNewUserType(userId, UserType.CUSTOMER);
         HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
         return ResponseEntity.ok().headers(headers).build();
+    }
+
+    @PostMapping("/owners/register")
+    @Operation(summary = "회원가입 시 사장 선택", description = "회원 시 사장 선택")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사장으로 가입 성공, header에 새로운 토큰 발급"),
+            @ApiResponse(responseCode = "404", description = "유저 id 기반 유저 없음"),
+            @ApiResponse(responseCode = "400", description = "이미 손님으로 등록된 유저"),
+            @ApiResponse(responseCode = "400", description = "이미 사장님으로 등록된 유저")
+    })
+    public ResponseEntity<Void> registerOwner(@RequestHeader(HEADER_AUTH) String accessToken) {
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+        userId = userService.registerNewUserType(userId, UserType.OWNER);
+        HttpHeaders headers = jwtUtil.createTokenHeaders(userId);
+        return ResponseEntity.ok().headers(headers).build();
+    }
+
+    @GetMapping("/profile/{userId}")
+    @Operation(summary = "유저 정보 조회", description = "유저 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "유저 조회 성공",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserInfoResponse.class))),
+            @ApiResponse(responseCode = "404", description = "해당 id 유저 없음")
+    })
+    public ResponseEntity<UserInfoResponse> getUserInformation(@PathVariable Integer userId) {
+        UserInfoResponse userInfoResponse = userService.getUserInfoById(userId);
+        return ResponseEntity.ok(userInfoResponse);
     }
 
     @GetMapping("/createToken")
@@ -141,8 +171,11 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "토큰 생성 완료")
     })
+    @Parameters({
+            @Parameter(name = "userId", in = ParameterIn.QUERY)
+    })
     @Tag(name = "토큰 생성")
-    public ResponseEntity<String> createToken(@Parameter(name = "유저 아이디", in = ParameterIn.QUERY) Integer userId) {
+    public ResponseEntity<String> createToken(@RequestParam Integer userId) {
         String token = jwtUtil.createAccessToken(userId);
         return ResponseEntity.ok(token);
     }

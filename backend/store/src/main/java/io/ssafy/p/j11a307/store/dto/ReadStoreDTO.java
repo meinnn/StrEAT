@@ -1,6 +1,8 @@
 package io.ssafy.p.j11a307.store.dto;
 
 import io.ssafy.p.j11a307.store.entity.Store;
+import io.ssafy.p.j11a307.store.entity.StoreStatus;
+import io.ssafy.p.j11a307.store.entity.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "가게 정보를 반환하기 위한 DTO")
@@ -26,8 +28,8 @@ public record ReadStoreDTO(
         @Schema(description = "경도", example = "127.123456")
         String longitude,
 
-        @Schema(description = "업종 타입", example = "카페")
-        String type,
+        @Schema(description = "업종 타입", example = "이동형")
+        StoreType type,
 
         @Schema(description = "계좌번호", example = "1234-5678-9012-3456")
         String bankAccount,
@@ -38,8 +40,11 @@ public record ReadStoreDTO(
         @Schema(description = "사장님 한마디", example = "맛있게 드세요!")
         String ownerWord,
 
-        @Schema(description = "영업 상태", example = "영업 중")
-        String status
+        @Schema(description = "영업 상태", example = "영업중")
+        StoreStatus status,
+
+        @Schema(description = "업종 카테고리 ID", example = "1")
+        Integer industryCategoryId  // 추가된 필드
 ) {
     // Store 엔티티를 받아서 DTO로 변환하는 생성자
     public ReadStoreDTO(Store store) {
@@ -55,7 +60,8 @@ public record ReadStoreDTO(
                 store.getBankAccount(),
                 store.getBankName(),
                 store.getOwnerWord(),
-                store.getStatus()
+                store.getStatus(),
+                store.getIndustryCategory().getId()
         );
     }
 }

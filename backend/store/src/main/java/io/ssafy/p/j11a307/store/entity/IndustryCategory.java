@@ -23,7 +23,7 @@ public class IndustryCategory {
     private String name;  // 업종명
 
     @OneToMany(mappedBy = "industryCategory", cascade = CascadeType.ALL)
-    private List<StoreIndustryCategory> storeIndustryCategories;
+    private List<Store> stores;
 
     public void changeName(String newName) {
         if (newName == null || newName.isEmpty()) {
