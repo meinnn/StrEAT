@@ -13,7 +13,7 @@ export default function OrderSuccess() {
 
     // 컴포넌트가 언마운트될 때 타이머 정리
     return () => clearTimeout(timer)
-  }, [])
+  }, [router])
 
   return (
     <div className="h-screen z-50 flex flex-col items-center justify-center">

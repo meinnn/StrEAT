@@ -11,7 +11,10 @@ export default function MenuEdit() {
         {/* 메뉴 추가 타이틀 */}
         <div className="relative mb-6 mt-4 w-full flex items-center">
           {/* relative 위치 지정 */}
-          <button className="text-xl text-primary-950 absolute left-4">
+          <button
+            type="button"
+            className="text-xl text-primary-950 absolute left-4"
+          >
             {/* 버튼을 왼쪽에 고정 */}
             <FaArrowLeft />
           </button>

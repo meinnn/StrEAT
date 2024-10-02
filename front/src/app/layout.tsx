@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
+import Script from 'next/script'
+import { MapCenterProvider } from '@/contexts/MapCenterContext'
 
 const pretendard = localFont({
   src: '../../public/fonts/woff2/PretendardVariable.woff2',
@@ -15,13 +17,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode
+  modal: React.ReactNode
 }>) {
   return (
     <html lang="ko" className={pretendard.className}>
       <body className="font-pretendard antialiased">
-        <main className="min-h-screen h-full">{children}</main>
+        <MapCenterProvider>
+          {modal}
+          <main className="min-h-screen h-full">{children}</main>
+        </MapCenterProvider>
+        <Script
+          type="text/javascript"
+          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}&submodules=geocoder`}
+        />
       </body>
     </html>
   )

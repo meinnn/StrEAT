@@ -5,11 +5,38 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { MdEventNote } from 'react-icons/md'
 import { RiHeart3Line, RiNotification2Line } from 'react-icons/ri'
+import { useRouter } from 'next/navigation'
 
 export default function MyPage() {
   // 알림 스위치 상태 관리
   const [orderNotification, setOrderNotification] = useState(true)
   const [storeNotification, setStoreNotification] = useState(true)
+
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    const response = await fetch('/services/users/logout', {
+      method: 'POST',
+    })
+
+    if (response.ok) {
+      router.push('/') // 로그인 페이지로 이동
+    } else {
+      console.error('Logout failed')
+    }
+  }
+
+  const handleWithdrawal = async () => {
+    const response = await fetch('/services/users/withdraw', {
+      method: 'DELETE',
+    })
+
+    if (response.ok) {
+      router.push('/')
+    } else {
+      console.error('Withdrawal failed')
+    }
+  }
 
   return (
     <div className="p-6">
@@ -38,7 +65,10 @@ export default function MyPage() {
       {/* 메뉴 */}
       <div className="flex items-center justify-evenly bg-white py-6 rounded-xl border border-gray-medium">
         {/* 내 리뷰 */}
-        <Link href="/customer/reviews" className="flex flex-col items-center">
+        <Link
+          href="/customer/mypage/reviews"
+          className="flex flex-col items-center"
+        >
           <MdEventNote className="text-primary-500" size={20} />
           <p className="text-sm font-medium mt-2">내 리뷰</p>
         </Link>
@@ -116,10 +146,18 @@ export default function MyPage() {
 
       {/* 기타 메뉴 */}
       <div className="px-4 space-y-4">
-        <button type="button" className="w-full text-left">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="w-full text-left"
+        >
           로그아웃
         </button>
-        <button type="button" className="w-full text-left text-red-500">
+        <button
+          type="button"
+          onClick={handleWithdrawal}
+          className="w-full text-left text-red-500"
+        >
           회원 탈퇴
         </button>
       </div>

@@ -19,7 +19,7 @@ export default function RadioButton({
   onChange,
   label,
   name,
-  size, // 기본값 설정
+  size = 24, // 기본값 설정
 }: RadioButtonProps) {
   return (
     <label htmlFor={id} className="flex items-center cursor-pointer">
@@ -48,9 +48,4 @@ export default function RadioButton({
       <span className="ms-2">{label}</span> {/* 라벨 텍스트 */}
     </label>
   )
-}
-
-RadioButton.defaultProps = {
-  size: 24,
-  label: null,
 }
