@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     })
 
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/${orderId}/review`,
+      `${process.env.NEXT_PUBLIC_NAVER_SEARCH_CLIENT_SECRET}/api/orders/${orderId}/review`,
       {
         method: 'POST',
         body: newFormData,
