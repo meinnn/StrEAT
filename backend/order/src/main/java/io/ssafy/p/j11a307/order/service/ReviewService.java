@@ -65,21 +65,23 @@ public class ReviewService {
                 .content(content).build();
 
         reviewRepository.save(review);
-        
-        //리뷰 이미지 저장
-        for (MultipartFile image : images) {
-            if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
-                throw new BusinessException(ErrorCode.FileEmptyException);
+
+        if(images != null) {
+            //리뷰 이미지 저장
+            for (MultipartFile image : images) {
+                if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
+                    throw new BusinessException(ErrorCode.FileEmptyException);
+                }
+
+                String url = this.uploadImage(image);
+
+                ReviewPhoto reviewPhoto = ReviewPhoto.builder()
+                        .reviewId(review)
+                        .src(url)
+                        .build();
+
+                reviewPhotoRepository.save(reviewPhoto);
             }
-
-            String url = this.uploadImage(image);
-            
-            ReviewPhoto reviewPhoto = ReviewPhoto.builder()
-                    .reviewId(review)
-                    .src(url)
-                    .build();
-
-            reviewPhotoRepository.save(reviewPhoto);
         }
     }
 
@@ -102,6 +104,8 @@ public class ReviewService {
     @Transactional
     public List<GetMyReviewsDTO> getMyReviews(String token) {
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
+
+        System.out.println(userId);
 
         //현재 로그인한 유저 아이디와 맞는 리뷰들을 모두 가져오기
         List<Orders> orders = ordersRepository.findByUserId(userId);

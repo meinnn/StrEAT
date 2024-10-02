@@ -25,9 +25,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
-    @Slf4j
-    public class ReviewController {
-        private final ReviewService reviewService;
+@Slf4j
+public class ReviewController {
+    private final ReviewService reviewService;
 
     @PostMapping(value= "/{id}/review", consumes = {"multipart/form-data"})
     @Operation(summary = "리뷰 등록", description = "주문 id를 보내고 리뷰 등록")
