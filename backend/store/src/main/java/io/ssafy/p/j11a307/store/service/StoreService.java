@@ -49,7 +49,7 @@ public class StoreService{
      * 가게 생성
      */
     @Transactional
-    public void createStore(CreateStoreDTO createStoreDTO, String token) {
+    public void createStore(String token,CreateStoreDTO createStoreDTO) {
         // token을 통해 userId 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
         if (userId == null) {
@@ -122,16 +122,19 @@ public class StoreService{
      * 가게 삭제
      */
     @Transactional
-    public void deleteStore(String token) {
+    public void deleteStoreByToken(String token) {
         // token을 통해 userId 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
         if (userId == null) {
             throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
         }
 
-        // userId에 해당하는 store 조회
+        // userId로 store 조회
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // IndustryCategory와의 연관관계 제거
+        store.removeFromCategory();
 
         // store 삭제
         storeRepository.delete(store);
@@ -178,6 +181,30 @@ public class StoreService{
         }
 
         store.changeClosedDays(closedDays);  // Store 엔티티에서 휴무일 변경 메서드 호출
+        storeRepository.save(store);  // 변경 사항 저장
+    }
+
+    /**
+     * 가게 사장님 한마디(ownerWord) 업데이트
+     */
+    @Transactional
+    public void updateOwnerWord(String token, String ownerWord) {
+        // token을 통해 userId 조회
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+
+        // userId에 해당하는 store 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // ownerWord 업데이트
+        if (ownerWord == null || ownerWord.isEmpty()) {
+            throw new BusinessException(ErrorCode.OWNER_WORD_NULL);  // 적절한 예외 처리
+        }
+
+        store.changeOwnerWord(ownerWord);  // Store 엔티티에서 사장님 한마디 변경 메서드 호출
         storeRepository.save(store);  // 변경 사항 저장
     }
 }

@@ -27,21 +27,21 @@ public class BusinessDayController {
     /**
      * BusinessDay 생성
      */
-    @PostMapping("/{storeId}")
-    @Operation(summary = "storeId를 통해 영업일 생성")
-    public ResponseEntity<MessageResponse> createBusinessDay(@PathVariable Integer storeId, @RequestBody CreateBusinessDayDTO createDTO) {
-        businessDayService.createBusinessDay(storeId, createDTO);
+    @PostMapping("/business-day")
+    @Operation(summary = "token으로 영업일 생성")
+    public ResponseEntity<MessageResponse> createBusinessDayByToken(@RequestHeader("Authorization") String token, @RequestBody CreateBusinessDayDTO createDTO) {
+        businessDayService.createBusinessDayByToken(token, createDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("영업일 생성 성공"));
     }
 
     /**
-     * BusinessDay 조회 (단일)
+     * BusinessDay 조회 (storeId로)
      */
-    @GetMapping("/{id}")
-    @Operation(summary = "영업일 단일 조회")
-    public ResponseEntity<DataResponse<ReadBusinessDayDTO>> getBusinessDayById(@PathVariable Integer id) {
-        ReadBusinessDayDTO businessDay = businessDayService.getBusinessDayById(id);
+    @GetMapping("/{storeId}")
+    @Operation(summary = "가게 ID로 영업일 조회")
+    public ResponseEntity<DataResponse<ReadBusinessDayDTO>> getBusinessDayByStoreId(@PathVariable Integer storeId) {
+        ReadBusinessDayDTO businessDay = businessDayService.getBusinessDayByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("영업일 조회 성공", businessDay));
     }
@@ -60,10 +60,10 @@ public class BusinessDayController {
     /**
      * BusinessDay 수정
      */
-    @PutMapping("/{id}")
-    @Operation(summary = "영업일 수정")
-    public ResponseEntity<MessageResponse> updateBusinessDay(@PathVariable Integer id, @RequestBody UpdateBusinessDayDTO updateDTO) {
-        businessDayService.updateBusinessDay(id, updateDTO);
+    @PutMapping("/update")
+    @Operation(summary = "token으로 영업일 수정")
+    public ResponseEntity<MessageResponse> updateBusinessDayByToken(@RequestHeader("Authorization") String token, @RequestBody UpdateBusinessDayDTO updateDTO) {
+        businessDayService.updateBusinessDayByToken(token, updateDTO);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("영업일 수정 성공"));
     }
@@ -71,10 +71,10 @@ public class BusinessDayController {
     /**
      * BusinessDay 삭제
      */
-    @DeleteMapping("/{storeId}")
-    @Operation(summary = "storeId를 통해 영업일 삭제")
-    public ResponseEntity<MessageResponse> deleteBusinessDay(@PathVariable Integer storeId) {
-        businessDayService.deleteBusinessDayByStoreId(storeId);
+    @DeleteMapping("/business-day")
+    @Operation(summary = "token으로 영업일 삭제")
+    public ResponseEntity<MessageResponse> deleteBusinessDayByToken(@RequestHeader("Authorization") String token) {
+        businessDayService.deleteBusinessDayByToken(token);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("영업일 삭제 성공"));
     }

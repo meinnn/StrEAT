@@ -12,6 +12,7 @@ import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,18 +23,28 @@ public class BusinessDayService {
 
     private final BusinessDayRepository businessDayRepository;
     private final StoreRepository storeRepository;
+    private final OwnerClient ownerClient;
+
+    @Value("${streat.internal-request}")
+    private String internalRequestKey;
 
     /**
      * BusinessDay 생성
      */
     @Transactional
-    public void createBusinessDay(Integer storeId, CreateBusinessDayDTO createDTO) {
-        // storeId로 가게를 조회
-        Store store = storeRepository.findById(storeId)
+    public void createBusinessDayByToken(String token, CreateBusinessDayDTO createDTO) {
+        // token을 통해 userId 조회
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+
+        // userId에 해당하는 store 조회
+        Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         // 해당 가게에 이미 영업일이 존재하는지 확인
-        boolean exists = businessDayRepository.existsByStoreId(storeId);
+        boolean exists = businessDayRepository.existsByStoreId(store.getId());
         if (exists) {
             throw new BusinessException(ErrorCode.BUSINESS_DAY_ALREADY_EXISTS); // 이미 영업일이 존재하는 경우 예외 처리
         }
@@ -47,8 +58,8 @@ public class BusinessDayService {
      * BusinessDay 조회 (단건)
      */
     @Transactional(readOnly = true)
-    public ReadBusinessDayDTO getBusinessDayById(Integer id) {
-        BusinessDay businessDay = businessDayRepository.findById(id)
+    public ReadBusinessDayDTO getBusinessDayByStoreId(Integer storeId) {
+        BusinessDay businessDay = businessDayRepository.findByStoreId(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.BUSINESS_DAY_NOT_FOUND));
         return new ReadBusinessDayDTO(businessDay);
     }
@@ -68,8 +79,19 @@ public class BusinessDayService {
      * BusinessDay 수정
      */
     @Transactional
-    public void updateBusinessDay(Integer id, UpdateBusinessDayDTO updateDTO) {
-        BusinessDay businessDay = businessDayRepository.findById(id)
+    public void updateBusinessDayByToken(String token, UpdateBusinessDayDTO updateDTO) {
+        // token을 통해 userId 조회
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+
+        // userId에 해당하는 store 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // storeId로 BusinessDay 조회
+        BusinessDay businessDay = businessDayRepository.findByStoreId(store.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.BUSINESS_DAY_NOT_FOUND));
 
         // DTO를 이용해 BusinessDay 정보 업데이트
@@ -81,8 +103,19 @@ public class BusinessDayService {
      * BusinessDay 삭제
      */
     @Transactional
-    public void deleteBusinessDayByStoreId(Integer storeId) {
-        BusinessDay businessDay = businessDayRepository.findByStoreId(storeId)
+    public void deleteBusinessDayByToken(String token) {
+        // token을 통해 userId 조회
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+
+        // userId에 해당하는 store 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // storeId로 영업일 조회
+        BusinessDay businessDay = businessDayRepository.findByStoreId(store.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.BUSINESS_DAY_NOT_FOUND));
 
         // 영업일 삭제

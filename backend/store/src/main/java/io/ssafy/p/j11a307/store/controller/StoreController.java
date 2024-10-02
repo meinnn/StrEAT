@@ -25,8 +25,8 @@ public class StoreController {
     // 1. 점포 생성
     @PostMapping
     @Operation(summary = "점포 생성")
-    public ResponseEntity<MessageResponse> createStore(@RequestBody CreateStoreDTO storeRequest, @RequestHeader("Authorization") String token) {
-        storeService.createStore(storeRequest, token);
+    public ResponseEntity<MessageResponse> createStore(@RequestHeader("Authorization") String token, @RequestBody CreateStoreDTO storeRequest) {
+        storeService.createStore(token, storeRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("가게 생성 성공"));
     }
@@ -88,7 +88,7 @@ public class StoreController {
     @DeleteMapping("/store")
     @Operation(summary = "점포 삭제")
     public ResponseEntity<MessageResponse> deleteStore(@RequestHeader("Authorization") String token) {
-        storeService.deleteStore(token);  // token을 통해 점포 삭제
+        storeService.deleteStoreByToken(token);  // token을 통해 점포 삭제
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 삭제 성공"));
     }
@@ -100,5 +100,13 @@ public class StoreController {
         storeService.updateClosedDays(token, closedDays);  // token을 통해 userId로 점포를 찾고 휴무일 업데이트
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 휴무일 변경 성공"));
+    }
+
+    @PatchMapping("/store/ownerWord")
+    @Operation(summary = "점포 사장님 한마디 수정")
+    public ResponseEntity<MessageResponse> updateOwnerWord(@RequestHeader("Authorization") String token, @RequestBody String ownerWord) {
+        storeService.updateOwnerWord(token, ownerWord);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("사장님 한마디 수정 성공"));
     }
 }

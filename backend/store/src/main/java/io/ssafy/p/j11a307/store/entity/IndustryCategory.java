@@ -25,6 +25,12 @@ public class IndustryCategory {
     @OneToMany(mappedBy = "industryCategory", cascade = CascadeType.ALL)
     private List<Store> stores;
 
+    public void removeStore(Store store) {
+        if (this.stores != null) {
+            this.stores.remove(store);  // stores 리스트에서 해당 store 삭제
+        }
+    }
+
     public void changeName(String newName) {
         if (newName == null || newName.isEmpty()) {
             throw new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NAME_NULL); // 이름이 유효하지 않으면 예외 처리

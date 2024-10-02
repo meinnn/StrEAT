@@ -47,13 +47,18 @@ public class StoreLocationPhotoService {
      * StoreLocationPhoto 생성
      */
     @Transactional
-    public void createStoreLocationPhoto(Integer storeId, CreateStoreLocationPhotoDTO createStoreLocationPhotoDTO, String token) {
+    public void createStoreLocationPhoto(String token, CreateStoreLocationPhotoDTO createStoreLocationPhotoDTO) {
         // 토큰으로 사용자 ID 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
 
         if (userId == null) {
             throw new BusinessException(ErrorCode.INVALID_USER);
         }
+
+        // userId로 store 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
         // 이미지 파일 처리 및 저장
         for (MultipartFile image : createStoreLocationPhotoDTO.images()) {
             if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
@@ -70,11 +75,9 @@ public class StoreLocationPhotoService {
                 throw new BusinessException(ErrorCode.FILE_UPLOAD_FAIL);
             }
 
-            Store store = storeRepository.findById(storeId).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-
             // StoreLocationPhoto 엔티티 생성 및 저장
             StoreLocationPhoto storeLocationPhoto = StoreLocationPhoto.builder()
-                    .store(store)  // storeId 대신 store 객체를 사용
+                    .store(store)  // userId로 찾은 store 객체를 사용
                     .src(url)  // URL 사용
                     .latitude(createStoreLocationPhotoDTO.latitude())
                     .longitude(createStoreLocationPhotoDTO.longitude())
@@ -106,13 +109,24 @@ public class StoreLocationPhotoService {
                 .map(ReadStoreLocationPhotoDTO::new)
                 .collect(Collectors.toList());
     }
-
     /**
      * StoreLocationPhoto 수정
      */
     @Transactional
-    public void updateStoreLocationPhoto(Integer id, UpdateStoreLocationPhotoDTO updateDTO) {
-        StoreLocationPhoto storeLocationPhoto = storeLocationPhotoRepository.findById(id)
+    public void updateStoreLocationPhoto(String token, Integer id, UpdateStoreLocationPhotoDTO updateDTO) {
+        // 토큰으로 사용자 ID 조회
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.INVALID_USER);
+        }
+
+        // userId로 store 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // Store의 사진을 가져옴
+        StoreLocationPhoto storeLocationPhoto = storeLocationPhotoRepository.findByIdAndStoreId(id, store.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_LOCATION_PHOTO_NOT_FOUND));
 
         // 이미지 파일이 있을 경우 업로드 후 URL 생성
@@ -136,8 +150,20 @@ public class StoreLocationPhotoService {
      * StoreLocationPhoto 삭제
      */
     @Transactional
-    public void deleteStoreLocationPhoto(Integer id) {
-        StoreLocationPhoto storeLocationPhoto = storeLocationPhotoRepository.findById(id)
+    public void deleteStoreLocationPhotoByToken(String token, Integer locationPhotoId) {
+        // 토큰으로 사용자 ID 조회
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.INVALID_USER);
+        }
+
+        // userId로 store 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // StoreLocationPhoto 삭제
+        StoreLocationPhoto storeLocationPhoto = storeLocationPhotoRepository.findByIdAndStoreId(locationPhotoId, store.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_LOCATION_PHOTO_NOT_FOUND));
 
         storeLocationPhotoRepository.delete(storeLocationPhoto);

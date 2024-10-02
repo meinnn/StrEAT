@@ -72,6 +72,13 @@ public class Store {
     @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
     private BusinessDay businessDay;
 
+    // Store 삭제 전 IndustryCategory와의 연관관계를 끊는 메서드 추가
+    public void removeFromCategory() {
+        if (this.industryCategory != null) {
+            this.industryCategory.removeStore(this);
+            this.industryCategory = null;  // 연관관계 제거
+        }
+    }
 
     // 이름 변경 메서드
     public void changeName(String name) {
@@ -79,6 +86,10 @@ public class Store {
               throw new BusinessException(ErrorCode.STORE_NAME_NULL);
         }
         this.name = name;
+    }
+
+    public void changeOwnerWord(String ownerWord) {
+        this.ownerWord = ownerWord;
     }
 
     // 주소 변경 메서드

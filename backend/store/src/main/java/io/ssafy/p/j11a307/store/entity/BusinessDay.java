@@ -41,12 +41,25 @@ public class BusinessDay {
     @Column(length = 20)
     private String thursdayStart;
 
+    @Column(length = 20)
     private String thursdayEnd;
+
+    @Column(length = 20)
     private String fridayStart;
+
+    @Column(length = 20)
     private String fridayEnd;
+
+    @Column(length = 20)
     private String saturdayStart;
+
+    @Column(length = 20)
     private String saturdayEnd;
+
+    @Column(length = 20)
     private String sundayStart;
+
+    @Column(length = 20)
     private String sundayEnd;
 
     // 필드별 값을 변경하는 명시적인 메서드
