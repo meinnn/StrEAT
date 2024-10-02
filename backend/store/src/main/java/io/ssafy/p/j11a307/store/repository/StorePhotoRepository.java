@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface StorePhotoRepository extends JpaRepository<StorePhoto, Integer> {
     List<StorePhoto> findByStoreId(Integer storeId);
+
 }
