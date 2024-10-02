@@ -12,7 +12,7 @@ export default function PaymentCheckoutPage() {
   const [payment, setPayment] = useState<any>(null)
   const [amount] = useState({
     currency: 'KRW',
-    value: 5000000000,
+    value: 50000,
   })
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
@@ -51,7 +51,7 @@ export default function PaymentCheckoutPage() {
         amount: amount, // amount는 숫자형 값으로 전달
         orderId: 'YVyBWblH0boLvfy5NgZJU',
         orderName: '토스 티셔츠 외 2건',
-        successUrl: `${window.location.origin}/ordersuccess`,
+        successUrl: `${window.location.origin}/customer/payment/result`,
         failUrl: `${window.location.origin}/orderfailure`,
         customerEmail: 'customer123@gmail.com',
         customerName: '김싸피',
