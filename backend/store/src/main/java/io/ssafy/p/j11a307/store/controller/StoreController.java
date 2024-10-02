@@ -1,9 +1,6 @@
 package io.ssafy.p.j11a307.store.controller;
 
-import io.ssafy.p.j11a307.store.dto.CreateStoreDTO;
-import io.ssafy.p.j11a307.store.dto.ReadStoreDTO;
-import io.ssafy.p.j11a307.store.dto.UpdateAddressDTO;
-import io.ssafy.p.j11a307.store.dto.UpdateStoreDTO;
+import io.ssafy.p.j11a307.store.dto.*;
 import io.ssafy.p.j11a307.store.global.DataResponse;
 import io.ssafy.p.j11a307.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,13 +36,22 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("점포 타입 조회 성공", storeType));
     }
 
-    // 3. 점포 상세 정보 조회
+    // 3. 점포 정보 조회
     @GetMapping("/{id}")
-    @Operation(summary = "점포 상세 정보 조회")
+    @Operation(summary = "점포 정보 조회")
     public ResponseEntity<DataResponse<ReadStoreDTO>> getStoreInfo(@PathVariable Integer id) {
         ReadStoreDTO storeResponse = storeService.getStoreInfo(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeResponse));
+    }
+
+    // 4. 점포 상세 정보 조회(with photo)
+    @GetMapping("/{id}/details")
+    @Operation(summary = "점포 상세 정보 조회")
+    public ResponseEntity<DataResponse<ReadStoreDetailsDTO>> getStoreDetailInfo(@PathVariable Integer id) {
+        ReadStoreDetailsDTO storeDetails = storeService.getStoreDetailInfo(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("점포 상세 정보 조회 성공", storeDetails));
     }
 
     // 4. 점포 리스트 조회

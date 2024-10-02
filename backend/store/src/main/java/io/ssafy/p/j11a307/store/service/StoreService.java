@@ -6,6 +6,8 @@ import io.ssafy.p.j11a307.store.entity.Store;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import io.ssafy.p.j11a307.store.repository.IndustryCategoryRepository;
+import io.ssafy.p.j11a307.store.repository.StoreLocationPhotoRepository;
+import io.ssafy.p.j11a307.store.repository.StorePhotoRepository;
 import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+import io.ssafy.p.j11a307.store.entity.StorePhoto;
+import io.ssafy.p.j11a307.store.entity.StoreLocationPhoto;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,9 @@ public class StoreService{
     private final StoreRepository storeRepository;
     private final IndustryCategoryRepository industryCategoryRepository;
     private final OwnerClient ownerClient;
+    private final StoreLocationPhotoRepository storeLocationPhotoRepository;
+    private final StorePhotoRepository storePhotoRepository;
+    private final ProductClient productClient;
 
     @Value("${streat.internal-request}")  // "${}"로 수정
     private String internalRequestKey;
@@ -44,6 +51,27 @@ public class StoreService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return new ReadStoreDTO(store);  // ReadStoreDTO로 변환하여 반환
     }
+
+
+
+
+    public ReadStoreDetailsDTO getStoreDetailInfo(Integer storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // StorePhotos, StoreLocationPhotos 로직 처리
+        List<ReadStorePhotoDTO> storePhotos = storePhotoRepository.findByStoreId(storeId)
+                .stream().map(ReadStorePhotoDTO::new).collect(Collectors.toList());
+
+        List<ReadStoreLocationPhotoDTO> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(storeId)
+                .stream().map(ReadStoreLocationPhotoDTO::new).collect(Collectors.toList());
+
+        // Product 서비스에서 categories 조회
+        List<String> categories = productClient.getProductCategories(storeId);
+
+        return new ReadStoreDetailsDTO(store, storePhotos, storeLocationPhotos, categories);
+    }
+
 
     /**
      * 가게 생성
