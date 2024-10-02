@@ -38,6 +38,9 @@ public record CreateStoreDTO(
         @Schema(description = "가게 전화번호", example = "02-0000-0000")
         String storePhoneNumber,
 
+        @Schema(description = "휴무일", example = "매주 월요일 휴무  09/16-09/18 추석 연휴 휴무")
+        String closedDays,
+
         @Schema(description = "영업 상태", example = "영업중")
         String status,
 
@@ -59,6 +62,7 @@ public record CreateStoreDTO(
                 .bankName(this.bankName)
                 .ownerWord(this.ownerWord)
                 .storePhoneNumber(this.storePhoneNumber)  // storePhoneNumber 추가
+                .closedDays(this.closedDays)
                 .status(StoreStatus.fromDescription(this.status))  // StoreStatus 변환
                 .industryCategory(industryCategory)  // IndustryCategory 설정
                 .build();

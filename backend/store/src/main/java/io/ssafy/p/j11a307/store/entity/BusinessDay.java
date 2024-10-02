@@ -16,8 +16,8 @@ public class BusinessDay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "store_id")
+    @OneToOne
+    @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     @Column(length = 20)

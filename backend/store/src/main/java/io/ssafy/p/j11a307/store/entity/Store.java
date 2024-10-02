@@ -52,6 +52,8 @@ public class Store {
 
     private String storePhoneNumber;
 
+    private String closedDays;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private StoreStatus status;
@@ -67,8 +69,8 @@ public class Store {
     @JoinColumn(name = "industry_category_id", nullable = false)
     private IndustryCategory industryCategory;
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
-    private List<BusinessDay> businessDays;
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    private BusinessDay businessDay;
 
 
     // 이름 변경 메서드
@@ -109,6 +111,7 @@ public class Store {
                 .bankName(request.bankName() != null ? request.bankName() : this.bankName)
                 .ownerWord(request.ownerWord() != null ? request.ownerWord() : this.ownerWord)
                 .storePhoneNumber(request.storePhoneNumber() != null ? request.storePhoneNumber() : this.storePhoneNumber)  // storePhoneNumber 추가
+                .closedDays(request.closedDays() != null ? request.closedDays() : this.closedDays)
                 .status(request.status() != null ? request.status() : this.status)
                 .industryCategory(industryCategory)
                 .build();
