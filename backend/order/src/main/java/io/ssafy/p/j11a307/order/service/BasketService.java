@@ -58,8 +58,9 @@ public class BasketService {
             if(shoppingCartOptions.equals(optionList)) {
                 //개수와 가격 업데이트
                 shoppingCart.updateQuantityAndPrice(quan);
+                shoppingCartRepository.save(shoppingCart);
                 return;
-            } else break;
+            }
         }
 
         //장바구니에 다른 요소로 추가
