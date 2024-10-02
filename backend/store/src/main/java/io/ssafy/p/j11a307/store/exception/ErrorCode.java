@@ -46,7 +46,9 @@ public enum ErrorCode {
     // Internal Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
     // Business Day
-    BUSINESS_DAY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 영업일 정보가 없습니다.");
+    BUSINESS_DAY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 영업일 정보가 없습니다."),
+    BUSINESS_DAY_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"이미 해당 가게에 영업일 정보가 존재합니다.");
+
 
     private final HttpStatus status;
     private final String message;

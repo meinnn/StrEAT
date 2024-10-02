@@ -20,25 +20,25 @@ public class BusinessDay {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String mondayStart;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String mondayEnd;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String tuesdayStart;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String tuesdayEnd;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String wednesdayStart;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String wednesdayEnd;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String thursdayStart;
 
     private String thursdayEnd;

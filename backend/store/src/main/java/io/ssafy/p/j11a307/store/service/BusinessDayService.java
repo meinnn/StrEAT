@@ -27,12 +27,18 @@ public class BusinessDayService {
      * BusinessDay 생성
      */
     @Transactional
-    public void createBusinessDay(CreateBusinessDayDTO createDTO) {
-        // Store 엔티티 조회
-        Store store = storeRepository.findById(createDTO.storeId())
+    public void createBusinessDay(Integer storeId, CreateBusinessDayDTO createDTO) {
+        // storeId로 가게를 조회
+        Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // BusinessDay 엔티티 생성 및 저장
+        // 해당 가게에 이미 영업일이 존재하는지 확인
+        boolean exists = businessDayRepository.existsByStoreId(storeId);
+        if (exists) {
+            throw new BusinessException(ErrorCode.BUSINESS_DAY_ALREADY_EXISTS); // 이미 영업일이 존재하는 경우 예외 처리
+        }
+
+        // DTO를 통해 영업일 생성
         BusinessDay businessDay = createDTO.toEntity(store);
         businessDayRepository.save(businessDay);
     }
@@ -75,10 +81,11 @@ public class BusinessDayService {
      * BusinessDay 삭제
      */
     @Transactional
-    public void deleteBusinessDay(Integer id) {
-        BusinessDay businessDay = businessDayRepository.findById(id)
+    public void deleteBusinessDayByStoreId(Integer storeId) {
+        BusinessDay businessDay = businessDayRepository.findByStoreId(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.BUSINESS_DAY_NOT_FOUND));
 
+        // 영업일 삭제
         businessDayRepository.delete(businessDay);
     }
 }

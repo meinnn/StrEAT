@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/business-days")
+@RequestMapping("/business-days")
 @CrossOrigin
 @Slf4j
 @RequiredArgsConstructor
@@ -27,10 +27,10 @@ public class BusinessDayController {
     /**
      * BusinessDay 생성
      */
-    @PostMapping
-    @Operation(summary = "영업일 생성")
-    public ResponseEntity<MessageResponse> createBusinessDay(@RequestBody CreateBusinessDayDTO createDTO) {
-        businessDayService.createBusinessDay(createDTO);
+    @PostMapping("/{storeId}")
+    @Operation(summary = "storeId를 통해 영업일 생성")
+    public ResponseEntity<MessageResponse> createBusinessDay(@PathVariable Integer storeId, @RequestBody CreateBusinessDayDTO createDTO) {
+        businessDayService.createBusinessDay(storeId, createDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("영업일 생성 성공"));
     }
@@ -71,10 +71,10 @@ public class BusinessDayController {
     /**
      * BusinessDay 삭제
      */
-    @DeleteMapping("/{id}")
-    @Operation(summary = "영업일 삭제")
-    public ResponseEntity<MessageResponse> deleteBusinessDay(@PathVariable Integer id) {
-        businessDayService.deleteBusinessDay(id);
+    @DeleteMapping("/{storeId}")
+    @Operation(summary = "storeId를 통해 영업일 삭제")
+    public ResponseEntity<MessageResponse> deleteBusinessDay(@PathVariable Integer storeId) {
+        businessDayService.deleteBusinessDayByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("영업일 삭제 성공"));
     }
