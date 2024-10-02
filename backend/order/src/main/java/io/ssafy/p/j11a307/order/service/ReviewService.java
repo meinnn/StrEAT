@@ -126,7 +126,8 @@ public class ReviewService {
             DataResponse<List<String>> productNameResponse = productClient.getProductNamesByProductIds(orderProducts);
 
             GetMyReviewsDTO getMyReviewsDTO= GetMyReviewsDTO.builder()
-                    .id(dataResponse.getData().getId())
+                    .reviewId(review.getId().getId().getId())
+                    .storeId(dataResponse.getData().getId())
                     .score(review.getScore())
                     .content(review.getContent())
                     .createdAt(review.getCreatedAt())
@@ -158,12 +159,9 @@ public class ReviewService {
             //주문상품목록 조회(상품 아이디를 가져와야 함)
             List<Integer> orderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
             DataResponse<List<String>> productNameResponse = productClient.getProductNamesByProductIds(orderProducts);
-            System.out.println(" 시작 출현!!!!!!!!!!!!!!!!!!!!");
 
             //User 정보 조회 API 구현된 후 호출해서 삽입 필요
             UserInfoResponse userInfoResponse = ownerClient.getUserInformation(order.getUserId());
-
-            System.out.println(userInfoResponse.name() + " 출현!!!!!!!!!!!!!!!!!!!!");
 
             GetStoreReviewsDTO getStoreReviewsDTO = GetStoreReviewsDTO.builder()
                     .content(review.getContent())
