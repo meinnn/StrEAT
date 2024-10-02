@@ -42,7 +42,7 @@ public class StorePhotoService {
      * StorePhoto 생성
      */
     @Transactional
-    public void createStorePhoto(CreateStorePhotoDTO createDTO, MultipartFile imageFile) throws IOException {
+    public void createStorePhoto(CreateStorePhotoDTO createDTO, MultipartFile imageFile){
         // Store ID가 null인 경우 예외 처리
         if (createDTO.storeId() == null) {
             throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
@@ -76,15 +76,14 @@ public class StorePhotoService {
     }
 
     /**
-     * StorePhoto 조회 (단일)
+     * 해당 가게의 StorePhoto 전체 조회
      */
-    @Transactional(readOnly = true)
-    public ReadStorePhotoDTO getStorePhotoById(Integer id) {
-        StorePhoto storePhoto = storePhotoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_PHOTO_NOT_FOUND));
-        return new ReadStorePhotoDTO(storePhoto);
+    public List<ReadStorePhotoDTO> getStorePhotosByStoreId(Integer storeId) {
+        List<StorePhoto> storePhotos = storePhotoRepository.findByStoreId(storeId);
+        return storePhotos.stream()
+                .map(ReadStorePhotoDTO::new)
+                .collect(Collectors.toList());
     }
-
     /**
      * StorePhoto 전체 조회
      */
@@ -168,4 +167,6 @@ public class StorePhotoService {
             throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
         }
     }
+
+
 }

@@ -49,12 +49,12 @@ public class StorePhotoController {
     /**
      * StorePhoto 조회 (단일)
      */
-    @GetMapping("/photo/{id}")
-    @Operation(summary = "StorePhoto 단일 조회")
-    public ResponseEntity<DataResponse<ReadStorePhotoDTO>> getStorePhotoById(@PathVariable Integer id) {
-        ReadStorePhotoDTO storePhoto = storePhotoService.getStorePhotoById(id);
+    @GetMapping("/photo/{storeId}")
+    @Operation(summary = "가게 ID로 검색 시 해당 가게 StorePhoto 조회")
+    public ResponseEntity<DataResponse<List<ReadStorePhotoDTO>>> getStorePhotosByStoreId(@PathVariable Integer storeId) {
+        List<ReadStorePhotoDTO> storePhotos = storePhotoService.getStorePhotosByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(DataResponse.of("StorePhoto 조회 성공", storePhoto));
+                .body(DataResponse.of("StorePhoto 조회 성공", storePhotos));
     }
 
     /**

@@ -154,7 +154,7 @@ public class UserController {
         return ResponseEntity.ok().headers(headers).build();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/profile/{userId}")
     @Operation(summary = "유저 정보 조회", description = "유저 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "유저 조회 성공",
