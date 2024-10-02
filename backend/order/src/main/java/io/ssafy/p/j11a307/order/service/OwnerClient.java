@@ -1,6 +1,11 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.UserInfoResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +18,11 @@ public interface OwnerClient {
     @GetMapping("/api/users/user-id")
     Integer getUserId(@RequestParam("accessToken") String accessToken, @RequestHeader("X-Internal-Request") String internalRequestHeader);
 
-    //User 정보 불러오는 API 필요
-    @GetMapping("/api/users/{userId}")
+    @GetMapping("/api/users/customer-id")
+    Integer getCustomerId(@RequestParam("accessToken") String accessToken, @RequestHeader("X-Internal-Request") String internalRequestHeader);
+
+
+    @GetMapping("/api/users/profile/{userId}")
     public UserInfoResponse getUserInformation(@PathVariable Integer userId);
 
 }
