@@ -137,7 +137,7 @@ services:
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://streat-config:8080 # config server
     ports:
-      - "8080:8080"
+      - "0:8080"
     networks:
       - streat-network
     depends_on: # 다른 서비스가 먼저 실행되도록 설정
@@ -145,7 +145,21 @@ services:
         condition: service_healthy
       streat-eureka:
         condition: service_healthy
-    
+
+  streat-payment:
+    image: junbeomson/streat-payment:latest
+    container_name: streat-payment
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://streat-config:8080 # config server
+    ports:
+      - "0:8080"
+    networks:
+      - streat-network
+    depends_on:
+      streat-config:
+        condition: service_healthy
+      streat-eureka:
+        condition: service_healthy
 
 
 networks:

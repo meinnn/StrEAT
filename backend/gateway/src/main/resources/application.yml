@@ -21,6 +21,10 @@ spring:
           uri: http://streat-product:8080
           predicates:
             - Path=/api/products/**
+        - id: payment
+          uri: http://streat-payment:8080
+          predicates:
+            - Path=/api/payments/**
     config:
       uri: http://localhost:8888
       label: main
@@ -43,3 +47,5 @@ springdoc:
         url: http://j11a307.p.ssafy.io/api/orders/v3/api-docs
       - name: Product API
         url: http://j11a307.p.ssafy.io/api/products/v3/api-docs
+      - name: Payment API
+        url: http://j11a307.p.ssafy.io/api/payments/v3/api-docs
