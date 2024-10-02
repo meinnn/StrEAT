@@ -28,12 +28,12 @@ public class SwaggerConfig {
         Components components = new Components().addSecuritySchemes(jwt, new SecurityScheme()
                 .name(jwt)
                 .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
+                .scheme("Bearer")
                 .bearerFormat("JWT")
         );
         return new OpenAPI()
                 .info(apiInfo())
-                .servers(List.of(new Server().url("/api/users")))
+                .servers(List.of(new Server().url("/api/orders")))
                 .addSecurityItem(securityRequirement)
                 .components(components);
     }

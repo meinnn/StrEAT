@@ -13,11 +13,15 @@ public record UpdateProductOptionDTO(
         @Schema(description = "옵션 카테고리 ID", example = "1")
         Integer productOptionCategoryId,
 
-        @Schema(description = "옵션 설명", example = "사이즈 옵션")
-        String description
+        @Schema(description = "옵션 이름", example = "매운맛")
+        String productOptionName,
+
+        @Schema(description = "옵션 가격", example = "2000")
+        Integer productOptionPrice
 ) {
     public void updateEntity(ProductOption productOption, Product product, ProductOptionCategory productOptionCategory) {
-        productOption.changeDescription(this.description);
+        productOption.changeProductOptionName(productOption);
+        productOption.changeProductOptionPrice(productOption);
         productOption.changeOptionCategory(productOptionCategory);
     }
 }

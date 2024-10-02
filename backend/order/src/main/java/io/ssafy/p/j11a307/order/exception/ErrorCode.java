@@ -13,7 +13,8 @@ public enum ErrorCode {
     REVIEW_DUPLICATED(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성한 이력이 있습니다."),
     FileEmptyException(HttpStatus.BAD_REQUEST, "파일이 비었습니다." ),
     S3Exception(HttpStatus.BAD_REQUEST, "이미지 업로드 중 유효하지 않은 형식으로 오류가 발생했습니다."),
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다.");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
+    REVIEW_ALREADY_FOUND(HttpStatus.BAD_REQUEST, "이미 리뷰가 존재합니다." );
 
     private final HttpStatus status;
     private final String message;

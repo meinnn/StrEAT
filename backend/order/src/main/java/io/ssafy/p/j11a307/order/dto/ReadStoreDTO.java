@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class StoreResponse {
+public class ReadStoreDTO {
         Integer id;
         String name;
         String address;
@@ -21,6 +21,6 @@ public class StoreResponse {
         Integer userId;
 
         //사진
-        List<String> images;
+        //List<String> images;
 
 }
