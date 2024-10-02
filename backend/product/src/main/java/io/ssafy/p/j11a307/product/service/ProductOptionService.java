@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,5 +76,39 @@ public class ProductOptionService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
 
         productOptionRepository.delete(productOption);
+    }
+
+    @Transactional
+    public Integer sumProductOption(List<Integer> optionList) {
+        int sum = 0;
+
+        for (Integer optionId : optionList) {
+            //해당 옵션이 겨냥한 상품에 대한 옵션이 아니면 에러
+            Optional<ProductOption> productOption = productOptionRepository.findById(optionId);
+
+            if(productOption.isPresent()) sum += productOption.get().getProductOptionPrice();
+            else throw new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND);
+        }
+
+        return sum;
+    }
+
+    @Transactional
+    public List<ReadProductOptionDTO> getProductOptionList(List<Integer> optionList) {
+        List<ReadProductOptionDTO> readProductOptionDTOs = new ArrayList<>();
+
+        for(Integer optionId : optionList) {
+            //해당 옵션이 겨냥한 상품에 대한 옵션이 아니면 에러
+            Optional<ProductOption> productOption = productOptionRepository.findById(optionId);
+
+            if(productOption.isPresent()) {
+                ReadProductOptionDTO readProductOptionDTO = new ReadProductOptionDTO(productOption.get());
+                readProductOptionDTOs.add(readProductOptionDTO);
+            }
+            else throw new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND);
+
+        }
+
+        return readProductOptionDTOs;
     }
 }
