@@ -53,13 +53,22 @@ public class StoreController {
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeResponse));
     }
 
-    // 4. 점포 상세 정보 조회(with photo)
+    // 4. 점포 상세 정보 조회(사장님 - 점포 상세 정보 조회)
     @GetMapping("/details")
-    @Operation(summary = "사장님 - 점포 상세 정보 조회 (상호명, 영업상태, 가게 주소, 사장님 한마디, 음식 카테고리, 가게 사진, 영업 위치 사진, 영업일, 휴무일")
+    @Operation(summary = "사장님 - 점포 상세 정보 조회 (상호명, 영업상태, 가게 주소, 사장님 한마디, 음식 카테고리, 가게 사진, 영업 위치 사진, 영업일, 휴무일)")
     public ResponseEntity<DataResponse<ReadStoreDetailsDTO>> getStoreDetailInfo(@RequestHeader("Authorization") String token) {
         ReadStoreDetailsDTO storeDetails = storeService.getStoreDetailInfo(token);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeDetails));
+    }
+
+    // 5. 점포 기본 정보 조회(리뷰 조회시 storeId로 검색했을 떄 점포 사진과 점포이름 반환)
+    @GetMapping("/{id}/photo-name")
+    @Operation(summary = "점포 기본 정보 조회 (가게 이름, 점포 사진(점포 사진이 null이면 위치 사진으로 대체))")
+    public ResponseEntity<DataResponse<ReadStoreBasicInfoDTO>> getStoreBasicInfo(@PathVariable Integer id) {
+        ReadStoreBasicInfoDTO storeBasicInfo = storeService.getStoreBasicInfo(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("점포 기본 정보 조회 성공", storeBasicInfo));
     }
 
     // 4. 점포 리스트 조회
