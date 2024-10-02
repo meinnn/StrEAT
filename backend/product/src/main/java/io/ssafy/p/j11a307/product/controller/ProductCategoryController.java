@@ -25,8 +25,9 @@ public class ProductCategoryController {
     // 1. 상품 카테고리 생성
     @PostMapping
     @Operation(summary = "상품 카테고리 생성")
-    public ResponseEntity<MessageResponse> createProductCategory(@RequestBody CreateProductCategoryDTO createCategoryDTO) {
-        productCategoryService.createProductCategory(createCategoryDTO);
+    public ResponseEntity<MessageResponse> createProductCategory(@RequestHeader("Authorization") String token,
+                                                                 @RequestBody CreateProductCategoryDTO createCategoryDTO) {
+        productCategoryService.createProductCategory(token, createCategoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("상품 카테고리 생성 성공"));
     }
@@ -52,18 +53,21 @@ public class ProductCategoryController {
     // 4. 상품 카테고리 수정
     @PatchMapping("/{categoryId}")
     @Operation(summary = "상품 카테고리 수정")
-    public ResponseEntity<MessageResponse> updateProductCategory(@PathVariable Integer categoryId,
+    public ResponseEntity<MessageResponse> updateProductCategory(@RequestHeader("Authorization") String token,
+                                                                 @PathVariable Integer categoryId,
                                                                  @RequestBody UpdateProductCategoryDTO updateCategoryDTO) {
-        productCategoryService.updateProductCategory(categoryId, updateCategoryDTO);
+        productCategoryService.updateProductCategory(token, categoryId, updateCategoryDTO);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 카테고리 수정 성공"));
     }
 
+
     // 5. 상품 카테고리 삭제
     @DeleteMapping("/{categoryId}")
     @Operation(summary = "상품 카테고리 삭제")
-    public ResponseEntity<MessageResponse> deleteProductCategory(@PathVariable Integer categoryId) {
-        productCategoryService.deleteProductCategory(categoryId);
+    public ResponseEntity<MessageResponse> deleteProductCategory(@RequestHeader("Authorization") String token,
+                                                                 @PathVariable Integer categoryId) {
+        productCategoryService.deleteProductCategory(token, categoryId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 카테고리 삭제 성공"));
     }
