@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ssafy.p.j11a307.payment.dto.TossPaymentBaseRequest;
 import io.ssafy.p.j11a307.payment.entity.CardPayment;
 import io.ssafy.p.j11a307.payment.entity.Payment;
+import io.ssafy.p.j11a307.payment.entity.TossEasyPayment;
+import io.ssafy.p.j11a307.payment.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
 
     @Value("${toss.confirm-url}")
@@ -23,6 +27,8 @@ public class PaymentService {
     private String tossSecretKey;
 
     private final String HEADER_AUTH = "Authorization";
+
+    private final PaymentRepository paymentRepository;
 
     public void tossRequestPayment(TossPaymentBaseRequest tossPaymentBaseRequest) throws JsonProcessingException {
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -42,5 +48,12 @@ public class PaymentService {
             CardPayment cardPayment = new CardPayment(payment, cardNode);
             payment.addCardPayment(cardPayment);
         }
+        JsonNode easyPayNode = jsonNode.get("easyPay");
+        if (easyPayNode != null && !easyPayNode.asText().equals("null")) {
+            TossEasyPayment tossEasyPayment = new TossEasyPayment(payment, easyPayNode);
+            payment.addTossEasyPayPayment(tossEasyPayment);
+        }
+
+        paymentRepository.save(payment);
     }
 }

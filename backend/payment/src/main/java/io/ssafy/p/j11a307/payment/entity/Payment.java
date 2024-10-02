@@ -60,6 +60,10 @@ public class Payment {
         this.cardPayment = cardPayment;
     }
 
+    public void addTossEasyPayPayment(TossEasyPayment tossEasyPayment) {
+        this.tossEasyPayment = tossEasyPayment;
+    }
+
     public Payment(JsonNode jsonNode) {
         this.mid = jsonNode.get("mid").asText();
         this.version = jsonNode.get("version").asText();

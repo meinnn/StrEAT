@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.payment.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.ssafy.p.j11a307.payment.dto.TossEasyPaymentRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -23,10 +24,10 @@ public class TossEasyPayment {
     private Integer discountAmount;
 
     @Builder
-    public TossEasyPayment(Payment payment, TossEasyPaymentRequest tossEasyPaymentRequest) {
+    public TossEasyPayment(Payment payment, JsonNode easyPaymentNode) {
         this.payment = payment;
-        this.provider = tossEasyPaymentRequest.provider();
-        this.amount = tossEasyPaymentRequest.amount();
-        this.discountAmount = tossEasyPaymentRequest.discountAmount();
+        this.provider = easyPaymentNode.get("provider").asText();
+        this.amount = easyPaymentNode.get("amount").asInt();
+        this.discountAmount = easyPaymentNode.get("discountAmount").asInt();
     }
 }
