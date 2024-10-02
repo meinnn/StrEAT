@@ -31,7 +31,7 @@ public class ProductController {
                 .body(MessageResponse.of("상품 등록 성공"));
     }
 
-    // 2. 상품 상세 정보 조회
+    // 2. 상품 정보 조회
     @GetMapping("/{productId}")
     @Operation(summary = "상품 상세 정보 조회")
     public ResponseEntity<DataResponse<ReadProductDTO>> getProductById(@PathVariable Integer productId) {
@@ -40,7 +40,17 @@ public class ProductController {
                 .body(DataResponse.of("상품 상세 정보 조회 성공", product));
     }
 
-    // 3. 상품 목록 조회
+    // 3. Store ID로 해당 가게의 상품 카테고리 조회
+    @GetMapping("/{storeId}/categories")
+    @Operation(summary = "Store ID로 해당 가게의 상품 카테고리 조회")
+    public ResponseEntity<DataResponse<List<String>>> getProductCategoriesByStoreId(@PathVariable Integer storeId) {
+        List<String> categories = productService.getProductCategoriesByStoreId(storeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("상품 카테고리 조회 성공", categories));
+    }
+
+
+    // 4. 상품 목록 조회
     @GetMapping("/all")
     @Operation(summary = "전체 상품 목록 조회")
     public ResponseEntity<DataResponse<List<ReadProductDTO>>> getAllProducts() {
@@ -49,7 +59,7 @@ public class ProductController {
                 .body(DataResponse.of("상품 리스트 조회 성공", productResponses));
     }
 
-    // 4. 가게별 상품 목록 조회 (storeId 기준)
+    // 5. 가게별 상품 목록 조회 (storeId 기준)
     @GetMapping("/store/{storeId}")
     @Operation(summary = "가게별 상품 목록 조회")
     public ResponseEntity<DataResponse<List<ReadProductDTO>>> getProductsByStoreId(@PathVariable Integer storeId) {
@@ -58,7 +68,7 @@ public class ProductController {
                 .body(DataResponse.of("가게별 상품 리스트 조회 성공", productResponses));
     }
 
-    // 5. 상품 수정
+    // 6. 상품 수정
     @PatchMapping("/{productId}")
     @Operation(summary = "상품 수정")
     public ResponseEntity<MessageResponse> updateProduct(@PathVariable Integer productId, @RequestBody UpdateProductDTO productRequest) {
@@ -67,7 +77,7 @@ public class ProductController {
                 .body(MessageResponse.of("상품 수정 성공"));
     }
 
-    // 6. 상품 삭제
+    // 7. 상품 삭제
     @DeleteMapping("/{productId}")
     @Operation(summary = "상품 삭제")
     public ResponseEntity<MessageResponse> deleteProduct(@PathVariable Integer productId) {
@@ -76,6 +86,7 @@ public class ProductController {
                 .body(MessageResponse.of("상품 삭제 성공"));
     }
 
+    // 8. 상품 아이디 리스트로 상품 이름 리스트 조회
     @GetMapping("/product-names")
     @Operation(summary = "상품 아이디 리스트로 상품 이름 리스트 조회")
     public ResponseEntity<DataResponse<List<String>>> getProductNamesByProductIds(@RequestParam List<Integer> ids) {

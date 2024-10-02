@@ -8,9 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "상품 카테고리를 생성하기 위한 DTO")
 public record CreateProductCategoryDTO(
-        @Schema(description = "상품 ID", example = "1")
-        Integer productId,
-
         @Schema(description = "카테고리명", example = "분식")
         String name,
 
@@ -18,10 +15,6 @@ public record CreateProductCategoryDTO(
         Integer parentCategoryId
 ) {
     public CreateProductCategoryDTO {
-        // productId와 name에 대한 검증
-        if (productId == null) {
-            throw new BusinessException(ErrorCode.PRODUCT_ID_NULL);
-        }
         if (name == null || name.isEmpty()) {
             throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_NAME_NULL);
         }
