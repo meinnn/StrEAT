@@ -5,6 +5,7 @@ import io.ssafy.p.j11a307.store.entity.IndustryCategory;
 import io.ssafy.p.j11a307.store.entity.Store;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
+import io.ssafy.p.j11a307.store.global.DataResponse;
 import io.ssafy.p.j11a307.store.repository.IndustryCategoryRepository;
 import io.ssafy.p.j11a307.store.repository.StoreLocationPhotoRepository;
 import io.ssafy.p.j11a307.store.repository.StorePhotoRepository;
@@ -53,21 +54,22 @@ public class StoreService{
     }
 
 
-
-
     public ReadStoreDetailsDTO getStoreDetailInfo(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         // StorePhotos, StoreLocationPhotos 로직 처리
-        List<ReadStorePhotoDTO> storePhotos = storePhotoRepository.findByStoreId(storeId)
-                .stream().map(ReadStorePhotoDTO::new).collect(Collectors.toList());
+        List<ReadStorePhotoSrcDTO> storePhotos = storePhotoRepository.findByStoreId(storeId)
+                .stream().map(ReadStorePhotoSrcDTO::new).collect(Collectors.toList());
 
-        List<ReadStoreLocationPhotoDTO> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(storeId)
-                .stream().map(ReadStoreLocationPhotoDTO::new).collect(Collectors.toList());
+        List<ReadStoreLocationPhotoSrcDTO> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(storeId)
+                .stream().map(ReadStoreLocationPhotoSrcDTO::new).collect(Collectors.toList());
 
         // Product 서비스에서 categories 조회
-        List<String> categories = productClient.getProductCategories(storeId);
+        DataResponse<List<String>> categoryResponse = productClient.getProductCategories(storeId);
+
+        // categories가 null이 아니고 성공했는지 확인 후 가져오기
+        List<String> categories = categoryResponse.getData();
 
         return new ReadStoreDetailsDTO(store, storePhotos, storeLocationPhotos, categories);
     }
@@ -234,5 +236,15 @@ public class StoreService{
 
         store.changeOwnerWord(ownerWord);  // Store 엔티티에서 사장님 한마디 변경 메서드 호출
         storeRepository.save(store);  // 변경 사항 저장
+    }
+
+    /**
+     * userId를 통해 storeId 조회
+     */
+    @Transactional(readOnly = true)
+    public Integer getStoreIdByUserId(Integer userId) {
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        return store.getStoreId();
     }
 }

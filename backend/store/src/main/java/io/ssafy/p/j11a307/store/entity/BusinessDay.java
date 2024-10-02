@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ public class BusinessDay {
 
     @OneToOne
     @JoinColumn(name = "store_id", nullable = false)
+    @JsonIgnore
     private Store store;
 
     @Column(length = 20)

@@ -33,13 +33,8 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<String> getProductCategoriesByStoreId(Integer storeId) {
-        List<Product> products = productRepository.findByStoreId(storeId);
-
-        return products.stream()
-                .flatMap(product -> product.getCategories().stream())  // 각 상품의 카테고리 리스트 추출
-                .map(ProductCategory::getName)  // 카테고리명 추출
-                .distinct()  // 중복 제거
-                .collect(Collectors.toList());
+        // storeId에 해당하는 카테고리 이름만 리스트로 반환
+        return productRepository.findCategoriesByStoreId(storeId);
     }
 
     public ReadProductDTO getProductById(Integer productId) {

@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ssafy.p.j11a307.store.dto.UpdateStoreDTO;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
@@ -60,16 +61,20 @@ public class Store {
 
     // 관계 설정
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @JsonIgnore  // 순환 참조 방지
     private List<StorePhoto> storePhotos;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @JsonIgnore  // 순환 참조 방지
     private List<StoreLocationPhoto> storeLocationPhotos;
 
     @ManyToOne
     @JoinColumn(name = "industry_category_id", nullable = false)
+    @JsonIgnore  // 순환 참조 방지
     private IndustryCategory industryCategory;
 
     @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    @JsonIgnore  // 순환 참조 방지
     private BusinessDay businessDay;
 
     // Store 삭제 전 IndustryCategory와의 연관관계를 끊는 메서드 추가
@@ -130,5 +135,9 @@ public class Store {
 
     public void changeClosedDays(String closedDays) {
         this.closedDays = closedDays;
+    }
+
+    public Integer getStoreId() {
+        return this.id;
     }
 }

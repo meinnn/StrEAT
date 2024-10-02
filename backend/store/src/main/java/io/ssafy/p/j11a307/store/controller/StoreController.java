@@ -28,6 +28,14 @@ public class StoreController {
                 .body(MessageResponse.of("가게 생성 성공"));
     }
 
+    // 2. userId에 해당하는 storeId 반환
+    @GetMapping("/api/stores/user")
+    public ResponseEntity<Integer> getStoreIdByUserId(@RequestParam Integer userId) {
+        Integer storeId = storeService.getStoreIdByUserId(userId);
+        return ResponseEntity.ok(storeId);
+    }
+
+
     // 2. 점포 타입 조회
     @GetMapping("/{id}/type")
     @Operation(summary = "점포 타입(MOBILE/FIXED) 조회")
@@ -47,7 +55,7 @@ public class StoreController {
 
     // 4. 점포 상세 정보 조회(with photo)
     @GetMapping("/{id}/details")
-    @Operation(summary = "점포 상세 정보 조회")
+    @Operation(summary = "점포 상세 정보 조회 (상호명, 영업상태, 가게 주소, 사장님 한마디, 음식 카테고리, 가게 사진, 영업 위치 사진, 영업일, 휴무일")
     public ResponseEntity<DataResponse<ReadStoreDetailsDTO>> getStoreDetailInfo(@PathVariable Integer id) {
         ReadStoreDetailsDTO storeDetails = storeService.getStoreDetailInfo(id);
         return ResponseEntity.status(HttpStatus.OK)
