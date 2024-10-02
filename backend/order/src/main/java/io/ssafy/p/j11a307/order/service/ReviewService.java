@@ -108,8 +108,6 @@ public class ReviewService {
     public List<GetMyReviewsDTO> getMyReviews(String token) {
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
 
-        System.out.println(userId);
-
         //현재 로그인한 유저 아이디와 맞는 리뷰들을 모두 가져오기
         List<Orders> orders = ordersRepository.findByUserId(userId);
         List<GetMyReviewsDTO> getMyReviewsDTOs = new ArrayList<>();
@@ -128,6 +126,7 @@ public class ReviewService {
             DataResponse<List<String>> productNameResponse = productClient.getProductNamesByProductIds(orderProducts);
 
             GetMyReviewsDTO getMyReviewsDTO= GetMyReviewsDTO.builder()
+                    .id(dataResponse.getData().getId())
                     .score(review.getScore())
                     .content(review.getContent())
                     .createdAt(review.getCreatedAt())
