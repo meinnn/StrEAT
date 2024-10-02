@@ -85,4 +85,18 @@ public class BasketService {
             shoppingCartOptionRepository.save(shoppingCartOption);
         }
     }
+
+    @Transactional
+    public void deleteProductFromBasket(Integer id, String token) {
+        int customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        //1. 장바구니 내역이 존재하지 않는다면?
+        ShoppingCart shoppingCart = shoppingCartRepository.findById(id).orElse(null);
+        if(shoppingCart == null) throw new BusinessException(ErrorCode.SHOPPING_CART_NOT_FOUND);
+
+        //2. 그 내역을 가진 본인이 아니라면?
+        if(customerId != shoppingCart.getCustomerId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+        shoppingCartRepository.delete(shoppingCart);
+    }
 }

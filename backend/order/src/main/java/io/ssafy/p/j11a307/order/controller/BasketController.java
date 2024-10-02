@@ -38,14 +38,27 @@ public class BasketController {
 
     //장바구니 조회
 
-
-
     //장바구니 옵션 수정
 
     //장바구니에서 삭제
+    @DeleteMapping(value= "/{id}/basket")
+    @Operation(summary = "장바구니에서 삭제", description = "장바구니 상품내역 id에 해당하는 상품을 삭제: 옵션도 함께 삭제")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "장바구니에 추가 성공"),
+//            @ApiResponse(responseCode = "404", description = "상품 존재하지 않음"),
+//            @ApiResponse(responseCode = "400", description = "상품에 들어있지 않은 옵션"),
+//    })
+    public ResponseEntity<MessageResponse> deleteProductFromBasket(@PathVariable Integer id,
+                                                              @RequestHeader("Authorization") String token) {
+        basketService.deleteProductFromBasket(id, token);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(MessageResponse.of("장바구니에서 삭제를 완료했습니다."));
+    }
 
 
 
 
 
-}
+
+    }
