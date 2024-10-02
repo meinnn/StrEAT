@@ -54,19 +54,21 @@ public class StoreService{
     }
 
 
-    public ReadStoreDetailsDTO getStoreDetailInfo(Integer storeId) {
-        Store store = storeRepository.findById(storeId)
+    public ReadStoreDetailsDTO getStoreDetailInfo(String token) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token을 사용하여 userId 조회
+
+        Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         // StorePhotos, StoreLocationPhotos 로직 처리
-        List<ReadStorePhotoSrcDTO> storePhotos = storePhotoRepository.findByStoreId(storeId)
+        List<ReadStorePhotoSrcDTO> storePhotos = storePhotoRepository.findByStoreId(store.getId())
                 .stream().map(ReadStorePhotoSrcDTO::new).collect(Collectors.toList());
 
-        List<ReadStoreLocationPhotoSrcDTO> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(storeId)
+        List<ReadStoreLocationPhotoSrcDTO> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(store.getId())
                 .stream().map(ReadStoreLocationPhotoSrcDTO::new).collect(Collectors.toList());
 
         // Product 서비스에서 categories 조회
-        DataResponse<List<String>> categoryResponse = productClient.getProductCategories(storeId);
+        DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
 
         // categories가 null이 아니고 성공했는지 확인 후 가져오기
         List<String> categories = categoryResponse.getData();
