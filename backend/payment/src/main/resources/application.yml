@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: payment
+  cloud:
+    config:
+      uri: http://localhost:8888
+      label: main
+  config:
+    import: "configserver:"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://streat-eureka:8080/eureka/ # ?? ??? ???? ??? ??? ???. ???? ??? docker-compose? ??? ??? ??.
+
+server:
+  servlet:
+    context-path: /api/payments
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    version: openapi_3_1  # OpenAPI ?? 3.1 ??
+    enabled: true  # API ??? ???
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json  # ?? ?? ??? ??
+  swagger-ui:
+    path: /swagger-ui.html
+    use-root-path: true  # Swagger UI? ?? ??? ??
+    enabled: true # Swagger UI ???

@@ -21,6 +21,10 @@ spring:
           uri: http://localhost:8083
           predicates:
             - Path=/api/products/**
+        - id: payment
+          uri: http://localhost:8223
+          predicates:
+            - Path=/api/payments/**
 server:
   port: 8787
 
@@ -35,3 +39,5 @@ springdoc:
         url: http://localhost:8787/api/orders/v3/api-docs
       - name: Product API
         url: http://localhost:8787/api/products/v3/api-docs
+      - name: Product API
+        url: http://localhost:8787/api/payments/v3/api-docs
