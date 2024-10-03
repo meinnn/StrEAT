@@ -42,6 +42,10 @@ const config: Config = {
           'linear-gradient(180deg, #FFFBF3 0%, #FFF 28.5%)',
       },
       keyframes: {
+        'short-slide-up': {
+          '0%': { transform: 'translateY(0%)', opacity: '0.5' },
+          '100%': { transform: 'translateY(-20%)', opacity: '1' },
+        },
         'slide-up': {
           '0%': { transform: 'translateY(100%)' },
           '100%': { transform: 'translateY(0)' },
@@ -54,6 +58,7 @@ const config: Config = {
       animation: {
         'slide-up': 'slide-up 0.2s ease-out forwards',
         'slide-down': 'slide-down 0.2s ease-out forwards',
+        'modal-short-slide-up': 'short-slide-up 0.2s ease-out forwards',
       },
       boxShadow: {
         'inner-strong': 'inset 10px 10px 20px rgba(255, 236, 199, 0.3)',
