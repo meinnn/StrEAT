@@ -114,7 +114,7 @@ public class ReviewService {
         Pageable pageable = PageRequest.of(pgno, spp);
 
         //현재 로그인한 유저 아이디와 맞는 리뷰들을 모두 가져오기
-        Page<Orders> orders = ordersRepository.findByUserId(userId, pageable);
+        Page<Orders> orders = ordersRepository.findByUserIdAndHasReview(userId, pageable);
 
         List<GetMyReviewListDTO> getMyReviewListDTOS = new ArrayList<>();
 
@@ -122,6 +122,7 @@ public class ReviewService {
             Review review = reviewRepository.searchReview(order.getId());
 
             if(review == null) continue;
+
             List<ReviewPhoto> photoList = reviewPhotoRepository.findByReviewId(review);
             List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
             DataResponse<ReadStoreDTO> dataResponse = storeClient.getStoreInfo(order.getStoreId());
@@ -146,6 +147,7 @@ public class ReviewService {
             getMyReviewListDTOS.add(getMyReviewListDTO);
         }
 
+
         GetMyReviewDTO getMyReviewDTO = GetMyReviewDTO.builder()
                 .getMyReviewList(getMyReviewListDTOS)
                 .totalPageCount(orders.getTotalPages())
@@ -160,7 +162,7 @@ public class ReviewService {
         Pageable pageable = PageRequest.of(pgno, spp);
 
         //해당 점포에 맞는 리뷰들 모두 가져오기
-        Page<Orders> orders = ordersRepository.findByStoreId(storeId, pageable);
+        Page<Orders> orders = ordersRepository.findByStoreIdAndHasReview(storeId, pageable);
         List<GetStoreReviewListDTO> getStoreReviewListDTOS = new ArrayList<>();
 
         for (Orders order : orders) {
