@@ -1,15 +1,11 @@
 package io.ssafy.p.j11a307.store.service;
 
 import io.ssafy.p.j11a307.store.dto.*;
-import io.ssafy.p.j11a307.store.entity.IndustryCategory;
-import io.ssafy.p.j11a307.store.entity.Store;
+import io.ssafy.p.j11a307.store.entity.*;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import io.ssafy.p.j11a307.store.global.DataResponse;
-import io.ssafy.p.j11a307.store.repository.IndustryCategoryRepository;
-import io.ssafy.p.j11a307.store.repository.StoreLocationPhotoRepository;
-import io.ssafy.p.j11a307.store.repository.StorePhotoRepository;
-import io.ssafy.p.j11a307.store.repository.StoreRepository;
+import io.ssafy.p.j11a307.store.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -20,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import io.ssafy.p.j11a307.store.entity.StorePhoto;
-import io.ssafy.p.j11a307.store.entity.StoreLocationPhoto;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +23,7 @@ public class StoreService{
 
     private final StoreRepository storeRepository;
     private final IndustryCategoryRepository industryCategoryRepository;
+    private final BusinessDayRepository businessDayRepository;
     private final OwnerClient ownerClient;
     private final StoreLocationPhotoRepository storeLocationPhotoRepository;
     private final StorePhotoRepository storePhotoRepository;
@@ -80,6 +75,23 @@ public class StoreService{
         List<String> categories = categoryResponse.getData();
 
         return new ReadStoreDetailsDTO(store, storePhotos, storeLocationPhotos, categories);
+    }
+
+    /**
+     * 가게 정보 조회( 손님이 내 점포 조회 시 나타나는 정보들 ex) 점포 상세 정보, 영업일)
+     */
+    @Transactional(readOnly = true)
+    public ReadStoreBusinessDayDTO getStoreBusinessDayInfo(Integer storeId) {
+        // 가게 정보 조회
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // 가게의 단일 영업일 정보 조회
+        BusinessDay businessDay = businessDayRepository.findByStoreId(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BUSINESS_DAY_NOT_FOUND));
+
+        // 가게 정보와 영업일 정보를 포함한 DTO 반환
+        return new ReadStoreBusinessDayDTO(store, businessDay);
     }
 
     /**
