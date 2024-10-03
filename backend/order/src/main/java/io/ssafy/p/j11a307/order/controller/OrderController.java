@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.order.controller;
 
+import io.ssafy.p.j11a307.order.dto.GetMyOrderDTO;
 import io.ssafy.p.j11a307.order.dto.GetStoreOrderDTO;
 import io.ssafy.p.j11a307.order.dto.GetStoreReviewDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
@@ -84,7 +85,27 @@ public class OrderController {
     }
 
 
-        //내 주문내역 리스트 조회(날짜별)
+    @GetMapping("/mine/list")
+    @Operation(summary = "내 주문내역 리스트 조회", description = "날짜별로 내 주문 내역을 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "나의 주문내역 조회 성공"),
+    })
+    @Parameters({
+            @Parameter(name = "pgno", description = "페이지 번호(0번부터 시작)"),
+            @Parameter(name = "spp", description = "한 페이지에 들어갈 개수"),
+    })
+    public ResponseEntity<DataResponse<GetMyOrderDTO>> getMyOrderList(@RequestParam Integer pgno,
+                                                                      @RequestParam Integer spp,
+                                                                      @RequestHeader("Authorization") String token)  {
+
+        GetMyOrderDTO getMyOrderDTO = orderService.getMyOrderList(pgno, spp, token);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("내 주문내역 리스트 조회에 성공했습니다.", getMyOrderDTO));
+    }
+
+
+
 
 
 

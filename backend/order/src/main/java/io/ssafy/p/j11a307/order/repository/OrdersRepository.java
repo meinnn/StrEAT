@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders, Integer> {
-    //Page<Orders> findByUserId(Integer userId, Pageable pageable);
+    Page<Orders> findByUserId(Integer userId, Pageable pageable);
 
     @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status = :status1 OR o.status = :status2)", nativeQuery = true)
     Page<Orders> findByStoreId(Integer storeId, String status1,String status2, Pageable pageable);

@@ -1,17 +1,16 @@
 package io.ssafy.p.j11a307.order.service;
 
-import io.ssafy.p.j11a307.order.dto.GetStoreOrderDTO;
-import io.ssafy.p.j11a307.order.dto.GetStoreOrderListDTO;
-import io.ssafy.p.j11a307.order.dto.GetStoreOrderListProductsDTO;
-import io.ssafy.p.j11a307.order.dto.ReadStoreDTO;
+import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.entity.OrderProduct;
 import io.ssafy.p.j11a307.order.entity.OrderProductOption;
 import io.ssafy.p.j11a307.order.entity.Orders;
+import io.ssafy.p.j11a307.order.entity.Review;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
+import io.ssafy.p.j11a307.order.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +34,7 @@ public class OrderService {
     private final ProductClient productClient;
     private final OrdersRepository ordersRepository;
     private final OrderProductRepository orderProductRepository;
+    private final ReviewRepository reviewRepository;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -151,5 +151,55 @@ public class OrderService {
         } else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
     }
 
+    @Transactional
+    public GetMyOrderDTO getMyOrderList(Integer pgno, Integer spp, String token) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+        Pageable pageable = PageRequest.of(pgno, spp);
 
+        //나의 주문내역 리스트를 가져온다.
+        Page<Orders> orders = ordersRepository.findByUserId(customerId, pageable);
+        List<GetMyOrderListDTO> getMyOrderListDTOs = new ArrayList<>();
+
+        for (Orders order : orders.getContent()) {
+            //order 점포 id를 줬을 때 점포 정보 필요.
+            ReadStoreBasicInfoDTO readStoreBasicInfoDTO = storeClient.getStoreBasicInfo(order.getStoreId()).getData();
+
+            //해당 order_id가 review 테이블에 존재하는지 살피면 됨.
+            Review review = reviewRepository.searchReview(order.getId());
+            Boolean isReviewed = review != null;
+
+            //주문에 포함된 상품 목록(위와 중복, 후일 모듈화 필요)
+            List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(order);
+
+            List<Integer> productIds = orderProducts.stream().map(OrderProduct::getProductId).toList();
+            List<String> productNames = productClient.getProductNamesByProductIds(productIds).getData();
+
+            //order에 대한 메뉴들을 가져와서 개수와 이름을 DTO에 넣기
+            List<GetStoreOrderListProductsDTO> productDTOs = IntStream.range(0, productNames.size())
+                    .mapToObj(i -> new GetStoreOrderListProductsDTO(
+                            productNames.get(i),
+                            orderProducts.get(i).getCount())).toList();
+
+            GetMyOrderListDTO getMyOrderListDTO = GetMyOrderListDTO.builder()
+                    .ordersId(order.getId())
+                    .ordersCreatedAt(order.getCreatedAt())
+                    .orderStatus(order.getStatus())
+                    .isReviewed(isReviewed)
+                    .storePhoto(readStoreBasicInfoDTO.src())
+                    .storeName(readStoreBasicInfoDTO.storeName())
+                    .storeId(order.getStoreId())
+                    .products(productDTOs)
+                    .build();
+
+            getMyOrderListDTOs.add(getMyOrderListDTO);
+        }
+
+        GetMyOrderDTO getMyOrderDTO = GetMyOrderDTO.builder()
+                .getMyOrderList(getMyOrderListDTOs)
+                .totalPageCount(orders.getTotalPages())
+                .totalDataCount(orders.getTotalElements())
+                .build();
+
+        return getMyOrderDTO;
+    }
 }
