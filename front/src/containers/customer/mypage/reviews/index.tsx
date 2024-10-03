@@ -1,11 +1,14 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import ReviewItem from '@/containers/customer/mypage/components/ReviewListItem'
 import getConvertedDate from '@/utils/getConvertedDate'
 import ReviewSkeleton from '@/components/skeleton/ReviewSkeleton'
 
 interface Review {
+  storeName: string
   content: string
   createdAt: string
   storeId: number
@@ -13,13 +16,21 @@ interface Review {
   orderProducts: string[]
   score: number
   srcList: string[]
-  storeName: string
   storePhoto?: string
 }
 
-const fetchMyReview = async () => {
+interface Page {
+  data: {
+    getMyReviewList: Review[]
+    totalDataCount: number
+    totalPageCount: number
+  }
+  hasMore: boolean
+}
+
+const fetchMyReview = async ({ pageParam = 0 }: any) => {
   try {
-    const response = await fetch(`/api/review/me`, {
+    const response = await fetch(`/api/review/me?page=${pageParam}&limit=5`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -43,47 +54,100 @@ export default function MyReviewList() {
   let lastDate = ''
 
   const {
-    data: reviewList,
-    isLoading,
-    error,
-  } = useQuery<Review[]>({
+    data: reviewData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery<Page, Error>({
+    queryFn: async ({ pageParam = 0 }) => fetchMyReview({ pageParam }),
     queryKey: ['/api/review/me'],
-    queryFn: fetchMyReview,
+    getNextPageParam: (lastPage: Page, pages: Page[]) => {
+      if (lastPage?.hasMore) {
+        return pages.length
+      }
+      return undefined
+    },
+    initialPageParam: 0,
   })
 
-  if (isLoading) {
+  const observerElem = useRef(null)
+
+  useEffect(() => {
+    const currentElem = observerElem.current
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage()
+        }
+      },
+      {
+        rootMargin: '100px',
+      }
+    )
+
+    if (currentElem) observer.observe(currentElem)
+
+    return () => {
+      if (currentElem) observer.unobserve(currentElem)
+    }
+  }, [fetchNextPage, hasNextPage])
+
+  if (status === 'pending') {
     return <ReviewSkeleton />
   }
 
   return (
     <div>
-      {reviewList &&
-        reviewList.length > 0 &&
-        reviewList.map((review) => {
-          const isVisibleDate = lastDate !== getConvertedDate(review.createdAt)
-          lastDate = getConvertedDate(review.createdAt)
+      {reviewData && reviewData?.pages?.length > 0 ? (
+        <>
+          {reviewData?.pages?.map((page) =>
+            page?.data?.getMyReviewList.map((review) => {
+              const isVisibleDate =
+                lastDate !== getConvertedDate(review.createdAt)
+              lastDate = getConvertedDate(review.createdAt)
 
-          return (
-            <div key={review.reviewId}>
-              {isVisibleDate && (
-                <h2 className="pl-4 pt-7 pb-3 text-lg font-medium text-text">
-                  {getConvertedDate(review.createdAt)}
-                </h2>
-              )}
-              <ReviewItem
-                reviewId={review.reviewId}
-                storeId={review.storeId}
-                storeName={review.storeName}
-                storeImage={review.storePhoto}
-                date={getConvertedDate(review.createdAt)}
-                orderList={review.orderProducts}
-                score={review.score}
-                content={review.content}
-                reviewImageList={review.srcList}
-              />
-            </div>
-          )
-        })}
+              return (
+                <div key={review.reviewId}>
+                  {isVisibleDate && (
+                    <h2 className="pl-4 pt-7 pb-3 text-lg font-medium text-text">
+                      {getConvertedDate(review.createdAt)}
+                    </h2>
+                  )}
+                  <ReviewItem
+                    reviewId={review.reviewId}
+                    storeId={review.storeId}
+                    storeName={review.storeName}
+                    storeImage={review.storePhoto}
+                    date={getConvertedDate(review.createdAt)}
+                    orderList={review.orderProducts}
+                    score={review.score}
+                    content={review.content}
+                    reviewImageList={review.srcList}
+                  />
+                </div>
+              )
+            })
+          )}
+          <div ref={observerElem}>
+            {isFetchingNextPage && <ReviewSkeleton />}
+          </div>
+        </>
+      ) : (
+        <div className="flex justify-center items-center h-80 flex-col gap-1">
+          <div className="relative w-40 aspect-square">
+            <Image
+              src="/images/test.png"
+              className="object-cover"
+              alt="내용이 없다는 일러스트"
+              fill
+              priority
+            />
+          </div>
+          <p className="text-text font-bold">조회된 리뷰가 없습니다</p>
+        </div>
+      )}
     </div>
   )
 }
