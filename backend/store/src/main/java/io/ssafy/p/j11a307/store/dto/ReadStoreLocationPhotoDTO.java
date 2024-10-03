@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.store.dto;
 
 import io.ssafy.p.j11a307.store.entity.StoreLocationPhoto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
@@ -14,10 +15,10 @@ public record ReadStoreLocationPhotoDTO(
         Integer storeId,
 
         @Schema(description = "위도", example = "37.5665")
-        String latitude,
+        Double latitude,
 
         @Schema(description = "경도", example = "126.9780")
-        String longitude,
+        Double longitude,
 
         @Schema(description = "이미지 경로", example = "https://s3.amazonaws.com/example.jpg")
         String src,  // 이미지 경로 추가

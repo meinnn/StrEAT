@@ -4,6 +4,7 @@ import io.ssafy.p.j11a307.store.dto.*;
 import io.ssafy.p.j11a307.store.global.DataResponse;
 import io.ssafy.p.j11a307.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -87,6 +88,22 @@ public class StoreController {
         Integer userId = storeService.getUserIdByStoreId(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 사장님 ID 조회 성공", userId));
+    }
+
+    // 6. 위도와 경도로 근처 가게 조회
+    @GetMapping("/nearby")
+    @Operation(summary = "위도와 경도로 근처 가게 20개씩 페이지네이션 조회")
+    public ResponseEntity<List<ReadNearByStoreDTO>> getNearbyStores(
+            @RequestParam
+            @Parameter(description = "위도", example = "37.123456") double latitude,
+            @RequestParam
+            @Parameter(description = "경도", example = "127.123456") double longitude,
+            @RequestParam(defaultValue = "0")
+            @Parameter(description = "페이지 번호", example = "0") int page,
+            @RequestParam(defaultValue = "20")
+            @Parameter(description = "페이지 크기", example = "20") int size) {
+        List<ReadNearByStoreDTO> stores = storeService.getStoresByLocation(latitude, longitude, page, size);
+        return ResponseEntity.ok(stores);
     }
 
     // 6. 점포 정보 수정

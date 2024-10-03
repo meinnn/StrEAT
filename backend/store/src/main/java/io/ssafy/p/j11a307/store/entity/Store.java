@@ -34,10 +34,10 @@ public class Store {
     private String address;
 
     @Column(nullable = false, length = 20)
-    private String latitude;
+    private Double latitude;
 
     @Column(nullable = false, length = 20)
-    private String longitude;
+    private Double longitude;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
