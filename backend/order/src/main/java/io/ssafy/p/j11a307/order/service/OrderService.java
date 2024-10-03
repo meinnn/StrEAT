@@ -9,6 +9,7 @@ import io.ssafy.p.j11a307.order.entity.OrderProductOption;
 import io.ssafy.p.j11a307.order.entity.Orders;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
+import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import jakarta.transaction.Transactional;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 
@@ -107,8 +109,23 @@ public class OrderService {
     public void handleOrders(Integer ordersId, Integer flag, String token) {
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
 
+        //1. 주문 내역이 존재하지 않는다면?
+        Optional<Orders> orders = ordersRepository.findById(ordersId);
 
+        if(orders.isPresent()) {
+            //2. 처리할 권한이 없다면?
+            ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
+            if(ownerId != readStoreDTO.getUserId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
+            //3. 내역이 대기 중인 상태가 아니라면?
+            if(orders.get().getStatus().equals(OrderCode.WAITING_FOR_PROCESSING)) {
+                if (flag == 0) orders.get().updateStatus(OrderCode.REJECTED);
+                else if(flag == 1) orders.get().updateStatus(OrderCode.PROCESSING);
+                else throw new BusinessException(ErrorCode.WRONG_FLAG);
 
+                ordersRepository.save(orders.get());
+
+            } else throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
+        } else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
     }
 }

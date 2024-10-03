@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.global;
 
 public enum OrderCode {
+    REJECTED("거절됨"),
     WAITING_FOR_PROCESSING("대기중"),
     PROCESSING("조리중"),
     WAITING_FOR_RECEIPT("수령 대기중"),
