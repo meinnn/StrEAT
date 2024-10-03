@@ -119,8 +119,8 @@ public class ReviewService {
             List<ReviewPhoto> photoList = reviewPhotoRepository.findByReviewId(review);
             List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
             DataResponse<ReadStoreDTO> dataResponse = storeClient.getStoreInfo(order.getStoreId());
-            //사진 받느라 DTO가 달라질 수 있음
-            
+            DataResponse<ReadStoreBasicInfoDTO> photoDataResponse = storeClient.getStoreBasicInfo(order.getStoreId());
+
             //주문상품목록 조회(상품 아이디를 가져와야 함)
             List<Integer> orderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
             DataResponse<List<String>> productNameResponse = productClient.getProductNamesByProductIds(orderProducts);
@@ -134,7 +134,7 @@ public class ReviewService {
                     .srcList(srcList)
                     .storeName(dataResponse.getData().getName())
                     .orderProducts(productNameResponse.getData())
-                    //.storePhoto(dataResponse.getData().getImages().get(0))
+                    .storePhoto(photoDataResponse.getData().src())
                     .build();
 
             getMyReviewsDTOs.add(getMyReviewsDTO);

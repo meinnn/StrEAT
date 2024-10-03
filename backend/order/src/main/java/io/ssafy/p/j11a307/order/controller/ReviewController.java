@@ -74,7 +74,6 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "내 리뷰 조회 성공"),
     })
     public ResponseEntity<DataResponse<List<GetMyReviewsDTO>>> getMyReviews(@RequestHeader("Authorization") String token) {
-        log.info("controller called");
         List<GetMyReviewsDTO> getMyReviewsDTOs = reviewService.getMyReviews(token);
 
         return ResponseEntity.status(HttpStatus.OK)
