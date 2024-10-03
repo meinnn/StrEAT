@@ -1,16 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { NextRequest, NextResponse } from 'next/server'
 
-interface Review {
-  reviewId: number
-  storeId: number
-  storeName: string
-  storePhoto: string
-  createdAt: string
-  orderProducts: string[]
-  content: string
-}
-
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = req.nextUrl

@@ -138,7 +138,7 @@ export default function MyReviewList() {
         <div className="flex justify-center items-center h-80 flex-col gap-1">
           <div className="relative w-40 aspect-square">
             <Image
-              src="/images/test.png"
+              src="/images/no_content_illustration.png"
               className="object-cover"
               alt="내용이 없다는 일러스트"
               fill
