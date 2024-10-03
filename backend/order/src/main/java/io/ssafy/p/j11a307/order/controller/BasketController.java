@@ -1,7 +1,9 @@
 package io.ssafy.p.j11a307.order.controller;
 
 import io.ssafy.p.j11a307.order.dto.AddProductToBasketDTO;
+import io.ssafy.p.j11a307.order.dto.GetBasketListDTO;
 import io.ssafy.p.j11a307.order.dto.ModifyOptionFromBasketDTO;
+import io.ssafy.p.j11a307.order.global.DataResponse;
 import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.service.BasketService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,6 +41,24 @@ public class BasketController {
     }
 
     //장바구니 리스트 조회
+    @PostMapping(value= "/basket/list")
+    @Operation(summary = "장바구니 리스트 조회", description = "장바구니에 있는 데이터들을 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "리스트 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "해당 장바구니 페이지가 비어 있음"),
+    })
+    @Parameters({
+            @Parameter(name = "pgno", description = "페이지 번호(0번부터 시작)"),
+            @Parameter(name = "spp", description = "한 페이지에 들어갈 개수")
+    })
+    public ResponseEntity<DataResponse<GetBasketListDTO>> getBasketList(@RequestHeader("Authorization") String token,
+                                                                        @RequestParam("pgno") Integer pgno,
+                                                                        @RequestParam("spp") Integer spp) {
+        GetBasketListDTO getBasketListDTO = basketService.getBasketList(token, pgno, spp);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("장바구니 리스트 조회에 성공했습니다.", getBasketListDTO));
+    }
+
 
     //장바구니 내역 상세조회
 

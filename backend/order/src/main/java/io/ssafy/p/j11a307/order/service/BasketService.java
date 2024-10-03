@@ -1,9 +1,6 @@
 package io.ssafy.p.j11a307.order.service;
 
-import io.ssafy.p.j11a307.order.dto.AddProductToBasketDTO;
-import io.ssafy.p.j11a307.order.dto.ModifyOptionFromBasketDTO;
-import io.ssafy.p.j11a307.order.dto.ReadProductDTO;
-import io.ssafy.p.j11a307.order.dto.ReadProductOptionDTO;
+import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.entity.ShoppingCart;
 import io.ssafy.p.j11a307.order.entity.ShoppingCartOption;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
@@ -14,13 +11,17 @@ import io.ssafy.p.j11a307.order.repository.ShoppingCartRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class BasketService {
+    private final StoreClient storeClient;
     private final OwnerClient ownerClient;
     private final ProductClient productClient;
     private final ShoppingCartRepository shoppingCartRepository;
@@ -132,5 +133,61 @@ public class BasketService {
 
             shoppingCartOptionRepository.save(shoppingCartOption);
         }
+    }
+
+    @Transactional
+    public GetBasketListDTO getBasketList(String token, Integer pgno, Integer spp) {
+        int customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        //페이징 코드
+        Pageable pageable = PageRequest.of(pgno, spp);
+        Page<ShoppingCart> shoppingCarts = shoppingCartRepository.findAllByCustomerId(customerId, pageable);
+
+        if(shoppingCarts != null && !shoppingCarts.isEmpty()) {
+            List<GetBasketOptionInfoDTO> basketList = new ArrayList<>();
+
+            //쇼핑카트에서 productid들 뽑아서 그 상품정보들 모두 가져온다.(아이디, 이름, 사진)
+            //그리고 해당 주문내역에 해당하는 옵션 이름목록들 가져옴
+            ReadProductDTO productData = new ReadProductDTO();
+
+            for (ShoppingCart shoppingCart : shoppingCarts) {
+                productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
+
+                List<Integer> optionIdList = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart).stream()
+                        .map(ShoppingCartOption::getProductOptionId).toList();
+
+                //가져온 옵션 id들의 이름을 가져와야 함
+                List<String> readProductOptions = productClient.getProductOptionList(optionIdList, internalRequestKey)
+                        .stream().map(ReadProductOptionDTO::getProductOptionName).toList();
+
+                GetBasketOptionInfoDTO getBasketOptionInfoDTO = GetBasketOptionInfoDTO.builder()
+                        .basketId(shoppingCart.getId())
+                        .quantity(shoppingCart.getQuantity())
+                        .price(shoppingCart.getPrice())
+                        .productId(productData.getId())
+                        .productName(productData.getName())
+                        .productSrc(productData.getSrc())
+                        .OptionNameList(readProductOptions)
+                        .build();
+
+                basketList.add(getBasketOptionInfoDTO);
+            }
+
+            ReadStoreDTO storeData = storeClient.getStoreInfo(productData.getStoreId()).getData();
+            ReadStoreBasicInfoDTO photoData = storeClient.getStoreBasicInfo(productData.getStoreId()).getData();
+
+            GetBasketListDTO getBasketListDTO = GetBasketListDTO.builder()
+                    .storeId(storeData.getId())
+                    .storeName(storeData.getName())
+                    .storeSrc(photoData.src())
+                    .basketList(basketList)
+                    .totalPageCount(shoppingCarts.getTotalPages())
+                    .totalDataCount(shoppingCarts.getTotalElements())
+                    .build();
+
+            return getBasketListDTO;
+        }
+
+        throw new BusinessException(ErrorCode.SHOPPING_CART_NOT_FOUND);
     }
 }
