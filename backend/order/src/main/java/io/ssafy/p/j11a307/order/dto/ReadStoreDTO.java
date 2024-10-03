@@ -19,8 +19,4 @@ public class ReadStoreDTO {
         String ownerWord;
         String status;
         Integer userId;
-
-        //사진
-        //List<String> images;
-
 }

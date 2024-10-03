@@ -1,9 +1,7 @@
 package io.ssafy.p.j11a307.order.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import io.ssafy.p.j11a307.order.global.OrderCode;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +21,9 @@ public class Orders {
     private Integer storeId; //외부 마이크로서비스
 
     private String orderNumber;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private OrderCode status;
     private String request;
 
     @CreatedDate

@@ -14,7 +14,6 @@ public interface StoreClient {
     @GetMapping("/api/stores/{id}")
     public DataResponse<ReadStoreDTO> getStoreInfo(@PathVariable Integer id);
 
-
     @GetMapping("/api/stores/{id}/photo-name")
     DataResponse<ReadStoreBasicInfoDTO> getStoreBasicInfo(@PathVariable Integer id);
 }
