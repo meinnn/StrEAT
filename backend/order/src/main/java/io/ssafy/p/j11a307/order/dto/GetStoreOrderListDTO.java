@@ -12,6 +12,12 @@ import java.util.List;
 @Builder
 @Schema(description = "각 주문 내역 데이터를 위한 DTO")
 public class GetStoreOrderListDTO {
+    @Schema(description = "주문내역 id", example = "1")
+    private Integer id;
+
+    @Schema(description = "주문번호", example = "A237482374")
+    private String orderNumber;
+
     @Schema(description = "주문 들어온 시각", example = "2024-09-30 12:34:56.000000")
     private LocalDateTime orderCreatedAt;
 
