@@ -106,6 +106,7 @@ public class OrderService {
         return getStoreOrderDTO;
     }
 
+    @Transactional
     public void handleOrders(Integer ordersId, Integer flag, String token) {
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
 
@@ -128,4 +129,27 @@ public class OrderService {
             } else throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
         } else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
     }
+
+    @Transactional
+    public void handleCompleteOrders(Integer ordersId, String token) {
+        Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
+
+        //1. 주문 내역이 존재하지 않는다면?
+        Optional<Orders> orders = ordersRepository.findById(ordersId);
+
+        if(orders.isPresent()) {
+            //2. 처리할 권한이 없다면?
+            ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
+            if(ownerId != readStoreDTO.getUserId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+            //3. 내역이 조리 중인 상태가 아니라면?
+            if(orders.get().getStatus().equals(OrderCode.PROCESSING)) {
+                orders.get().updateStatus(OrderCode.WAITING_FOR_RECEIPT);
+
+                ordersRepository.save(orders.get());
+            } else throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
+        } else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+    }
+
+
 }

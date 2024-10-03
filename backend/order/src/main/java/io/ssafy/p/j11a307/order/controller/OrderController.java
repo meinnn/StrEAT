@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
-    //점포별 주문내역 조회(현황별)
     @GetMapping("/{storeId}/list")
     @Operation(summary = "점포별 주문내역 조회", description = "현황별 해당 id 점포의 주문내역 조회")
     @ApiResponses(value = {
@@ -47,7 +46,6 @@ public class OrderController {
                 .body(DataResponse.of("점포별 주문내역 조회에 성공했습니다.", getStoreOrderDTO));
     }
 
-    //주문 승인/거절
     @GetMapping("/{ordersId}/handle")
     @Operation(summary = "주문 승인/거절", description = "대기 중인 주문을 승인하거나 거절")
     @ApiResponses(value = {
@@ -68,11 +66,27 @@ public class OrderController {
                 .body(MessageResponse.of("대기 중인 주문 처리에 성공했습니다."));
     }
 
-    //내 주문내역 리스트 조회(날짜별)
+
+    @GetMapping("/{ordersId}/handle/complete")
+    @Operation(summary = "조리 완료", description = "조리 중인 주문을 완료하고 수령 대기중으로")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "주문 완료 성공"),
+            @ApiResponse(responseCode = "404", description = "주문 내역 존재하지 않음"),
+            @ApiResponse(responseCode = "401", description = "권한 없음"),
+            @ApiResponse(responseCode = "400", description = "주문이 조리 상태가 아님"),
+    })
+    public ResponseEntity<MessageResponse> handleCompleteOrders(@PathVariable Integer ordersId,
+                                                        @RequestHeader("Authorization") String token) {
+        orderService.handleCompleteOrders(ordersId, token);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("조리 중인 주문 처리에 성공했습니다."));
+    }
 
 
+        //내 주문내역 리스트 조회(날짜별)
 
-    //조리 완료하기
+
 
     //주문 내역 검색
 
