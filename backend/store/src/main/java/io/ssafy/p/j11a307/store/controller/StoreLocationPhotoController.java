@@ -33,8 +33,8 @@ public class StoreLocationPhotoController {
     public ResponseEntity<MessageResponse> createStoreLocationPhoto(
             @RequestHeader("Authorization") String token,  // 첫 번째로 token을 받음
             @RequestPart("images") MultipartFile[] images,
-            @RequestParam("latitude") String latitude,
-            @RequestParam("longitude") String longitude) {
+            @RequestParam("latitude") Double latitude,
+            @RequestParam("longitude") Double longitude) {
 
         // CreateStoreLocationPhotoDTO 생성
         CreateStoreLocationPhotoDTO createStoreLocationPhotoDTO = new CreateStoreLocationPhotoDTO(latitude, longitude, images);
@@ -78,8 +78,8 @@ public class StoreLocationPhotoController {
             @RequestHeader("Authorization") String token,  // 첫 번째로 token을 받음
             @PathVariable Integer id,
             @RequestPart(value = "image", required = false) MultipartFile image,  // 이미지 파일 받기
-            @RequestParam("latitude") String latitude,
-            @RequestParam("longitude") String longitude) {
+            @RequestParam("latitude") Double latitude,
+            @RequestParam("longitude") Double longitude) {
 
         UpdateStoreLocationPhotoDTO updateDTO = new UpdateStoreLocationPhotoDTO(latitude, longitude, image);
 

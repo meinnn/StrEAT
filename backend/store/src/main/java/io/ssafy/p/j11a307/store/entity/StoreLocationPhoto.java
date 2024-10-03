@@ -27,10 +27,10 @@ public class StoreLocationPhoto {
     private Store store;
 
     @Column(nullable = false, length = 20)
-    private String latitude;
+    private Double latitude;
 
     @Column(nullable = false, length = 20)
-    private String longitude;
+    private Double longitude;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -40,16 +40,16 @@ public class StoreLocationPhoto {
     private String src;
 
     // 위도 값 변경 메서드
-    public void updateLatitude(String newLatitude) {
-        if (newLatitude == null || newLatitude.isEmpty()) {
+    public void updateLatitude(Double newLatitude) {
+        if (newLatitude == null) {
             throw new BusinessException(ErrorCode.STORE_LOCATION_PHOTO_LATITUDE_NULL);
         }
         this.latitude = newLatitude;
     }
 
     // 경도 값 변경 메서드
-    public void updateLongitude(String newLongitude) {
-        if (newLongitude == null || newLongitude.isEmpty()) {
+    public void updateLongitude(Double newLongitude) {
+        if (newLongitude == null) {
             throw new BusinessException(ErrorCode.STORE_LOCATION_PHOTO_LONGITUDE_NULL);
         }
         this.longitude = newLongitude;

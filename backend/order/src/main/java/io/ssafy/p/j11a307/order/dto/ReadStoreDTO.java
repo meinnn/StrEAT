@@ -11,8 +11,8 @@ public class ReadStoreDTO {
         Integer id;
         String name;
         String address;
-        String latitude;
-        String longitude;
+        Double latitude;
+        Double longitude;
         String type;
         String bankAccount;
         String bankName;

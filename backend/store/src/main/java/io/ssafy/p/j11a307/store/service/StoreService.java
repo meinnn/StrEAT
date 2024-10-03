@@ -12,8 +12,12 @@ import io.ssafy.p.j11a307.store.repository.StorePhotoRepository;
 import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import io.ssafy.p.j11a307.store.entity.StorePhoto;
@@ -93,6 +97,82 @@ public class StoreService{
 
         return new ReadStoreBasicInfoDTO(store.getName(), src);
     }
+
+    /**
+     * 위도와 경도로 근처 가게 조회
+     */
+//    public List<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude) {
+//        // 위도와 경도를 기준으로 범위 내 가게 리스트를 가져옵니다.
+//        List<Store> stores = storeRepository.findAllByLocationRange(latitude, longitude);
+//
+//        // 거리 계산 및 정렬
+//        return stores.stream()
+//                .map(store -> {
+//                    // Store의 사진 가져오기
+//                    String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
+//                            .stream()
+//                            .findFirst()
+//                            .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())  // 객체를 명시적으로 생성하고 필드 참조
+//                            .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(store.getId())
+//                                    .stream()
+//                                    .findFirst()
+//                                    .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())  // 마찬가지로 필드 참조
+//                                    .orElse(""));
+//
+//                    // Store의 카테고리 가져오기
+//                    DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
+//                    List<String> categories = categoryResponse.getData();
+//
+//                    // 거리 계산 (Java에서 Haversine 공식을 적용)
+//                    Integer distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
+//
+//                    // ReadNearByStoreDTO 생성
+//                    return new ReadNearByStoreDTO(
+//                            store.getName(),
+//                            storePhotoSrc,
+//                            store.getStatus(),
+//                            categories,
+//                            distance
+//                    );
+//                })
+//                // 거리 기준으로 정렬
+//                .sorted(Comparator.comparingInt(ReadNearByStoreDTO::distance))
+//                .collect(Collectors.toList());
+//    }
+    public List<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude, int page, int size) {
+        // 페이지네이션을 위한 PageRequest 생성
+        Pageable pageable = PageRequest.of(page, size);
+
+        // JPQL로 가까운 가게들을 페이지네이션 처리하여 가져옵니다.
+        Page<Store> storePage = storeRepository.findAllByLocationRange(latitude, longitude, pageable);
+
+        // Store 엔티티를 ReadNearByStoreDTO로 변환
+        return storePage.stream().map(store -> {
+            // Store의 사진 가져오기
+            String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
+                    .stream().findFirst()
+                    .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())  // 객체 생성 후 src() 호출
+                    .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(store.getId())
+                            .stream().findFirst().map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src()).orElse(""));
+
+            // Store의 카테고리 가져오기
+            DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
+            List<String> categories = categoryResponse.getData();
+
+            // 거리 계산 (Java에서 Haversine 공식을 적용)
+            Integer distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
+
+            // ReadNearByStoreDTO 생성
+            return new ReadNearByStoreDTO(
+                    store.getName(),
+                    storePhotoSrc,
+                    store.getStatus(),
+                    categories,
+                    distance
+            );
+        }).collect(Collectors.toList());
+    }
+
 
     /**
      * 가게 생성
@@ -265,5 +345,19 @@ public class StoreService{
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getStoreId();
+    }
+
+    private Integer calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        // Haversine 공식을 사용하여 두 지점 간의 거리를 계산하는 메서드
+        final int R = 6371; // 지구 반경 (단위: km)
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // 거리 (단위: m)
+
+        return (int) distance;
     }
 }
