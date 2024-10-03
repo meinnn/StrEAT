@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -37,7 +38,7 @@ public class OrderService {
     private String internalRequestKey;
 
     @Transactional
-    public GetStoreOrderDTO getStoreOrderList(Integer storeId, Integer pgno, Integer spp, String token) {
+    public GetStoreOrderDTO getStoreOrderList(Integer storeId, Integer pgno, Integer spp, String status, String token) {
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
         Pageable pageable = PageRequest.of(pgno, spp);
 
@@ -48,8 +49,21 @@ public class OrderService {
         //2. 만약 해당 유저가 store의 사장이 아니라면?
         if(readStoreDTO.getUserId() != ownerId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
+        List<String> statusList = new ArrayList<>();
+
+        switch (status) {
+            case "PROCESSING":
+                statusList.addAll(Arrays.asList("WAITING_FOR_PROCESSING", "PROCESSING"));
+                break;
+            case "RECEIVING":
+                statusList.addAll(Arrays.asList("WAITING_FOR_RECEIPT", "RECEIVED"));
+                break;
+            default:
+                throw new BusinessException(ErrorCode.WRONG_STATUS);
+        }
+
         //해당 점포의 주문내역을 가져옴!!
-        Page<Orders> orders = ordersRepository.findByStoreId(storeId, pageable);
+        Page<Orders> orders = ordersRepository.findByStoreId(storeId,statusList.get(0), statusList.get(1), pageable);
 
         List<GetStoreOrderListDTO> getStoreOrderListDTOs = new ArrayList<>();
 
@@ -74,6 +88,8 @@ public class OrderService {
                     .products(productDTOs)
                     .status(order.getStatus())
                     .totalPrice(order.getTotalPrice())
+                    .orderNumber(order.getOrderNumber())
+                    .id(order.getId())
                     .build();
 
             getStoreOrderListDTOs.add(getStoreOrderListDTO);
@@ -86,5 +102,13 @@ public class OrderService {
                 .build();
 
         return getStoreOrderDTO;
+    }
+
+    public void handleOrders(Integer ordersId, Integer flag, String token) {
+        Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
+
+
+
+
     }
 }

@@ -16,7 +16,8 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품이 존재하지 않습니다."),
     WRONG_PRODUCT_OPTION(HttpStatus.BAD_REQUEST, "상품의 유효한 옵션이 아닙니다." ),
     SHOPPING_CART_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장바구니 내역이 존재하지 않습니다." ),
-    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 점포가 존재하지 않습니다.");
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 점포가 존재하지 않습니다."),
+    WRONG_STATUS(HttpStatus.BAD_REQUEST, "올바른 Status 정보를 입력해주세요.");
 
 
     private final HttpStatus status;

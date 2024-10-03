@@ -3,6 +3,7 @@ package io.ssafy.p.j11a307.order.controller;
 import io.ssafy.p.j11a307.order.dto.GetStoreOrderDTO;
 import io.ssafy.p.j11a307.order.dto.GetStoreReviewDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
+import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,48 +17,67 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/order-request")
 @CrossOrigin
 public class OrderController {
     private final OrderService orderService;
 
     //점포별 주문내역 조회(현황별)
-    @GetMapping("/stores/{storeId}/list")
+    @GetMapping("/{storeId}/list")
     @Operation(summary = "점포별 주문내역 조회", description = "현황별 해당 id 점포의 주문내역 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "점포별 주문 내역 조회 성공"),
             @ApiResponse(responseCode = "404", description = "점포 존재하지 않음"),
             @ApiResponse(responseCode = "401", description = "권한 없음"),
-
     })
     @Parameters({
             @Parameter(name = "pgno", description = "페이지 번호(0번부터 시작)"),
             @Parameter(name = "spp", description = "한 페이지에 들어갈 개수"),
-            @Parameter(name = "status", description = "주문 상태(WAITING_FOR_PROCESSING/PROCESSING/WAITING_FOR_RECEIPT/RECEIVED")
+            @Parameter(name = "status", description = "주문 상태(PROCESSING/RECEIVING)")
     })
     public ResponseEntity<DataResponse<GetStoreOrderDTO>> getStoreOrderList(@PathVariable Integer storeId,
                                                                             @RequestParam Integer pgno,
                                                                             @RequestParam Integer spp,
+                                                                            @RequestParam String status,
                                                                             @RequestHeader("Authorization") String token) {
 
-        GetStoreOrderDTO getStoreOrderDTO = orderService.getStoreOrderList(storeId, pgno, spp, token);
+        GetStoreOrderDTO getStoreOrderDTO = orderService.getStoreOrderList(storeId, pgno, spp, status, token);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포별 주문내역 조회에 성공했습니다.", getStoreOrderDTO));
+    }
 
+    //주문 승인/거절
+    @GetMapping("/{ordersId}/handle")
+    @Operation(summary = "주문 승인/거절", description = "대기 중인 주문을 승인하거나 거절")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "점포별 주문 내역 조회 성공"),
+//            @ApiResponse(responseCode = "404", description = "점포 존재하지 않음"),
+//            @ApiResponse(responseCode = "401", description = "권한 없음"),
+//
+//    })
+    @Parameters({
+            @Parameter(name = "flag", description = "거절 시: 0, 승인 시: 1"),
+    })
+    public ResponseEntity<MessageResponse> handleOrders(@PathVariable Integer ordersId,
+                                                        @RequestParam Integer flag,
+                                                        @RequestHeader("Authorization") String token) {
+
+        orderService.handleOrders(ordersId, flag, token);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("대기 중인 주문 처리에 성공했습니다."));
     }
 
 
-
-
-    //주문 승인/거절
+    //내 주문내역 리스트 조회(날짜별)
 
     //조리 완료하기
 
     //주문 내역 검색
 
-    //주문 내역 상세조회
 
-    //내 주문내역 리스트 조회(날짜별)
+
+    //주문 내역 상세조회
 
     //대기 팀 조회
 
