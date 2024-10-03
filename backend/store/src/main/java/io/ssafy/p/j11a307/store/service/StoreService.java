@@ -101,44 +101,6 @@ public class StoreService{
     /**
      * 위도와 경도로 근처 가게 조회
      */
-//    public List<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude) {
-//        // 위도와 경도를 기준으로 범위 내 가게 리스트를 가져옵니다.
-//        List<Store> stores = storeRepository.findAllByLocationRange(latitude, longitude);
-//
-//        // 거리 계산 및 정렬
-//        return stores.stream()
-//                .map(store -> {
-//                    // Store의 사진 가져오기
-//                    String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
-//                            .stream()
-//                            .findFirst()
-//                            .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())  // 객체를 명시적으로 생성하고 필드 참조
-//                            .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(store.getId())
-//                                    .stream()
-//                                    .findFirst()
-//                                    .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())  // 마찬가지로 필드 참조
-//                                    .orElse(""));
-//
-//                    // Store의 카테고리 가져오기
-//                    DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
-//                    List<String> categories = categoryResponse.getData();
-//
-//                    // 거리 계산 (Java에서 Haversine 공식을 적용)
-//                    Integer distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
-//
-//                    // ReadNearByStoreDTO 생성
-//                    return new ReadNearByStoreDTO(
-//                            store.getName(),
-//                            storePhotoSrc,
-//                            store.getStatus(),
-//                            categories,
-//                            distance
-//                    );
-//                })
-//                // 거리 기준으로 정렬
-//                .sorted(Comparator.comparingInt(ReadNearByStoreDTO::distance))
-//                .collect(Collectors.toList());
-//    }
     public List<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude, int page, int size) {
         // 페이지네이션을 위한 PageRequest 생성
         Pageable pageable = PageRequest.of(page, size);
