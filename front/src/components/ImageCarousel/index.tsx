@@ -22,7 +22,7 @@ export default function ImageCrousel({ slides }: { slides: string[] }) {
   }
 
   return (
-    <div className="relative w-full mb-3 rounded-lg overflow-hidden">
+    <div className="relative w-full mb-3 rounded-lg overflow-hidden border border-gray-medium">
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
