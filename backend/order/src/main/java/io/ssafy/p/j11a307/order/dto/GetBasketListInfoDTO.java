@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @Builder
 @Schema(description = "장바구니 상세 내역 정보를 담기 위한 DTO")
-public class GetBasketOptionInfoDTO {
+public class GetBasketListInfoDTO {
     @Schema(description = "내역 아이디", example = "12")
     private Integer basketId;
 

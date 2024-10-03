@@ -1,11 +1,14 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.*;
+import io.ssafy.p.j11a307.order.entity.OrderProduct;
+import io.ssafy.p.j11a307.order.entity.OrderProductOption;
 import io.ssafy.p.j11a307.order.entity.ShoppingCart;
 import io.ssafy.p.j11a307.order.entity.ShoppingCartOption;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
 import io.ssafy.p.j11a307.order.global.DataResponse;
+import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.ShoppingCartOptionRepository;
 import io.ssafy.p.j11a307.order.repository.ShoppingCartRepository;
 import jakarta.transaction.Transactional;
@@ -26,6 +29,7 @@ public class BasketService {
     private final ProductClient productClient;
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartOptionRepository shoppingCartOptionRepository;
+    private final OrderProductRepository orderProductRepository;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -90,7 +94,7 @@ public class BasketService {
 
     @Transactional
     public void deleteProductFromBasket(Integer id, String token) {
-        int customerId = ownerClient.getCustomerId(token, internalRequestKey);
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
 
         //1. 장바구니 내역이 존재하지 않는다면?
         ShoppingCart shoppingCart = shoppingCartRepository.findById(id).orElse(null);
@@ -104,7 +108,7 @@ public class BasketService {
 
     @Transactional
     public void modifyOptionFromBasket(Integer id, ModifyOptionFromBasketDTO modifyOptionFromBasketDTO, String token) {
-        int customerId = ownerClient.getCustomerId(token, internalRequestKey);
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
 
         //1. 장바구니 내역이 존재하지 않는다면?
         ShoppingCart shoppingCart = shoppingCartRepository.findById(id).orElse(null);
@@ -115,7 +119,6 @@ public class BasketService {
 
         //가격, 개수 수정
         shoppingCart.modifyOption(modifyOptionFromBasketDTO.getPrice(), modifyOptionFromBasketDTO.getQuantity());
-        //shoppingCartRepository.save(shoppingCart);
 
         //옵션 대체
         List<ShoppingCartOption> shoppingCartOptions = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart);
@@ -137,14 +140,14 @@ public class BasketService {
 
     @Transactional
     public GetBasketListDTO getBasketList(String token, Integer pgno, Integer spp) {
-        int customerId = ownerClient.getCustomerId(token, internalRequestKey);
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
 
         //페이징 코드
         Pageable pageable = PageRequest.of(pgno, spp);
         Page<ShoppingCart> shoppingCarts = shoppingCartRepository.findAllByCustomerId(customerId, pageable);
 
         if(shoppingCarts != null && !shoppingCarts.isEmpty()) {
-            List<GetBasketOptionInfoDTO> basketList = new ArrayList<>();
+            List<GetBasketListInfoDTO> basketList = new ArrayList<>();
 
             //쇼핑카트에서 productid들 뽑아서 그 상품정보들 모두 가져온다.(아이디, 이름, 사진)
             //그리고 해당 주문내역에 해당하는 옵션 이름목록들 가져옴
@@ -160,7 +163,7 @@ public class BasketService {
                 List<String> readProductOptions = productClient.getProductOptionList(optionIdList, internalRequestKey)
                         .stream().map(ReadProductOptionDTO::getProductOptionName).toList();
 
-                GetBasketOptionInfoDTO getBasketOptionInfoDTO = GetBasketOptionInfoDTO.builder()
+                GetBasketListInfoDTO getBasketListInfoDTO = GetBasketListInfoDTO.builder()
                         .basketId(shoppingCart.getId())
                         .quantity(shoppingCart.getQuantity())
                         .price(shoppingCart.getPrice())
@@ -170,7 +173,7 @@ public class BasketService {
                         .OptionNameList(readProductOptions)
                         .build();
 
-                basketList.add(getBasketOptionInfoDTO);
+                basketList.add(getBasketListInfoDTO);
             }
 
             ReadStoreDTO storeData = storeClient.getStoreInfo(productData.getStoreId()).getData();
@@ -189,5 +192,56 @@ public class BasketService {
         }
 
         throw new BusinessException(ErrorCode.SHOPPING_CART_NOT_FOUND);
+    }
+
+    @Transactional
+    public GetBasketOptionDTO getBasketInfo(Integer id, String token) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        //1. 장바구니 내역이 존재하지 않는다면?
+        ShoppingCart shoppingCart = shoppingCartRepository.findById(id).orElse(null);
+        if(shoppingCart == null) throw new BusinessException(ErrorCode.SHOPPING_CART_NOT_FOUND);
+
+        //2. 그 내역을 가진 본인이 아니라면?
+        if(customerId != shoppingCart.getCustomerId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+        ReadProductDTO productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
+        List<GetBasketOptionDetailDTO> basketOptionDetailList = new ArrayList<>();
+
+        //이 Product가 가지고 있는 옵션 리스트들을 돌면서 getBasketOptionDetailDTO를 만들고 list에 채운다.
+        List<ReadProductOptionDTO> productOptionData = productClient.getProductOptionListByProductId(productData.getId(), internalRequestKey);
+
+        for (ReadProductOptionDTO option : productOptionData) {
+            //(해당 옵션, 장바구니 번호) 쇼핑카트 옵션에 있는지 확인
+            ShoppingCartOption shoppingCartOption = shoppingCartOptionRepository.findByProductOptionIdAndShoppingCartId(option.getId(),shoppingCart);
+            Boolean is_Selected = shoppingCartOption != null;
+            
+            //카테고리 id 던지면 해당 카테고리 상세를 가져와야 함
+            ReadProductOptionCategoryDTO categoryData = productClient.getProductOptionCategoryById(option.getProductOptionCategoryId()).getData();
+
+            GetBasketOptionDetailDTO getBasketOptionDetailDTO = GetBasketOptionDetailDTO.builder()
+                    .optionId(option.getId())
+                    .optionName(option.getProductOptionName())
+                    .optionPrice(option.getProductOptionPrice())
+                    .isSelected(is_Selected)
+                    .optionCategoryId(option.getProductOptionCategoryId())
+                    .optionCategoryName(categoryData.name())
+                    .optionParentCategoryId(categoryData.parentOptionCategoryId())
+                    .isEssentialCategory(categoryData.isEssential())
+                    .maxSelectCategory(categoryData.maxSelect())
+                    .build();
+
+            basketOptionDetailList.add(getBasketOptionDetailDTO);
+        }
+
+        GetBasketOptionDTO getBasketOptionDTO = GetBasketOptionDTO.builder()
+                .basketId(shoppingCart.getId())
+                .price(shoppingCart.getPrice())
+                .quantity(shoppingCart.getQuantity())
+                .productName(productData.getName())
+                .getBasketOptionDetailDTOs(basketOptionDetailList)
+                .build();
+
+        return getBasketOptionDTO;
     }
 }

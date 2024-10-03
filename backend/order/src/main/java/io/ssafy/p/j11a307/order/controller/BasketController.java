@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.controller;
 
 import io.ssafy.p.j11a307.order.dto.AddProductToBasketDTO;
+import io.ssafy.p.j11a307.order.dto.GetBasketOptionDTO;
 import io.ssafy.p.j11a307.order.dto.GetBasketListDTO;
 import io.ssafy.p.j11a307.order.dto.ModifyOptionFromBasketDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
@@ -11,9 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +39,8 @@ public class BasketController {
                 .body(MessageResponse.of("장바구니에 상품 추가를 완료했습니다."));
     }
 
-    //장바구니 리스트 조회
-    @PostMapping(value= "/basket/list")
+
+    @GetMapping(value= "/basket/list")
     @Operation(summary = "장바구니 리스트 조회", description = "장바구니에 있는 데이터들을 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "리스트 조회 성공"),
@@ -59,13 +58,22 @@ public class BasketController {
                 .body(DataResponse.of("장바구니 리스트 조회에 성공했습니다.", getBasketListDTO));
     }
 
+    @GetMapping(value= "/basket/{id}/info")
+    @Operation(summary = "장바구니 내역 상세조회", description = "장바구니 내역 id를 받아, 장바구니에서 옵션 수정 시 불러오는 데이터들")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "상세조회 성공"),
+            @ApiResponse(responseCode = "404", description = "장바구니 내역 존재하지 않음"),
+            @ApiResponse(responseCode = "401", description = "조회 권한 없음"),
+    })
+    public ResponseEntity<DataResponse<GetBasketOptionDTO>> getBasketInfo(@PathVariable Integer id,
+                                                                          @RequestHeader("Authorization") String token) {
+        GetBasketOptionDTO getBasketOptionDTO = basketService.getBasketInfo(id, token);
 
-    //장바구니 내역 상세조회
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("장바구니 내역 상세조회에 성공했습니다.", getBasketOptionDTO));
+    }
 
 
-
-
-    //장바구니 옵션 수정
     @PatchMapping(value = "/{id}/basket")
     @Operation(summary = "옵션 수정", description = "장바구니 상품내역 id에 해당하는 상품 옵션을 수정")
     @ApiResponses(value = {

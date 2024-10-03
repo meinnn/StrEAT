@@ -11,4 +11,6 @@ import java.util.List;
 public interface ShoppingCartOptionRepository extends JpaRepository<ShoppingCartOption, Integer> {
     List<ShoppingCartOption> findAllByShoppingCartId(ShoppingCart shoppingCartId);
 
+    ShoppingCartOption findByProductOptionIdAndShoppingCartId(Integer productOptionId, ShoppingCart shoppingCart);
+
 }

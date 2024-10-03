@@ -22,7 +22,7 @@ public class GetBasketListDTO {
     private String storeSrc;
 
     @Schema(description = "주문 예정 리스트")
-    List<GetBasketOptionInfoDTO> basketList;
+    List<GetBasketListInfoDTO> basketList;
 
     @Schema(description = "총 페이지 개수", example = "4")
     Integer totalPageCount;

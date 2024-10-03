@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.ReadProductDTO;
+import io.ssafy.p.j11a307.order.dto.ReadProductOptionCategoryDTO;
 import io.ssafy.p.j11a307.order.dto.ReadProductOptionDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,5 +27,11 @@ public interface ProductClient {
 
     @GetMapping("/api/products/options/list")
     List<ReadProductOptionDTO> getProductOptionList(@RequestParam List<Integer> optionList, @RequestHeader(value = "X-Internal-Request") String internalRequest);
+
+    @GetMapping("/api/products/options/{productId}/list")
+    List<ReadProductOptionDTO> getProductOptionListByProductId(@PathVariable Integer productId, @RequestHeader(value = "X-Internal-Request") String internalRequest);
+
+    @GetMapping("/api/products/option-categories/{optionCategoryId}")
+    DataResponse<ReadProductOptionCategoryDTO> getProductOptionCategoryById(@PathVariable Integer optionCategoryId);
 
 }
