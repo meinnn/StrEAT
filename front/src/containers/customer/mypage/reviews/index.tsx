@@ -1,79 +1,89 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
 import ReviewItem from '@/containers/customer/mypage/components/ReviewListItem'
+import getConvertedDate from '@/utils/getConvertedDate'
+import ReviewSkeleton from '@/components/skeleton/ReviewSkeleton'
 
-const REVIEW_LIST = [
-  {
-    id: 1,
-    storeTitle: '맛있는 보쌈/족발',
-    storeImage: '/images/보쌈사진.jpg',
-    date: '2024.09.09 (월)',
-    order: '매운 족발 小 1개 외 4개',
-    content: `안녕하세요. 보쌈과 족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과 족발이 정말
-  맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요. 굿입니다. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요.`,
-  },
-  {
-    id: 2,
-    storeTitle: '맛있는 보쌈/족발',
-    storeImage: '/images/보쌈사진.jpg',
-    date: '2024.09.09 (월)',
-    order: '매운 족발 小 1개 외 4개',
-    content: `안녕하세요. 보쌈과 족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과 족발이 정말
-  맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요. 굿입니다. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요.`,
-  },
-  {
-    id: 3,
-    storeTitle: '맛있는 보쌈/족발',
-    storeImage: '/images/보쌈사진.jpg',
-    date: '2024.09.08 (일)',
-    order: '매운 족발 小 1개 외 4개',
-    content: `안녕하세요. 보쌈과 족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과 족발이 정말
-  맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요. 굿입니다. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요.`,
-  },
+interface Review {
+  content: string
+  createdAt: string
+  storeId: number
+  reviewId: number
+  orderProducts: string[]
+  score: number
+  srcList: string[]
+  storeName: string
+  storePhoto?: string
+}
 
-  {
-    id: 4,
-    storeTitle: '맛있는 보쌈/족발',
-    storeImage: '/images/보쌈사진.jpg',
-    date: '2024.09.08 (일)',
-    order: '매운 족발 小 1개 외 4개',
-    content: `안녕하세요. 보쌈과 족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 안녕하세요. 보쌈과 족발이 정말
-  맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요. 굿입니다. 보쌈과
-  족발이 정말 맛있네요. 굿입니다. 보쌈과 족발이 정말 맛있네요.`,
-  },
-]
+const fetchMyReview = async () => {
+  try {
+    const response = await fetch(`/api/review/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+          'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch review')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error:', error)
+    throw error
+  }
+}
 
 export default function MyReviewList() {
   let lastDate = ''
 
+  const {
+    data: reviewList,
+    isLoading,
+    error,
+  } = useQuery<Review[]>({
+    queryKey: ['/api/review/me'],
+    queryFn: fetchMyReview,
+  })
+
+  if (isLoading) {
+    return <ReviewSkeleton />
+  }
+
   return (
     <div>
-      {REVIEW_LIST.map((review) => {
-        const isVisibleDate = lastDate !== review.date
-        lastDate = review.date
+      {reviewList &&
+        reviewList.length > 0 &&
+        reviewList.map((review) => {
+          const isVisibleDate = lastDate !== getConvertedDate(review.createdAt)
+          lastDate = getConvertedDate(review.createdAt)
 
-        return (
-          <div key={review.id}>
-            {isVisibleDate && (
-              <h2 className="pl-4 pt-7 pb-3 text-lg font-medium text-text">
-                {review.date}
-              </h2>
-            )}
-            <ReviewItem
-              store={review.storeTitle}
-              storeImage={review.storeImage}
-              date={review.date}
-              order={review.order}
-              content={review.content}
-            />
-          </div>
-        )
-      })}
+          return (
+            <div key={review.reviewId}>
+              {isVisibleDate && (
+                <h2 className="pl-4 pt-7 pb-3 text-lg font-medium text-text">
+                  {getConvertedDate(review.createdAt)}
+                </h2>
+              )}
+              <ReviewItem
+                reviewId={review.reviewId}
+                storeId={review.storeId}
+                storeName={review.storeName}
+                storeImage={review.storePhoto}
+                date={getConvertedDate(review.createdAt)}
+                orderList={review.orderProducts}
+                score={review.score}
+                content={review.content}
+                reviewImageList={review.srcList}
+              />
+            </div>
+          )
+        })}
     </div>
   )
 }
