@@ -54,14 +54,35 @@ public class StoreController {
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeResponse));
     }
 
+    // 점포 정보 조회 (손님 - 점포 상세 정보 조회)
+    @GetMapping("/{id}/business-day")
+    @Operation(summary = "손님 - 점포 상세 정보 조회 (영업일 포함)")
+    public ResponseEntity<DataResponse<ReadStoreBusinessDayDTO>> getStoreBusinessDayInfo(@PathVariable Integer id) {
+        ReadStoreBusinessDayDTO storeResponse = storeService.getStoreBusinessDayInfo(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("점포 영업일 정보 조회 성공", storeResponse));
+    }
+
+    // 새로운 점포 상세 정보 조회 컨트롤러
+    @GetMapping("{id}/details/customer")
+    @Operation(summary = "손님 - 간단한 점포 정보 조회 (상호명, 영업상태, 가게 주소, 음식 카테고리, 가게 사진)")
+    public ResponseEntity<DataResponse<ReadCustomerStoreDTO>> getStoreDetailInfoForCustomer(@PathVariable Integer id) {
+        ReadCustomerStoreDTO storeDetails = storeService.getStoreDetailInfoForCustomer(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("간단한 점포 정보 조회 성공", storeDetails));
+    }
+
     // 4. 점포 상세 정보 조회(사장님 - 점포 상세 정보 조회)
-    @GetMapping("/details")
+    @GetMapping("/details/owner")
     @Operation(summary = "사장님 - 점포 상세 정보 조회 (상호명, 영업상태, 가게 주소, 사장님 한마디, 음식 카테고리, 가게 사진, 영업 위치 사진, 영업일, 휴무일)")
-    public ResponseEntity<DataResponse<ReadStoreDetailsDTO>> getStoreDetailInfo(@RequestHeader("Authorization") String token) {
-        ReadStoreDetailsDTO storeDetails = storeService.getStoreDetailInfo(token);
+    public ResponseEntity<DataResponse<ReadStoreDetailsDTO>> getStoreDetailInfoForOwner(@RequestHeader("Authorization") String token) {
+        ReadStoreDetailsDTO storeDetails = storeService.getStoreDetailInfoForOwner(token);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeDetails));
     }
+
+
+
 
     // 5. 점포 기본 정보 조회(리뷰 조회시 storeId로 검색했을 떄 점포 사진과 점포이름 반환)
     @GetMapping("/{id}/photo-name")

@@ -1,15 +1,11 @@
 package io.ssafy.p.j11a307.store.service;
 
 import io.ssafy.p.j11a307.store.dto.*;
-import io.ssafy.p.j11a307.store.entity.IndustryCategory;
-import io.ssafy.p.j11a307.store.entity.Store;
+import io.ssafy.p.j11a307.store.entity.*;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import io.ssafy.p.j11a307.store.global.DataResponse;
-import io.ssafy.p.j11a307.store.repository.IndustryCategoryRepository;
-import io.ssafy.p.j11a307.store.repository.StoreLocationPhotoRepository;
-import io.ssafy.p.j11a307.store.repository.StorePhotoRepository;
-import io.ssafy.p.j11a307.store.repository.StoreRepository;
+import io.ssafy.p.j11a307.store.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -18,10 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import io.ssafy.p.j11a307.store.entity.StorePhoto;
-import io.ssafy.p.j11a307.store.entity.StoreLocationPhoto;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +24,7 @@ public class StoreService{
 
     private final StoreRepository storeRepository;
     private final IndustryCategoryRepository industryCategoryRepository;
+    private final BusinessDayRepository businessDayRepository;
     private final OwnerClient ownerClient;
     private final StoreLocationPhotoRepository storeLocationPhotoRepository;
     private final StorePhotoRepository storePhotoRepository;
@@ -60,26 +56,67 @@ public class StoreService{
     /**
      * 가게 정보 조회( 사장님이 내 점포 조회 시 나타나는 정보들 ex) 점포 사진, 점포 위치 사진, 영업일...)
      */
-    public ReadStoreDetailsDTO getStoreDetailInfo(String token) {
-        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token을 사용하여 userId 조회
-
+    public ReadStoreDetailsDTO getStoreDetailInfoForOwner(String token) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token으로 userId 조회
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // StorePhotos, StoreLocationPhotos 로직 처리
+        // Store의 사진 목록 가져오기
         List<ReadStorePhotoSrcDTO> storePhotos = storePhotoRepository.findByStoreId(store.getId())
                 .stream().map(ReadStorePhotoSrcDTO::new).collect(Collectors.toList());
 
         List<ReadStoreLocationPhotoSrcDTO> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(store.getId())
                 .stream().map(ReadStoreLocationPhotoSrcDTO::new).collect(Collectors.toList());
 
-        // Product 서비스에서 categories 조회
+        // Product 서비스에서 카테고리 가져오기
         DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
-
-        // categories가 null이 아니고 성공했는지 확인 후 가져오기
         List<String> categories = categoryResponse.getData();
 
         return new ReadStoreDetailsDTO(store, storePhotos, storeLocationPhotos, categories);
+    }
+
+    /**
+     * 가게 정보 조회( 손님이 내 점포 조회 시 나타나는 정보들 ex) 점포 위치 사진, 영업상태...)
+     */
+
+    public ReadCustomerStoreDTO getStoreDetailInfoForCustomer(Integer storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // 가게 사진을 리스트로 변환
+        List<String> storePhotos = storePhotoRepository.findByStoreId(store.getId())
+                .stream().map(storePhoto -> storePhoto.getSrc()).collect(Collectors.toList());
+
+        // 가게 위치 사진 조회, 없으면 가게 대표 사진 사용
+        List<String> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(store.getId())
+                .stream().map(storeLocationPhoto -> storeLocationPhoto.getSrc()).collect(Collectors.toList());
+
+        if (storeLocationPhotos.isEmpty()) {
+            storeLocationPhotos = new ArrayList<>(storePhotos); // 위치 사진이 없으면 대표 사진 사용
+        }
+
+        // 카테고리 정보 가져오기
+        DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
+        List<String> categories = categoryResponse.getData();
+
+        // DTO 반환
+        return new ReadCustomerStoreDTO(store, storeLocationPhotos, categories);
+    }
+    /**
+     * 가게 상세 정보 조회( 손님이 내 점포 조회 시 나타나는 상세 정보들 ex) 점포 상세 정보, 영업일)
+     */
+    @Transactional(readOnly = true)
+    public ReadStoreBusinessDayDTO getStoreBusinessDayInfo(Integer storeId) {
+        // 가게 정보 조회
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // 가게의 단일 영업일 정보 조회
+        BusinessDay businessDay = businessDayRepository.findByStoreId(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BUSINESS_DAY_NOT_FOUND));
+
+        // 가게 정보와 영업일 정보를 포함한 DTO 반환
+        return new ReadStoreBusinessDayDTO(store, businessDay);
     }
 
     /**
@@ -101,44 +138,6 @@ public class StoreService{
     /**
      * 위도와 경도로 근처 가게 조회
      */
-//    public List<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude) {
-//        // 위도와 경도를 기준으로 범위 내 가게 리스트를 가져옵니다.
-//        List<Store> stores = storeRepository.findAllByLocationRange(latitude, longitude);
-//
-//        // 거리 계산 및 정렬
-//        return stores.stream()
-//                .map(store -> {
-//                    // Store의 사진 가져오기
-//                    String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
-//                            .stream()
-//                            .findFirst()
-//                            .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())  // 객체를 명시적으로 생성하고 필드 참조
-//                            .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(store.getId())
-//                                    .stream()
-//                                    .findFirst()
-//                                    .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())  // 마찬가지로 필드 참조
-//                                    .orElse(""));
-//
-//                    // Store의 카테고리 가져오기
-//                    DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
-//                    List<String> categories = categoryResponse.getData();
-//
-//                    // 거리 계산 (Java에서 Haversine 공식을 적용)
-//                    Integer distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
-//
-//                    // ReadNearByStoreDTO 생성
-//                    return new ReadNearByStoreDTO(
-//                            store.getName(),
-//                            storePhotoSrc,
-//                            store.getStatus(),
-//                            categories,
-//                            distance
-//                    );
-//                })
-//                // 거리 기준으로 정렬
-//                .sorted(Comparator.comparingInt(ReadNearByStoreDTO::distance))
-//                .collect(Collectors.toList());
-//    }
     public List<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude, int page, int size) {
         // 페이지네이션을 위한 PageRequest 생성
         Pageable pageable = PageRequest.of(page, size);

@@ -16,12 +16,6 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
 
     boolean existsByUserId(Integer userId);
 
-//    @Query("SELECT s FROM Store s WHERE " +
-//            "(s.latitude BETWEEN :latitude - 0.1 AND :latitude + 0.1) AND " +
-//            "(s.longitude BETWEEN :longitude - 0.1 AND :longitude + 0.1)")
-//    List<Store> findAllByLocationRange(@Param("latitude") double latitude, @Param("longitude") double longitude, Pageable pageable);
-
-
     @Query("SELECT s FROM Store s WHERE " +
             "(s.latitude BETWEEN :latitude - 0.1 AND :latitude + 0.1) AND " +
             "(s.longitude BETWEEN :longitude - 0.1 AND :longitude + 0.1)")
