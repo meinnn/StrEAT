@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.store.dto;
 
 import io.ssafy.p.j11a307.store.entity.StorePhoto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ public record ReadStorePhotoDTO(
         Integer storeId,
 
         @Schema(description = "사진 경로", example = "https://s3.amazonaws.com/example.jpg")
+        @Getter
         String src,
 
         @Schema(description = "생성일자", example = "2024-09-30T12:34:56")
