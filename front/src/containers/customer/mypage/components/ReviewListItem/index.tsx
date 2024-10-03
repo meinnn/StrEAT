@@ -64,11 +64,11 @@ export default function ReviewListItem({
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleClickDeleteBtn = () => {
-    mutation.mutate()
     setIsModalOpen(true)
   }
 
   const handleConfirmDelete = () => {
+    mutation.mutate()
     setIsModalOpen(false)
   }
 
