@@ -111,4 +111,14 @@ public class ProductOptionService {
 
         return readProductOptionDTOs;
     }
+
+    @Transactional
+    public List<ReadProductOptionDTO> getProductOptionListByProductId(Integer productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        List<ReadProductOptionDTO> readProductOptionDTOs = new ArrayList<>();
+
+        if(product.isPresent()) readProductOptionDTOs = productOptionRepository.findAllByProduct(product.get());
+
+        return readProductOptionDTOs;
+    }
 }

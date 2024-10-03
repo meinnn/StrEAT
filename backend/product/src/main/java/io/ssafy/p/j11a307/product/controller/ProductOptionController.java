@@ -103,4 +103,12 @@ public class ProductOptionController {
 
         return null;
     }
+
+    //8. 상품 아이디에 따른 옵션들 반환
+    @GetMapping("/{productId}/list")
+    @Operation(summary = "상품 아이디에 따른 옵션 리스트 조회")
+    @Tag(name = "내부 서비스 간 요청")
+    public List<ReadProductOptionDTO> getProductOptionListByProductId(@PathVariable Integer productId, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+        return productOptionService.getProductOptionListByProductId(productId);
+    }
 }
