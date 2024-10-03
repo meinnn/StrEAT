@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,30 +56,54 @@ public class StoreService{
     /**
      * 가게 정보 조회( 사장님이 내 점포 조회 시 나타나는 정보들 ex) 점포 사진, 점포 위치 사진, 영업일...)
      */
-    public ReadStoreDetailsDTO getStoreDetailInfo(String token) {
-        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token을 사용하여 userId 조회
-
+    public ReadStoreDetailsDTO getStoreDetailInfoForOwner(String token) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token으로 userId 조회
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // StorePhotos, StoreLocationPhotos 로직 처리
+        // Store의 사진 목록 가져오기
         List<ReadStorePhotoSrcDTO> storePhotos = storePhotoRepository.findByStoreId(store.getId())
                 .stream().map(ReadStorePhotoSrcDTO::new).collect(Collectors.toList());
 
         List<ReadStoreLocationPhotoSrcDTO> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(store.getId())
                 .stream().map(ReadStoreLocationPhotoSrcDTO::new).collect(Collectors.toList());
 
-        // Product 서비스에서 categories 조회
+        // Product 서비스에서 카테고리 가져오기
         DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
-
-        // categories가 null이 아니고 성공했는지 확인 후 가져오기
         List<String> categories = categoryResponse.getData();
 
         return new ReadStoreDetailsDTO(store, storePhotos, storeLocationPhotos, categories);
     }
 
     /**
-     * 가게 정보 조회( 손님이 내 점포 조회 시 나타나는 정보들 ex) 점포 상세 정보, 영업일)
+     * 가게 정보 조회( 손님이 내 점포 조회 시 나타나는 정보들 ex) 점포 위치 사진, 영업상태...)
+     */
+
+    public ReadCustomerStoreDTO getStoreDetailInfoForCustomer(Integer storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // 가게 사진을 리스트로 변환
+        List<String> storePhotos = storePhotoRepository.findByStoreId(store.getId())
+                .stream().map(storePhoto -> storePhoto.getSrc()).collect(Collectors.toList());
+
+        // 가게 위치 사진 조회, 없으면 가게 대표 사진 사용
+        List<String> storeLocationPhotos = storeLocationPhotoRepository.findByStoreId(store.getId())
+                .stream().map(storeLocationPhoto -> storeLocationPhoto.getSrc()).collect(Collectors.toList());
+
+        if (storeLocationPhotos.isEmpty()) {
+            storeLocationPhotos = new ArrayList<>(storePhotos); // 위치 사진이 없으면 대표 사진 사용
+        }
+
+        // 카테고리 정보 가져오기
+        DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
+        List<String> categories = categoryResponse.getData();
+
+        // DTO 반환
+        return new ReadCustomerStoreDTO(store, storeLocationPhotos, categories);
+    }
+    /**
+     * 가게 상세 정보 조회( 손님이 내 점포 조회 시 나타나는 상세 정보들 ex) 점포 상세 정보, 영업일)
      */
     @Transactional(readOnly = true)
     public ReadStoreBusinessDayDTO getStoreBusinessDayInfo(Integer storeId) {
