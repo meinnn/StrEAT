@@ -11,8 +11,10 @@ export default function OrderBox() {
 
   return (
     <div
-      className={`flex gap-2 border p-4 rounded-lg shadow-md max-w-md mt-4 mx-3 ${
-        isAccepted ? 'bg-white text-black' : 'bg-primary-400 text-white'
+      className={`flex gap-2 border p-4 rounded-lg shadow-md max-w-full mt-4 mx-3 justify-between ${
+        isAccepted
+          ? 'bg-secondary-light text-black'
+          : 'bg-primary-400 text-white'
       }`}
     >
       <div className="flex items-start">
@@ -33,7 +35,7 @@ export default function OrderBox() {
       </div>
 
       {/* 버튼 배치 */}
-      <div className="flex justify-end space-x-2">
+      <div className="flex space-x-2">
         <PrintOrderBtn />
         <AcceptFinishBtn onAccept={handleAccept} />
       </div>

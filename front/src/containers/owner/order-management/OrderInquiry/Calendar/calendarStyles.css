@@ -1,0 +1,132 @@
+/* 전체 달력 컨테이너 */
+.react-datepicker {
+  font-family: 'Inter', sans-serif;
+  background-color: white;
+  border-radius: 10px;
+  border: none;
+  width: 100%;
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+/* 헤더 영역 */
+.react-datepicker__header {
+  background-color: white;
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+/* 중복된 월/년 요소 숨기기 (시각적 요소만 숨김) */
+.react-datepicker__aria-live {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+/* 기본적으로 표시되는 현재 월 텍스트 숨기기 */
+.react-datepicker__current-month {
+  display: none;
+}
+
+/* 요일 스타일 */
+.react-datepicker__day-names {
+  display: flex;
+  justify-content: space-around; /* 요일을 균등하게 배치 */
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  width: 100%; /* 전체 너비를 차지하게 설정 */
+  text-align: center;
+  margin-bottom: 0.5rem; /* 요일과 날짜 사이 간격 조정 */
+}
+
+/* 날짜 스타일 */
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-around; /* 날짜를 요일과 동일하게 배치 */
+  width: 100%; /* 전체 너비를 차지하게 설정 */
+}
+
+.react-datepicker__day {
+  font-size: 1rem;
+  color: #333;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0; /* 여백을 없애고 정확하게 정렬 */
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+/* 오늘 날짜 스타일 */
+.react-datepicker__day--today {
+  font-weight: bold;
+  color: #ff4081;
+}
+
+/* 선택된 날짜 스타일 */
+.react-datepicker__day--selected {
+  background-color: #ff4081;
+  color: white;
+  font-weight: bold;
+}
+
+/* 선택된 범위 안의 날짜 스타일 */
+.react-datepicker__day--in-range {
+  background-color: #ff4081; /* 선택된 범위 안의 날짜 배경색 */
+  color: white; /* 선택된 범위 안의 날짜 텍스트 색 */
+}
+
+/* 선택된 범위 안의 날짜 호버 스타일 */
+.react-datepicker__day--in-range:hover {
+  background-color: #ffd6e6; /* 범위 안의 날짜가 호버될 때 배경색 */
+}
+
+/* 날짜 호버 스타일 */
+.react-datepicker__day:hover {
+  background-color: #ff4081;
+}
+
+/* 네비게이션 버튼 */
+.react-datepicker__navigation {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: absolute; /* 절대 위치 설정 */
+  top: 10px; /* 상단에 고정 */
+  width: 24px; /* 버튼 크기 조정 */
+  height: 24px;
+  text-align: center;
+}
+
+.react-datepicker__navigation--previous {
+  left: 10px; /* 왼쪽 화살표 위치 */
+}
+
+.react-datepicker__navigation--next {
+  right: 10px; /* 오른쪽 화살표 위치 */
+}
+
+/* 화살표 아이콘 추가 */
+.react-datepicker__navigation-icon::before {
+  content: '';
+  display: inline-block;
+  border-style: solid;
+  border-width: 4px;
+  padding: 5px;
+}
+
+/* 이전 달 화살표 */
+.react-datepicker__navigation--previous
+  .react-datepicker__navigation-icon::before {
+  border-color: transparent transparent transparent #ff4081;
+}
+
+/* 다음 달 화살표 */
+.react-datepicker__navigation--next .react-datepicker__navigation-icon::before {
+  border-color: transparent #ff4081 transparent transparent;
+}

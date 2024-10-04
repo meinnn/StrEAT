@@ -21,8 +21,8 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
 
   streat-eureka:
     image: junbeomson/streat-eureka:latest
@@ -129,4 +129,3 @@ services:
 networks:
   streat-network:
     external: true
-

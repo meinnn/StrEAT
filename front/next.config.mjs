@@ -9,6 +9,7 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    domains: ['streat-bucket.s3.ap-northeast-2.amazonaws.com'],
   },
 }
 
