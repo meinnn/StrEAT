@@ -8,5 +8,5 @@ export interface CartItem {
   quantity: number
   checked: boolean
   options: string[] // 사용자가 선택한 옵션
-  option_categories: MenuOptionCategory[]
+  optionCategories: MenuOptionCategory[]
 }

@@ -21,7 +21,7 @@ export default function BackButtonWithImage({
   useEffect(() => {
     const handleScroll = () => {
       // 스크롤이 일정 위치 이상 내려갔을 때 showTopBar를 true로 설정
-      if (window.pageYOffset > 176) {
+      if (window.scrollY > 176) {
         setShowTopBar(true)
       } else {
         setShowTopBar(false)
@@ -49,13 +49,9 @@ export default function BackButtonWithImage({
         <FaAngleLeft size={24} className="text-white" />
       </button>
 
-      <Image
-        src={src}
-        alt={alt}
-        width={192}
-        height={192}
-        className="absoulte top-0 w-full h-48 object-cover bg-gray-dark"
-      />
+      <div className="w-full h-48 relative -z-10">
+        <Image src={src} alt={alt} fill className="object-cover" priority />
+      </div>
 
       {/* 스크롤에 따라 상단 바와 뒤로가기 버튼을 표시 */}
       {showTopBar && (

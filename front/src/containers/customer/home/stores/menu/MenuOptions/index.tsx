@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react'
 import Checkbox from '@/components/Checkbox'
 import RadioButton from '@/components/RadioButton'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
-import { MenuItem } from '@/types/menu'
+import { Menu } from '@/types/menu'
 import { CartItem } from '@/types/cart'
 
 interface MenuOptionsProps {
   type?: 'default' | 'change'
-  menuInfo: MenuItem | CartItem
+  menuInfo: Menu | CartItem
 }
 
 export default function MenuOptions({
@@ -19,9 +19,9 @@ export default function MenuOptions({
   // CartItem일 경우 이미 quantity가 있으므로, CartItem을 사용한다면 해당 값을 설정
   const initialQuantity = 'quantity' in menuInfo ? menuInfo.quantity : 1
   const [selectedOptions, setSelectedOptions] = useState<
-    Record<number, string[]>
+    Record<number, number[]>
   >({})
-  const [quantity, setQuantity] = useState(initialQuantity)
+  const [quantity, setQuantity] = useState(1)
   const [showAlert, setShowAlert] = useState(false)
   const [accordionOpen, setAccordionOpen] = useState<Record<number, boolean>>(
     {}
@@ -29,10 +29,10 @@ export default function MenuOptions({
 
   // 첫 번째 RadioButton 옵션 자동 선택
   useEffect(() => {
-    const initialSelections: Record<number, string[]> = {}
-    menuInfo.option_categories.forEach((category) => {
-      if (category.max_select === 1 && category.options.length > 0) {
-        initialSelections[category.id] = [category.options[0].desc]
+    const initialSelections: Record<number, number[]> = {}
+    menuInfo.optionCategories.forEach((category) => {
+      if (category.maxSelect === 1 && category.options.length > 0) {
+        initialSelections[category.id] = [category.options[0].id]
       }
     })
     setSelectedOptions(initialSelections)
@@ -41,7 +41,7 @@ export default function MenuOptions({
   // 아코디언 상태 초기화
   useEffect(() => {
     const initialAccordionState: Record<number, boolean> = {}
-    menuInfo.option_categories.forEach((category) => {
+    menuInfo.optionCategories.forEach((category) => {
       initialAccordionState[category.id] = type !== 'change' // change일 때는 접혀있도록
     })
     setAccordionOpen(initialAccordionState)
@@ -49,27 +49,27 @@ export default function MenuOptions({
 
   const handleOptionChange = (
     categoryId: number,
-    optionDesc: string,
+    optionId: number,
     maxSelect: number
   ) => {
     setSelectedOptions((prev) => {
       const currentSelections = prev[categoryId] || []
 
       if (maxSelect === 1) {
-        return { ...prev, [categoryId]: [optionDesc] }
+        return { ...prev, [categoryId]: [optionId] }
       }
 
-      if (currentSelections.includes(optionDesc)) {
+      if (currentSelections.includes(optionId)) {
         return {
           ...prev,
           [categoryId]: currentSelections.filter(
-            (selectedOption) => selectedOption !== optionDesc
+            (selectedOption) => selectedOption !== optionId
           ),
         }
       }
 
       if (currentSelections.length < maxSelect) {
-        return { ...prev, [categoryId]: [...currentSelections, optionDesc] }
+        return { ...prev, [categoryId]: [...currentSelections, optionId] }
       }
 
       return prev
@@ -81,10 +81,12 @@ export default function MenuOptions({
   }
 
   const areAllRequiredOptionsSelected = () => {
-    return menuInfo.option_categories.every((category) => {
-      const selectedCount = selectedOptions[category.id]?.length || 0
-      return selectedCount >= category.min_select
-    })
+    return menuInfo.optionCategories
+      .filter((category) => category.isEssential)
+      .every((category) => {
+        const selectedCount = selectedOptions[category.id]?.length || 0
+        return selectedCount >= category.minSelect
+      })
   }
 
   const handleButtonClick = () => {
@@ -118,7 +120,7 @@ export default function MenuOptions({
         </div>
 
         {/* 옵션 카테고리들 */}
-        {menuInfo.option_categories.map((category) => (
+        {menuInfo.optionCategories.map((category) => (
           <div
             key={category.id}
             className={`${type === 'change' ? 'border border-gray-medium rounded-lg py-4 px-5 m-2' : 'p-6'}`}
@@ -134,7 +136,7 @@ export default function MenuOptions({
                 <h2 className="text-lg font-bold flex items-center">
                   {category.name}
                 </h2>
-                {category.min_select > 0 ? (
+                {category.isEssential ? (
                   <span className="ml-2 bg-primary-50 px-3 py-1 rounded-full text-primary-500 font-semibold text-xs">
                     필수
                   </span>
@@ -166,35 +168,35 @@ export default function MenuOptions({
             {/* 아코디언 내용: type이 change일 때만 접힘 */}
             {(type !== 'change' || accordionOpen[category.id]) && (
               <>
-                {category.max_select > 1 &&
-                  (category.min_select === category.max_select ? (
+                {category.maxSelect > 1 &&
+                  (category.minSelect === category.maxSelect ? (
                     <p className="text-gray-dark text-sm">
-                      {category.max_select}개 선택 필수
+                      {category.maxSelect}개 선택 필수
                     </p>
                   ) : (
                     <p className="text-gray-dark text-sm">
-                      최대 {category.max_select}개 선택
+                      최대 {category.maxSelect}개 선택
                     </p>
                   ))}
 
                 <div className="mt-5 mx-2 space-y-5">
                   {category.options.map((option) =>
-                    category.max_select > 1 ? (
+                    category.maxSelect > 1 ? (
                       <Checkbox
                         key={option.id}
                         onChange={() =>
                           handleOptionChange(
                             category.id,
-                            option.desc,
-                            category.max_select
+                            option.id,
+                            category.maxSelect
                           )
                         }
                         checked={
-                          selectedOptions[category.id]?.includes(option.desc) ||
+                          selectedOptions[category.id]?.includes(option.id) ||
                           false
                         }
                         id={`option-${option.id}`}
-                        label={option.desc}
+                        label={option.productOptionName}
                         size={24}
                       />
                     ) : (
@@ -203,17 +205,17 @@ export default function MenuOptions({
                         onChange={() =>
                           handleOptionChange(
                             category.id,
-                            option.desc,
-                            category.max_select
+                            option.id,
+                            category.maxSelect
                           )
                         }
                         checked={
-                          selectedOptions[category.id]?.includes(option.desc) ||
+                          selectedOptions[category.id]?.includes(option.id) ||
                           false
                         }
                         id={`option-${option.id}`}
                         name={`option-${category.id}`}
-                        label={option.desc}
+                        label={option.productOptionName}
                         size={24}
                       />
                     )

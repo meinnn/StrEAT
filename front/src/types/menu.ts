@@ -1,13 +1,14 @@
 export interface MenuItemOption {
   id: number
-  desc: string
+  productOptionName: string
 }
 
 export interface MenuOptionCategory {
   id: number
   name: string
-  min_select: number
-  max_select: number
+  minSelect: number
+  maxSelect: number
+  isEssential: boolean
   options: MenuItemOption[]
 }
 
@@ -19,4 +20,32 @@ export interface MenuItem {
   description_full: string
   price: number
   option_categories: MenuOptionCategory[]
+}
+
+export interface OptionCategoryItem {
+  id: number
+  productId: number
+  productOptionCategoryId: 1
+  productOptionName: string
+  productOptionPrice: number
+}
+
+export interface OptionCategory {
+  id: number
+  productId: number
+  name: string
+  isEssential: boolean
+  minSelect: number
+  maxSelect: number
+  options: OptionCategoryItem[]
+}
+
+export interface Menu {
+  id: number
+  name: string
+  price: number
+  description: string
+  categories: number[]
+  optionCategories: OptionCategory[]
+  photos: string[]
 }
