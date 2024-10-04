@@ -25,12 +25,14 @@ public class ProductController {
     // 1. 상품 등록
     @PostMapping
     @Operation(summary = "상품 등록")
-    public ResponseEntity<MessageResponse> createProduct(@RequestBody CreateProductDTO product, @RequestHeader("Authorization") String token) {
-        productService.createProduct(product, token);
+    public ResponseEntity<MessageResponse> createProduct(
+            @RequestHeader("Authorization") String token,
+            @RequestBody CreateProductDTO product) {
+
+        productService.createProduct(token, product); // token을 전달
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("상품 등록 성공"));
     }
-
     // 2. 상품 정보 조회
     @GetMapping("/{productId}")
     @Operation(summary = "상품 상세 정보 조회")
@@ -68,11 +70,14 @@ public class ProductController {
                 .body(DataResponse.of("가게별 상품 리스트 조회 성공", productResponses));
     }
 
-    // 6. 상품 수정
     @PatchMapping("/{productId}")
     @Operation(summary = "상품 수정")
-    public ResponseEntity<MessageResponse> updateProduct(@PathVariable Integer productId, @RequestBody UpdateProductDTO productRequest) {
-        productService.updateProduct(productId, productRequest);
+    public ResponseEntity<MessageResponse> updateProduct(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer productId,
+            @RequestBody UpdateProductDTO productRequest) {
+
+        productService.updateProduct(token, productId, productRequest); // token을 전달
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 수정 성공"));
     }
@@ -80,8 +85,11 @@ public class ProductController {
     // 7. 상품 삭제
     @DeleteMapping("/{productId}")
     @Operation(summary = "상품 삭제")
-    public ResponseEntity<MessageResponse> deleteProduct(@PathVariable Integer productId) {
-        productService.deleteProduct(productId);
+    public ResponseEntity<MessageResponse> deleteProduct(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer productId) {
+
+        productService.deleteProduct(token, productId); // token을 전달
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 삭제 성공"));
     }

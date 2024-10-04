@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.product.entity;
 
+import io.ssafy.p.j11a307.product.dto.UpdateProductOptionCategoryDTO;
 import io.ssafy.p.j11a307.product.exception.BusinessException;
 import io.ssafy.p.j11a307.product.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -62,5 +63,12 @@ public class ProductOptionCategory {
     // 부모 카테고리 변경 메서드
     public void changeParentCategory(ProductOptionCategory parentCategory) {
         this.parentCategory = parentCategory;
+    }
+    public ProductOptionCategory(Product product, UpdateProductOptionCategoryDTO dto) {
+        this.product = product;
+        this.name = dto.name();
+        this.isEssential = dto.isEssential();
+        this.maxSelect = dto.maxSelect();
+        this.parentCategory = null;
     }
 }

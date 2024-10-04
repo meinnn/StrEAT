@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "product")
+@FeignClient(name = "PRODUCT")
 public interface ProductClient {
     @GetMapping("/api/products/{storeId}/categories")
     DataResponse<List<String>> getProductCategories(@PathVariable Integer storeId);

@@ -42,7 +42,7 @@ public class StorePhotoController {
         CreateStorePhotoDTO createStorePhotoDTO = new CreateStorePhotoDTO(storeId, image);
 
         // StorePhoto 생성 서비스 호출
-        storePhotoService.createStorePhoto(token, createStorePhotoDTO, image);
+        storePhotoService.createStorePhoto(token, image);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("StorePhoto 생성 성공"));

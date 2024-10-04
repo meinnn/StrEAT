@@ -1,11 +1,11 @@
 package io.ssafy.p.j11a307.product.entity;
 
+import io.ssafy.p.j11a307.product.dto.UpdateProductCategoryDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 
 @Entity
 @Getter
@@ -23,9 +23,10 @@ public class ProductCategory {
     private Product product;
 
     private String name;
-    // 상위 카테고리를 참조하는 parentCategoryId 필드
+
+    // 상위 카테고리를 참조하는 필드
     @ManyToOne
-    @JoinColumn(name = "parent_category_id")
+    @JoinColumn(name = "parent_category_id", nullable = true)
     private ProductCategory parentCategory;
 
     // 카테고리명 변경 메서드
@@ -42,6 +43,20 @@ public class ProductCategory {
             return this;
         }
         return this.parentCategory.getRootCategory();
+    }
+
+    public void changeParentCategory(ProductCategory parentCategory) {
+        this.parentCategory = parentCategory;
+    }
+
+    public ProductCategory(Product product, UpdateProductCategoryDTO dto) {
+        this.product = product;
+        this.name = dto.name();
+        this.parentCategory = dto.parentCategoryId() != null ? new ProductCategory() : null; // 상위 카테고리 설정
+    }
+
+    public ProductCategory(Integer id) {
+        this.id = id;
     }
 
 }
