@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import PrintOrderBtn from './PrintOrderBtn'
-import AcceptFinishBtn from './AcceptFinishBtn'
+import PrintOrderBtn from '@/containers/owner/order-management/OrderBox/PrintOrderBtn'
+import AcceptFinishBtn from '@/containers/owner/order-management/OrderBox/AcceptFinishBtn'
 
 export default function OrderBox() {
   const [isAccepted, setIsAccepted] = useState(false)
