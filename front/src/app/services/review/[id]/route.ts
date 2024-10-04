@@ -9,7 +9,7 @@ export async function DELETE(
     const reviewId = params.id
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/services/orders/${reviewId}/review`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/${reviewId}/review`,
       {
         method: 'DELETE',
         headers: {

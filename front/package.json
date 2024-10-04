@@ -9,13 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@tanstack/react-query": "^5.59.0",
-=======
     "@tosspayments/tosspayments-sdk": "^2.3.2",
     "@types/react-datepicker": "^7.0.0",
     "date-fns": "^4.1.0",
->>>>>>> 88cc3c2ccaa64aa047780d51c83b1a538675469c
     "next": "14.2.11",
     "react": "^18",
     "react-datepicker": "^7.4.0",

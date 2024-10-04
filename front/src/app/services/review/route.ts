@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     })
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/services/orders/${orderId}/review`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/${orderId}/review`,
       {
         method: 'POST',
         body: newFormData,

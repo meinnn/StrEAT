@@ -74,6 +74,8 @@ export default function MyReviewList() {
     initialPageParam: 0,
   })
 
+  console.log('reviewData:', reviewData)
+
   const observerElem = useRef(null)
 
   useEffect(() => {

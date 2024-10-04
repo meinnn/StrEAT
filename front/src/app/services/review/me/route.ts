@@ -8,7 +8,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const limit = Number(searchParams.get('limit') ?? '5')
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/services/orders/mine/reviews?pgno=${page}&spp=${limit}`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/mine/reviews?pgno=${page}&spp=${limit}`,
       {
         method: 'GET',
         headers: {
