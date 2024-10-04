@@ -226,9 +226,9 @@ public class BasketService {
                     .isSelected(is_Selected)
                     .optionCategoryId(option.getProductOptionCategoryId())
                     .optionCategoryName(categoryData.name())
-                    .optionParentCategoryId(categoryData.parentOptionCategoryId())
                     .isEssentialCategory(categoryData.isEssential())
                     .maxSelectCategory(categoryData.maxSelect())
+                    .minSelectCategory(categoryData.minSelect())
                     .build();
 
             basketOptionDetailList.add(getBasketOptionDetailDTO);
