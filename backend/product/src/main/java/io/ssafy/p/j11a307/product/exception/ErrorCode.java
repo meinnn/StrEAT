@@ -26,6 +26,7 @@ public enum ErrorCode {
     // Product Option Category
     PRODUCT_OPTION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 제품 옵션 카테고리가 없습니다."),
     INVALID_MAX_SELECT(HttpStatus.BAD_REQUEST, "최대 선택 개수는 null 이거나 음수 값을 허용하지 않습니다."),
+    INVALID_MIN_SELECT(HttpStatus.BAD_REQUEST, "최대 선택 개수는 null 이거나 음수 값을 허용하지 않습니다."),
     PRODUCT_OPTION_CATEGORY_NAME_NULL(HttpStatus.BAD_REQUEST, "상품 옵션 카테고리명은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     // Product Option
     PRODUCT_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 제품 옵션이 없습니다."),

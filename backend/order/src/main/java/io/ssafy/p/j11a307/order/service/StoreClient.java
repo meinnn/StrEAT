@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "STORE")
 public interface StoreClient {
     @GetMapping("/api/stores/{id}")
-    public DataResponse<ReadStoreDTO> getStoreInfo(@PathVariable Integer id);
+    DataResponse<ReadStoreDTO> getStoreInfo(@PathVariable Integer id);
 
 
     @GetMapping("/api/stores/{id}/photo-name")

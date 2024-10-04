@@ -24,20 +24,31 @@ public class ProductOptionCategoryService {
     private final ProductRepository productRepository;
 
     // 1. 옵션 카테고리 생성
+//    @Transactional
+//    public void createProductOptionCategory(CreateProductOptionCategoryDTO createOptionCategoryDTO) {
+//        Product product = productRepository.findById(createOptionCategoryDTO.productId())
+//                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+//
+//        // 상위 옵션 카테고리 조회 (없을 수도 있음)
+//        ProductOptionCategory parentCategory = null;
+//        if (createOptionCategoryDTO.parentOptionCategoryId() != null) {
+//            parentCategory = productOptionCategoryRepository.findById(createOptionCategoryDTO.parentOptionCategoryId())
+//                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
+//        }
+//
+//        // DTO를 엔티티로 변환하여 저장
+//        ProductOptionCategory optionCategory = createOptionCategoryDTO.toEntity(product, parentCategory);
+//        productOptionCategoryRepository.save(optionCategory);
+//    }
+
     @Transactional
     public void createProductOptionCategory(CreateProductOptionCategoryDTO createOptionCategoryDTO) {
         Product product = productRepository.findById(createOptionCategoryDTO.productId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // 상위 옵션 카테고리 조회 (없을 수도 있음)
-        ProductOptionCategory parentCategory = null;
-        if (createOptionCategoryDTO.parentOptionCategoryId() != null) {
-            parentCategory = productOptionCategoryRepository.findById(createOptionCategoryDTO.parentOptionCategoryId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
-        }
 
         // DTO를 엔티티로 변환하여 저장
-        ProductOptionCategory optionCategory = createOptionCategoryDTO.toEntity(product, parentCategory);
+        ProductOptionCategory optionCategory = createOptionCategoryDTO.toEntity(product);
         productOptionCategoryRepository.save(optionCategory);
     }
 
