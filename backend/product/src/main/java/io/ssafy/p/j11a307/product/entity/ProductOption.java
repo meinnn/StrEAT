@@ -28,14 +28,6 @@ public class ProductOption {
     private String productOptionName;
     private Integer productOptionPrice;
 
-    // 설명 변경 메서드
-//    public void changeDescription(String description) {
-//        if (description == null || description.isEmpty()) {
-//            throw new IllegalArgumentException("Description cannot be empty.");
-//        }
-//        this.description = description;
-//    }
-
     // 옵션 카테고리 변경 메서드
     public void changeOptionCategory(ProductOptionCategory productOptionCategory) {
         if (productOptionCategory == null) {

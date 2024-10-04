@@ -28,13 +28,14 @@ public class ProductOptionCategory {
     private String name;
     private Boolean isEssential;
     private Integer maxSelect;
+    private Integer minSelect;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_option_category_id")
-    private ProductOptionCategory parentCategory;
+//    @ManyToOne
+//    @JoinColumn(name = "parent_option_category_id")
+//    private ProductOptionCategory parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory") // 부모-자식 관계 설정
-    private List<ProductOptionCategory> subCategories;  // 자식 카테고리 리스트 추가
+//    @OneToMany(mappedBy = "parentCategory") // 부모-자식 관계 설정
+//    private List<ProductOptionCategory> subCategories;  // 자식 카테고리 리스트 추가
 
     @OneToMany(mappedBy = "productOptionCategory")
     private List<ProductOption> options;
@@ -60,15 +61,23 @@ public class ProductOptionCategory {
         this.maxSelect = maxSelect;
     }
 
-    // 부모 카테고리 변경 메서드
-    public void changeParentCategory(ProductOptionCategory parentCategory) {
-        this.parentCategory = parentCategory;
+    // 최대 선택 개수 변경 메서드
+    public void changeMinSelect(Integer minSelect) {
+        if (minSelect == null || minSelect < 0) {
+            throw new BusinessException(ErrorCode.INVALID_MIN_SELECT);
+        }
+        this.minSelect = minSelect;
     }
+
+//     부모 카테고리 변경 메서드
+//    public void changeParentCategory(ProductOptionCategory parentCategory) {
+//
+//    }
     public ProductOptionCategory(Product product, UpdateProductOptionCategoryDTO dto) {
         this.product = product;
         this.name = dto.name();
         this.isEssential = dto.isEssential();
         this.maxSelect = dto.maxSelect();
-        this.parentCategory = null;
+//        this.parentCategory = null;
     }
 }
