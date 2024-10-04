@@ -13,9 +13,6 @@ public record ReadProductDTO(
         @Schema(description = "상품 ID", example = "1")
         Integer id,
 
-        @Schema(description = "가게 ID", example = "101")
-        Integer storeId,
-
         @Schema(description = "상품명", example = "떡볶이")
         String name,
 
@@ -26,10 +23,10 @@ public record ReadProductDTO(
         String description,
 
         @Schema(description = "카테고리 목록")
-        List<String> categories,
+        List<Integer> categories,
 
         @Schema(description = "옵션 카테고리 목록")
-        List<String> optionCategories,
+        List<Integer> optionCategories,
 
         @Schema(description = "상품 사진 목록")
         List<String> photos  // 상품 사진의 src 경로 리스트
@@ -38,25 +35,24 @@ public record ReadProductDTO(
     public ReadProductDTO(Product product) {
         this(
                 product.getId(),
-                product.getStoreId(),
                 product.getName(),
                 product.getPrice(),
-                product.getDescription(),  // 설명 추가
+                product.getDescription(), // 설명 추가
                 product.getCategories() != null ?
                         product.getCategories().stream()
-                                .map(ProductCategory::getName)
+                                .map(ProductCategory::getId) // ID로 변경
                                 .collect(Collectors.toList()) :
                         List.of(),  // null일 경우 빈 리스트 반환
                 product.getOptionCategories() != null ?
                         product.getOptionCategories().stream()
-                                .map(ProductOptionCategory::getName)
+                                .map(ProductOptionCategory::getId) // ID로 변경
                                 .collect(Collectors.toList()) :
                         List.of(),  // null일 경우 빈 리스트 반환
                 product.getPhotos() != null ?
                         product.getPhotos().stream()
-                                .map(ProductPhoto::getSrc)  // 이미지 경로만 추출
+                                .map(ProductPhoto::getSrc) // 이미지 경로만 추출
                                 .collect(Collectors.toList()) :
-                        List.of()  // null일 경우 빈 리스트 반환
+                        List.of() // null일 경우 빈 리스트 반환
         );
     }
 }
