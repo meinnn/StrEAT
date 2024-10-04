@@ -1,19 +1,19 @@
 /* eslint-disable import/prefer-default-export */
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { searchParams } = req.nextUrl
-    const page = Number(searchParams.get('page') ?? '0')
-    const limit = Number(searchParams.get('limit') ?? '5')
+    const reviewId = params.id
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/mine/reviews?pgno=${page}&spp=${limit}`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/services/orders/${reviewId}/review`,
       {
-        method: 'GET',
+        method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization':
+          Authorization:
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
         },
         cache: 'no-store',
@@ -21,18 +21,16 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     )
 
     if (!response.ok) {
-      const errorData = await response.text()
-      console.error('Error Response:', errorData)
+      const errorMessage = await response.text()
+      console.error('Error Response:', errorMessage)
       return NextResponse.json(
-        { message: 'Error occurred while fetching reviews', error: errorData },
+        { error: errorMessage },
         { status: response.status }
       )
     }
 
     const data = await response.json()
-
-    const hasMore = data.data.totalPageCount > page + 1
-    return NextResponse.json({ data: data.data, hasMore })
+    return NextResponse.json(data)
   } catch (error: unknown) {
     let errorMessage = '에러가 발생했습니다'
 

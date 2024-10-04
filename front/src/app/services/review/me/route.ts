@@ -1,50 +1,38 @@
 /* eslint-disable import/prefer-default-export */
-import { NextResponse, NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = req.nextUrl
-    const orderId = searchParams.get('orderId')
-
-    const formData = await req.formData()
-    const formEntries = Array.from(formData.entries())
-    formEntries.forEach(([key, value]) => {
-      console.log(key, value)
-    })
-
-    const newFormData = new FormData()
-
-    formEntries.forEach(([key, value]) => {
-      if (value instanceof File) {
-        newFormData.append(key, value, value.name)
-      } else {
-        newFormData.append(key, value)
-      }
-    })
+    const page = Number(searchParams.get('page') ?? '0')
+    const limit = Number(searchParams.get('limit') ?? '5')
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/${orderId}/review`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/services/orders/mine/reviews?pgno=${page}&spp=${limit}`,
       {
-        method: 'POST',
-        body: newFormData,
+        method: 'GET',
         headers: {
-          Authorization:
+          'Content-Type': 'application/json',
+          'Authorization':
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
         },
+        cache: 'no-store',
       }
     )
 
     if (!response.ok) {
-      const errorMessage = await response.text()
-      console.error('Error Response:', errorMessage)
+      const errorData = await response.text()
+      console.error('Error Response:', errorData)
       return NextResponse.json(
-        { error: errorMessage },
+        { message: 'Error occurred while fetching reviews', error: errorData },
         { status: response.status }
       )
     }
 
     const data = await response.json()
-    return NextResponse.json(data)
+
+    const hasMore = data.data.totalPageCount > page + 1
+    return NextResponse.json({ data: data.data, hasMore })
   } catch (error: unknown) {
     let errorMessage = '에러가 발생했습니다'
 

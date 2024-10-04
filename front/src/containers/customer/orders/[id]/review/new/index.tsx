@@ -54,7 +54,7 @@ export default function CustomerCreateReview({
     })
 
     try {
-      const response = await fetch(`/api/review?orderId=${orderId}`, {
+      const response = await fetch(`/services/review?orderId=${orderId}`, {
         method: 'POST',
         body: formData,
       })

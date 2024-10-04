@@ -42,14 +42,17 @@ interface Page {
 
 const fetchMyOrderList = async ({ pageParam = 0 }: any) => {
   try {
-    const response = await fetch(`/api/order/me?page=${pageParam}&limit=5`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization':
-          'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
-      },
-    })
+    const response = await fetch(
+      `/services/order/me?page=${pageParam}&limit=5`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
+        },
+      }
+    )
 
     if (!response.ok) {
       throw new Error('Failed to fetch review')
@@ -73,7 +76,7 @@ export default function Orders() {
     status,
   } = useInfiniteQuery<Page, Error>({
     queryFn: async ({ pageParam = 0 }) => fetchMyOrderList({ pageParam }),
-    queryKey: ['/api/review/me'],
+    queryKey: ['/services/review/me'],
     getNextPageParam: (lastPage: Page, pages: Page[]) => {
       if (lastPage?.hasMore) {
         return pages.length

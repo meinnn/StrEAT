@@ -1,22 +1,36 @@
 /* eslint-disable import/prefer-default-export */
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const reviewId = params.id
+    const { searchParams } = req.nextUrl
+    const orderId = searchParams.get('orderId')
+
+    const formData = await req.formData()
+    const formEntries = Array.from(formData.entries())
+    formEntries.forEach(([key, value]) => {
+      console.log(key, value)
+    })
+
+    const newFormData = new FormData()
+
+    formEntries.forEach(([key, value]) => {
+      if (value instanceof File) {
+        newFormData.append(key, value, value.name)
+      } else {
+        newFormData.append(key, value)
+      }
+    })
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/${reviewId}/review`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/services/orders/${orderId}/review`,
       {
-        method: 'DELETE',
+        method: 'POST',
+        body: newFormData,
         headers: {
           Authorization:
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
         },
-        cache: 'no-store',
       }
     )
 

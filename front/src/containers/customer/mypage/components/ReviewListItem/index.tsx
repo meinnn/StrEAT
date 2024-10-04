@@ -11,7 +11,7 @@ import ImageCrousel from '@/components/ImageCarousel'
 import DeleteConfirmationModal from '@/containers/customer/mypage/DeleteConfirmationModal'
 
 const deleteReview = async (reviewId: number) => {
-  const response = await fetch(`/api/review/${reviewId}`, {
+  const response = await fetch(`/services/review/${reviewId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export default function ReviewListItem({
   const mutation = useMutation({
     mutationFn: () => deleteReview(reviewId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/review/me'] })
+      queryClient.invalidateQueries({ queryKey: ['/services/review/me'] })
     },
     onError: (error: Error) => {
       console.error('Error:', error)
