@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "영업일을 생성하기 위한 DTO")
 public record CreateBusinessDayDTO(
-        @Schema(description = "가게 ID", example = "1")
-        Integer storeId,
 
         @Schema(description = "월요일 시작 시간", example = "09:00")
         String mondayStart,

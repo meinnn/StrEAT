@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,37 +17,51 @@ public class BusinessDay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "store_id")
+    @OneToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    @JsonIgnore
     private Store store;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String mondayStart;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String mondayEnd;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String tuesdayStart;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String tuesdayEnd;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String wednesdayStart;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String wednesdayEnd;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String thursdayStart;
 
+    @Column(length = 20)
     private String thursdayEnd;
+
+    @Column(length = 20)
     private String fridayStart;
+
+    @Column(length = 20)
     private String fridayEnd;
+
+    @Column(length = 20)
     private String saturdayStart;
+
+    @Column(length = 20)
     private String saturdayEnd;
+
+    @Column(length = 20)
     private String sundayStart;
+
+    @Column(length = 20)
     private String sundayEnd;
 
     // 필드별 값을 변경하는 명시적인 메서드

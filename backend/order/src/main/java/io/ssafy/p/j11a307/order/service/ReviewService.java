@@ -1,15 +1,11 @@
 package io.ssafy.p.j11a307.order.service;
 
-import ch.qos.logback.core.CoreConstants;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
-import io.ssafy.p.j11a307.order.dto.CreateReviewDTO;
-import io.ssafy.p.j11a307.order.dto.GetMyReviewsDTO;
-import io.ssafy.p.j11a307.order.dto.GetStoreReviewsDTO;
-import io.ssafy.p.j11a307.order.dto.StoreResponse;
+import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.entity.*;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
@@ -21,7 +17,6 @@ import io.ssafy.p.j11a307.order.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +35,7 @@ public class ReviewService {
     private final OrderProductRepository orderProductRepository;
     private final OwnerClient ownerClient;
     private final StoreClient storeClient;
+    private final ProductClient productClient;
 
     private final AmazonS3 amazonS3;
 
@@ -51,40 +46,45 @@ public class ReviewService {
     private String internalRequestKey;
 
     @Transactional
-    public void createReview(Integer id, CreateReviewDTO createReviewDTO, String token) {
+    public void createReview(Integer id, CreateReviewDTO createReviewDTO, MultipartFile[] images, String token) {
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
-        Integer score = createReviewDTO.score();
-        String content = createReviewDTO.content();
+        Integer score = createReviewDTO.getScore();
+        String content = createReviewDTO.getContent();
 
         //1. 주문 id가 유효하지 않다면?
         Orders orders =ordersRepository.findById(id).orElse(null);
         if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
 
-
         //2. 해당 주문을 한 유저가 아니라면?
         if(orders.getUserId() != userId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+        //3. 이미 해당 주문에 대한 리뷰가 존재한다면?
+        if(reviewRepository.searchReview(id) != null) throw new BusinessException(ErrorCode.REVIEW_ALREADY_FOUND);
 
         Review review = Review.builder()
                 .id(new OrdersId(orders))
                 .score(score)
                 .content(content).build();
 
+
         reviewRepository.save(review);
-        
-        //리뷰 이미지 저장
-        for (MultipartFile image : createReviewDTO.images()) {
-            if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
-                throw new BusinessException(ErrorCode.FileEmptyException);
+
+        if(images != null) {
+            //리뷰 이미지 저장
+            for (MultipartFile image : images) {
+                if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
+                    throw new BusinessException(ErrorCode.FileEmptyException);
+                }
+
+                String url = this.uploadImage(image);
+
+                ReviewPhoto reviewPhoto = ReviewPhoto.builder()
+                        .reviewId(review)
+                        .src(url)
+                        .build();
+
+                reviewPhotoRepository.save(reviewPhoto);
             }
-
-            String url = this.uploadImage(image);
-            
-            ReviewPhoto reviewPhoto = ReviewPhoto.builder()
-                    .reviewId(review)
-                    .src(url)
-                    .build();
-
-            reviewPhotoRepository.save(reviewPhoto);
         }
     }
 
@@ -110,38 +110,35 @@ public class ReviewService {
 
         //현재 로그인한 유저 아이디와 맞는 리뷰들을 모두 가져오기
         List<Orders> orders = ordersRepository.findByUserId(userId);
-        log.info("orders length: {}", orders.size());
         List<GetMyReviewsDTO> getMyReviewsDTOs = new ArrayList<>();
 
         for (Orders order : orders) {
             Review review = reviewRepository.searchReview(order.getId());
 
             if(review == null) continue;
-            log.info("order id : {}", order.getId());
             List<ReviewPhoto> photoList = reviewPhotoRepository.findByReviewId(review);
             List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
-            DataResponse<StoreResponse> dataResponse = storeClient.getStoreInfo(order.getStoreId());
-            //사진 받느라 DTO가 달라질 수 있음
-            
-            //주문상품목록 조회(상품 아이디를 가져와야 함)
-            List<Integer> OrderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
+            DataResponse<ReadStoreDTO> dataResponse = storeClient.getStoreInfo(order.getStoreId());
+            DataResponse<ReadStoreBasicInfoDTO> photoDataResponse = storeClient.getStoreBasicInfo(order.getStoreId());
 
-            //상품 아이디에 대한 리스트를 던지면 그 상품의 이름들이 와야 함!!
-            //storeClient로 던지면, 상품 이름 리스트가 온다. 이걸 빌더에 넣으면 됨
+            //주문상품목록 조회(상품 아이디를 가져와야 함)
+            List<Integer> orderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
+            DataResponse<List<String>> productNameResponse = productClient.getProductNamesByProductIds(orderProducts);
 
             GetMyReviewsDTO getMyReviewsDTO= GetMyReviewsDTO.builder()
+                    .reviewId(review.getId().getId().getId())
+                    .storeId(dataResponse.getData().getId())
                     .score(review.getScore())
                     .content(review.getContent())
                     .createdAt(review.getCreatedAt())
                     .srcList(srcList)
                     .storeName(dataResponse.getData().getName())
-                    //.orderProducts()
-                    //.storePhoto(dataResponse.getData().getImages().get(0))
+                    .orderProducts(productNameResponse.getData())
+                    .storePhoto(photoDataResponse.getData().src())
                     .build();
 
             getMyReviewsDTOs.add(getMyReviewsDTO);
         }
-        log.info("Reviews length: {}", getMyReviewsDTOs.size());
         return getMyReviewsDTOs;
     }
 
@@ -160,19 +157,20 @@ public class ReviewService {
             List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
 
             //주문상품목록 조회(상품 아이디를 가져와야 함)
-            List<Integer> OrderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
-            //상품 이름들 가져온 후 삽입 필요
+            List<Integer> orderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
+            DataResponse<List<String>> productNameResponse = productClient.getProductNamesByProductIds(orderProducts);
 
             //User 정보 조회 API 구현된 후 호출해서 삽입 필요
+            UserInfoResponse userInfoResponse = ownerClient.getUserInformation(order.getUserId());
 
             GetStoreReviewsDTO getStoreReviewsDTO = GetStoreReviewsDTO.builder()
                     .content(review.getContent())
                     .score(review.getScore())
                     .createdAt(review.getCreatedAt())
-                    //.orderProducts()
+                    .orderProducts(productNameResponse.getData())
                     .srcList(srcList)
-//                    .userName()
-//                    .userPhoto()
+                    .userName(userInfoResponse.name())
+                    .userPhoto(userInfoResponse.profileImgSrc())
                     .build();
 
             getStoreReviewsDTOs.add(getStoreReviewsDTO);
@@ -180,8 +178,6 @@ public class ReviewService {
 
         return getStoreReviewsDTOs;
     }  
-
-
 
     private String uploadImage(MultipartFile image) {
         //image 파일 확장자 검사

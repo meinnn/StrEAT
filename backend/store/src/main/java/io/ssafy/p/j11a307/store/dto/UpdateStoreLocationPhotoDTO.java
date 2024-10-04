@@ -7,20 +7,20 @@ import org.springframework.web.multipart.MultipartFile;
 @Schema(description = "StoreLocationPhoto 수정 DTO")
 public record UpdateStoreLocationPhotoDTO(
         @Schema(description = "위도", example = "37.5665")
-        String latitude,
+        Double latitude,
 
         @Schema(description = "경도", example = "126.9780")
-        String longitude,
+        Double longitude,
 
         @Schema(description = "이미지 파일", example = "파일")
         MultipartFile image
 ) {
     // 기존 StoreLocationPhoto 엔티티의 값을 업데이트하는 메서드
     public void applyTo(StoreLocationPhoto storeLocationPhoto, String imageUrl) {
-        if (latitude != null && !latitude.isEmpty()) {
+        if (latitude != null) {
             storeLocationPhoto.updateLatitude(latitude);
         }
-        if (longitude != null && !longitude.isEmpty()) {
+        if (longitude != null) {
             storeLocationPhoto.updateLongitude(longitude);
         }
         // 이미지가 있을 경우에만 업데이트

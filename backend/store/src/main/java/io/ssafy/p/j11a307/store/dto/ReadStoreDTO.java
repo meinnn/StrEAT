@@ -23,10 +23,10 @@ public record ReadStoreDTO(
         String address,
 
         @Schema(description = "위도", example = "37.123456")
-        String latitude,
+        Double latitude,
 
         @Schema(description = "경도", example = "127.123456")
-        String longitude,
+        Double longitude,
 
         @Schema(description = "업종 타입", example = "이동형")
         StoreType type,
@@ -39,6 +39,12 @@ public record ReadStoreDTO(
 
         @Schema(description = "사장님 한마디", example = "맛있게 드세요!")
         String ownerWord,
+
+        @Schema(description = "가게 전화번호", example = "02-0000-0000")
+        String storePhoneNumber,
+
+        @Schema(description = "휴무일", example = "매주 월요일 휴무  09/16-09/18 추석 연휴 휴무")
+        String closedDays,
 
         @Schema(description = "영업 상태", example = "영업중")
         StoreStatus status,
@@ -60,6 +66,8 @@ public record ReadStoreDTO(
                 store.getBankAccount(),
                 store.getBankName(),
                 store.getOwnerWord(),
+                store.getStorePhoneNumber(),
+                store.getClosedDays(),
                 store.getStatus(),
                 store.getIndustryCategory().getId()
         );

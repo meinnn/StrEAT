@@ -25,15 +25,16 @@ public class ProductOption {
     @JoinColumn(name = "product_option_category_id")
     private ProductOptionCategory productOptionCategory;
 
-    private String description;
+    private String productOptionName;
+    private Integer productOptionPrice;
 
     // 설명 변경 메서드
-    public void changeDescription(String description) {
-        if (description == null || description.isEmpty()) {
-            throw new IllegalArgumentException("Description cannot be empty.");
-        }
-        this.description = description;
-    }
+//    public void changeDescription(String description) {
+//        if (description == null || description.isEmpty()) {
+//            throw new IllegalArgumentException("Description cannot be empty.");
+//        }
+//        this.description = description;
+//    }
 
     // 옵션 카테고리 변경 메서드
     public void changeOptionCategory(ProductOptionCategory productOptionCategory) {
@@ -42,4 +43,22 @@ public class ProductOption {
         }
         this.productOptionCategory = productOptionCategory;
     }
+
+    //옵션 이름 변경 메서드
+    public void changeProductOptionName(ProductOption productOption) {
+        if (productOption == null) {
+            throw new IllegalArgumentException("Product option cannot be null.");
+        }
+        this.productOptionName = productOption.getProductOptionName();
+    }
+
+    //옵션 가격 변경 메서드
+    public void changeProductOptionPrice(ProductOption productOption) {
+        if (productOption == null) {
+            throw new IllegalArgumentException("Product option cannot be null.");
+        }
+        this.productOptionPrice = productOption.getProductOptionPrice();
+    }
+
+
 }

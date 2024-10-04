@@ -9,6 +9,9 @@ public enum ErrorCode {
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게가 없습니다."),
     STORE_NAME_NULL(HttpStatus.BAD_REQUEST, "가게이름은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     STORE_ADDRESS_NULL(HttpStatus.BAD_REQUEST, "가게주소는 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
+    CLOSED_DAYS_NULL(HttpStatus.BAD_REQUEST,"휴무일이 null이거나 비어있습니다."),
+    STORE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"해당 사용자ID로 이미 가게가 존재합니다."),
+    OWNER_WORD_NULL(HttpStatus.BAD_REQUEST,"사장님 한마디가 null이거나 비어있습니다."),
     // Store Location Photo
     STORE_LOCATION_PHOTO_LATITUDE_NULL(HttpStatus.BAD_REQUEST, "위도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     STORE_LOCATION_PHOTO_LONGITUDE_NULL(HttpStatus.BAD_REQUEST, "경도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
@@ -18,6 +21,7 @@ public enum ErrorCode {
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
     // User
     INVALID_USER(HttpStatus.BAD_REQUEST, "해당하는 ID의 유저가 없습니다."),
+
     // Store Photo
     STORE_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 사진이 없습니다."),
     STORE_PHOTO_NULL(HttpStatus.NOT_FOUND, "가게사진은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
@@ -46,7 +50,9 @@ public enum ErrorCode {
     // Internal Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
     // Business Day
-    BUSINESS_DAY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 영업일 정보가 없습니다.");
+    BUSINESS_DAY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 영업일 정보가 없습니다."),
+    BUSINESS_DAY_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"이미 해당 가게에 영업일 정보가 존재합니다.");
+
 
     private final HttpStatus status;
     private final String message;
