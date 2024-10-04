@@ -13,6 +13,9 @@ public record ReadProductDTO(
         @Schema(description = "상품 ID", example = "1")
         Integer id,
 
+        @Schema(description = "가게 ID", example = "1")
+        Integer storeId,
+
         @Schema(description = "상품명", example = "떡볶이")
         String name,
 
@@ -35,6 +38,7 @@ public record ReadProductDTO(
     public ReadProductDTO(Product product) {
         this(
                 product.getId(),
+                product.getStoreId(),
                 product.getName(),
                 product.getPrice(),
                 product.getDescription(), // 설명 추가
