@@ -1,5 +1,5 @@
 package io.ssafy.p.j11a307.product.dto;
-
+import io.ssafy.p.j11a307.product.entity.ProductPhoto;
 import io.ssafy.p.j11a307.product.entity.Product;
 import io.ssafy.p.j11a307.product.entity.ProductCategory;
 import io.ssafy.p.j11a307.product.entity.ProductOptionCategory;
@@ -22,14 +22,17 @@ public record ReadProductDTO(
         @Schema(description = "가격", example = "2800")
         Integer price,
 
-        @Schema(description = "이미지 경로", example = "/images/iphone14.jpg")
-        String src,
+        @Schema(description = "상품설명", example = "통통한 문어가 들어있는 타코야끼")
+        String description,
 
         @Schema(description = "카테고리 목록")
         List<String> categories,
 
         @Schema(description = "옵션 카테고리 목록")
-        List<String> optionCategories
+        List<String> optionCategories,
+
+        @Schema(description = "상품 사진 목록")
+        List<String> photos  // 상품 사진의 src 경로 리스트
 ) {
     // Product 엔티티를 받아서 DTO로 변환하는 생성자
     public ReadProductDTO(Product product) {
@@ -38,19 +41,22 @@ public record ReadProductDTO(
                 product.getStoreId(),
                 product.getName(),
                 product.getPrice(),
-                product.getSrc(),
-                // ProductCategory 리스트에서 이름만 추출하여 리스트로 변환
+                product.getDescription(),  // 설명 추가
                 product.getCategories() != null ?
                         product.getCategories().stream()
                                 .map(ProductCategory::getName)
                                 .collect(Collectors.toList()) :
-                        null,
-                // ProductOptionCategory 리스트에서 이름만 추출하여 리스트로 변환
+                        List.of(),  // null일 경우 빈 리스트 반환
                 product.getOptionCategories() != null ?
                         product.getOptionCategories().stream()
                                 .map(ProductOptionCategory::getName)
                                 .collect(Collectors.toList()) :
-                        null
+                        List.of(),  // null일 경우 빈 리스트 반환
+                product.getPhotos() != null ?
+                        product.getPhotos().stream()
+                                .map(ProductPhoto::getSrc)  // 이미지 경로만 추출
+                                .collect(Collectors.toList()) :
+                        List.of()  // null일 경우 빈 리스트 반환
         );
     }
 }

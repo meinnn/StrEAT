@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     // storeId로 상품 목록 조회
@@ -13,4 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT pc.name FROM ProductCategory pc JOIN pc.product p WHERE p.storeId = :storeId")
     List<String> findCategoriesByStoreId(@Param("storeId") Integer storeId);
+
+    // storeId와 productId로 Product 조회
+    Optional<Product> findByStoreIdAndId(Integer storeId, Integer productId);
 }

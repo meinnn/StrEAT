@@ -21,6 +21,7 @@ public enum ErrorCode {
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
     // User
     INVALID_USER(HttpStatus.BAD_REQUEST, "해당하는 ID의 유저가 없습니다."),
+
     // Store Photo
     STORE_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 사진이 없습니다."),
     STORE_PHOTO_NULL(HttpStatus.NOT_FOUND, "가게사진은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),

@@ -1,5 +1,5 @@
 package io.ssafy.p.j11a307.store.service;
-
+import lombok.extern.slf4j.Slf4j;
 import io.ssafy.p.j11a307.store.dto.*;
 import io.ssafy.p.j11a307.store.entity.*;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
@@ -13,13 +13,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import feign.FeignException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StoreService{
 
     private final StoreRepository storeRepository;
@@ -341,9 +343,14 @@ public class StoreService{
      */
     @Transactional(readOnly = true)
     public Integer getStoreIdByUserId(Integer userId) {
-        Store store = storeRepository.findByUserId(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        return store.getStoreId();
+
+        Optional<Store> store = storeRepository.findByUserId(userId);
+
+        if(store.isPresent()) {
+            return store.get().getStoreId();
+        }
+        else throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+
     }
 
     private Integer calculateDistance(double lat1, double lon1, double lat2, double lon2) {
