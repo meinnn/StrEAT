@@ -77,14 +77,14 @@ public class ProductOptionCategoryService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
 
         // 상위 카테고리 조회 (없을 수도 있음)
-        ProductOptionCategory parentCategory = null;
-        if (updateOptionCategoryDTO.parentOptionCategoryId() != null) {
-            parentCategory = productOptionCategoryRepository.findById(updateOptionCategoryDTO.parentOptionCategoryId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
-        }
+//        ProductOptionCategory parentCategory = null;
+//        if (updateOptionCategoryDTO.parentOptionCategoryId() != null) {
+//            parentCategory = productOptionCategoryRepository.findById(updateOptionCategoryDTO.parentOptionCategoryId())
+//                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
+//        }
 
         // DTO를 사용하여 옵션 카테고리 업데이트
-        updateOptionCategoryDTO.updateEntity(optionCategory, parentCategory);
+        updateOptionCategoryDTO.updateEntity(optionCategory);
 
         // 변경된 옵션 카테고리 저장
         productOptionCategoryRepository.save(optionCategory);
