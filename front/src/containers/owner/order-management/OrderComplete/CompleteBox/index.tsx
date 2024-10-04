@@ -5,7 +5,7 @@ export default function CompleteBox() {
   return (
     <div>
       {/* 수령 전 박스 */}
-      <div className="bg-gray-medium flex gap-2 border p-4 rounded-lg shadow-md max-w-md mt-4 mx-3">
+      <div className="bg-gray-medium flex gap-2 border p-4 rounded-lg shadow-md max-w-full mt-4 mx-3 justify-between">
         {/* 수령 전 라벨 */}
         <div className="absolute rounded-full py-0.5 text-xs font-semibold text-gray-400 bg-white border-2 border-gray-400 text-center w-[72px] -ms-1">
           수령 전
@@ -36,7 +36,7 @@ export default function CompleteBox() {
       </div>
 
       {/* 수령 완료 박스 */}
-      <div className="bg-gray-medium flex gap-2 border p-4 rounded-lg shadow-md max-w-md mt-4 mx-3">
+      <div className="bg-gray-medium flex gap-2 border p-4 rounded-lg shadow-md max-w-full mt-4 mx-3 justify-between">
         {/* 수령 전 라벨 */}
         <div className="absolute rounded-full py-0.5 text-xs font-semibold bg-white text-primary-400 border-2 border-primary-400 text-center w-[72px] -ms-1">
           수령 완료

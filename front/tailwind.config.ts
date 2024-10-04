@@ -62,6 +62,7 @@ const config: Config = {
       },
       boxShadow: {
         'inner-strong': 'inset 10px 10px 20px rgba(255, 236, 199, 0.3)',
+        'up-shadow': '0px -4px 4px 0px rgba(197, 197, 197, 0.25)',
       },
     },
   },

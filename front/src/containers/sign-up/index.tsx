@@ -3,12 +3,31 @@
 import { useState } from 'react'
 import { PiChefHat, PiForkKnife } from 'react-icons/pi'
 import { LuMoveRight } from 'react-icons/lu'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function SignUp() {
-  const [selectedRole, setSelectedRole] = useState<'owner' | 'customer' | null>(
-    null
-  )
+  const [selectedRole, setSelectedRole] = useState<
+    'owners' | 'customers' | null
+  >(null)
+  const router = useRouter()
+
+  const handleSignUp = async () => {
+    const response = await fetch('/services/users/sign-up', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userType: selectedRole }), // userType을 요청 본문에 포함
+    })
+
+    const data = await response.json()
+    if (response.ok) {
+      if (selectedRole === 'customers') router.push('/customers')
+      else router.push('/owner')
+    }
+
+    console.error(data.message)
+  }
 
   return (
     <div className="h-screen flex flex-col items-center justify-center space-y-10">
@@ -19,11 +38,11 @@ export default function SignUp() {
         <button
           type="button"
           className={`border size-40 rounded-lg flex flex-col space-y-2 items-center justify-center transition-colors ${
-            selectedRole === 'owner'
+            selectedRole === 'owners'
               ? 'bg-primary-500 text-white'
               : 'border-primary-500 text-primary-500'
           }`}
-          onClick={() => setSelectedRole('owner')}
+          onClick={() => setSelectedRole('owners')}
         >
           <PiChefHat size={48} />
           <p>사장님</p>
@@ -33,25 +52,24 @@ export default function SignUp() {
         <button
           type="button"
           className={`border size-40 rounded-lg flex flex-col space-y-2 items-center justify-center transition-colors ${
-            selectedRole === 'customer'
+            selectedRole === 'customers'
               ? 'bg-primary-500 text-white'
               : 'border-primary-500 text-primary-500'
           }`}
-          onClick={() => setSelectedRole('customer')}
+          onClick={() => setSelectedRole('customers')}
         >
           <PiForkKnife size={48} />
           <p>손님</p>
         </button>
       </div>
-      {/* 임시 Link */}
-      <Link href="/customer">
+      <button type="button" onClick={handleSignUp}>
         <LuMoveRight
           size={48}
           className={`fixed bottom-6 right-6 transition-colors ${
             selectedRole ? 'text-primary-950' : 'text-gray-medium'
           }`}
         />
-      </Link>
+      </button>
     </div>
   )
 }
