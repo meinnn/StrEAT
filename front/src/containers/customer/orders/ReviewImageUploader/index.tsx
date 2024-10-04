@@ -1,28 +1,32 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
 import { VscAdd } from 'react-icons/vsc'
 import { TfiClose } from 'react-icons/tfi'
 
-interface ImageList {
+export interface ImageList {
   preview: string
   file: File
 }
 
-export default function ReviewImageUploader() {
-  const [imageList, setImageList] = useState<ImageList[]>([])
-
+export default function ReviewImageUploader({
+  reviewImageList,
+  setReviewImageList,
+}: {
+  reviewImageList: ImageList[]
+  setReviewImageList: React.Dispatch<React.SetStateAction<ImageList[]>>
+}) {
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+
     if (file) {
       const preview = URL.createObjectURL(file)
-      const nImageList = [...imageList]
+      const nImageList = [...reviewImageList]
       nImageList.push({
         preview,
         file,
       })
-      setImageList(nImageList)
+      setReviewImageList(nImageList)
     }
   }
 
@@ -31,14 +35,14 @@ export default function ReviewImageUploader() {
     index: number
   ) => {
     e.preventDefault()
-    const nImageList = [...imageList]
+    const nImageList = [...reviewImageList]
     nImageList.splice(index, 1)
-    setImageList(nImageList)
+    setReviewImageList(nImageList)
   }
 
   return (
     <section className="flex gap-3">
-      {imageList.map((image, index) => {
+      {reviewImageList.map((image, index) => {
         return (
           <div key={image.preview} className="relative inline-block">
             <button
@@ -61,7 +65,7 @@ export default function ReviewImageUploader() {
           </div>
         )
       })}
-      {imageList.length < 5 ? (
+      {reviewImageList.length < 5 ? (
         <div>
           <label
             htmlFor="file-upload"
