@@ -86,7 +86,7 @@ public class ProductCategoryService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND));
 
         // DTO를 사용하여 카테고리 업데이트
-        updateCategoryDTO.updateEntity(category);
+        updateCategoryDTO.updateEntity(category); // 부모 카테고리가 null일 경우를 처리
 
         // 변경된 카테고리 저장
         productCategoryRepository.save(category);

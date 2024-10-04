@@ -47,7 +47,7 @@ public class StorePhotoService {
      * StorePhoto 생성
      */
     @Transactional
-    public void createStorePhoto(String token, CreateStorePhotoDTO createDTO, MultipartFile imageFile){
+    public void createStorePhoto(String token, MultipartFile imageFile){
         // 토큰으로 사용자 ID 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
 
