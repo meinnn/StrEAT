@@ -33,7 +33,7 @@ public record UpdateProductOptionCategoryDTO(
     }
 
     // DTO에서 ProductOptionCategory 엔티티로 변환하는 메서드
-    public void updateEntity(ProductOptionCategory optionCategory, ProductOptionCategory parentCategory) {
+    public void updateEntity(ProductOptionCategory optionCategory) {
         optionCategory.changeName(this.name);
         optionCategory.changeIsEssential(this.isEssential);
         optionCategory.changeMaxSelect(this.maxSelect);
