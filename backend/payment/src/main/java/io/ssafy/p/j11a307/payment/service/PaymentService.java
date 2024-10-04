@@ -58,6 +58,6 @@ public class PaymentService {
         }
 
         paymentRepository.save(payment);
-        return new PaymentResponse(payment.getId());
+        return new PaymentResponse(payment.getId(), payment.getOrderId());
     }
 }
