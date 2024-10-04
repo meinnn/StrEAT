@@ -28,7 +28,12 @@ public class PaymentService {
     @Value("${toss.secret-key}")
     private String tossSecretKey;
 
+    @Value("${streat.internal-request}")
+    private String internalRequestKey;
+
     private final String HEADER_AUTH = "Authorization";
+
+    private final OrderService orderService;
 
     private final PaymentRepository paymentRepository;
 
@@ -56,6 +61,8 @@ public class PaymentService {
             TossEasyPayment tossEasyPayment = new TossEasyPayment(payment, easyPayNode);
             payment.addTossEasyPayPayment(tossEasyPayment);
         }
+
+        orderService.completeOrder(payment.getOrderId(), internalRequestKey);
 
         paymentRepository.save(payment);
         return new PaymentResponse(payment.getId(), payment.getOrderId());
