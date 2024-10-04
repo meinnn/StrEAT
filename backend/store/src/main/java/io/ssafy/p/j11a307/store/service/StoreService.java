@@ -168,7 +168,9 @@ public class StoreService{
                     storePhotoSrc,
                     store.getStatus(),
                     categories,
-                    distance
+                    distance,
+                    store.getLatitude(),
+                    store.getLongitude()
             );
         }).collect(Collectors.toList());
     }
