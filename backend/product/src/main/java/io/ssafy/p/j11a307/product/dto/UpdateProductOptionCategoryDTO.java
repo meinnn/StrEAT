@@ -16,10 +16,10 @@ public record UpdateProductOptionCategoryDTO(
         Integer maxSelect,
 
         @Schema(description = "최소 선택 개수", example = "1")
-        Integer minSelect,
+        Integer minSelect
 
-        @Schema(description = "상위 옵션 카테고리 ID", example = "1")
-        Integer parentOptionCategoryId
+//        @Schema(description = "상위 옵션 카테고리 ID", example = "1")
+//        Integer parentOptionCategoryId
 ) {
     // ProductOptionCategory 엔티티를 받아서 DTO로 변환하는 생성자
     public UpdateProductOptionCategoryDTO(ProductOptionCategory optionCategory) {
@@ -27,8 +27,8 @@ public record UpdateProductOptionCategoryDTO(
                 optionCategory.getName(),
                 optionCategory.getIsEssential(),
                 optionCategory.getMaxSelect(),
-                optionCategory.getMinSelect(),
-                optionCategory.getParentCategory() != null ? optionCategory.getParentCategory().getId() : null
+                optionCategory.getMinSelect()
+//                optionCategory.getParentCategory() != null ? optionCategory.getParentCategory().getId() : null
         );
     }
 
@@ -38,6 +38,6 @@ public record UpdateProductOptionCategoryDTO(
         optionCategory.changeIsEssential(this.isEssential);
         optionCategory.changeMaxSelect(this.maxSelect);
         optionCategory.changeMinSelect(this.minSelect);
-        optionCategory.changeParentCategory(parentCategory); // 상위 카테고리 변경
+//        optionCategory.changeParentCategory(parentCategory); // 상위 카테고리 변경
     }
 }

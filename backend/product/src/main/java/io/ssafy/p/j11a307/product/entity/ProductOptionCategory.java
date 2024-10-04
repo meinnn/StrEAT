@@ -30,9 +30,9 @@ public class ProductOptionCategory {
     private Integer maxSelect;
     private Integer minSelect;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_option_category_id")
-    private ProductOptionCategory parentCategory;
+//    @ManyToOne
+//    @JoinColumn(name = "parent_option_category_id")
+//    private ProductOptionCategory parentCategory;
 
 //    @OneToMany(mappedBy = "parentCategory") // 부모-자식 관계 설정
 //    private List<ProductOptionCategory> subCategories;  // 자식 카테고리 리스트 추가
@@ -69,15 +69,15 @@ public class ProductOptionCategory {
         this.minSelect = minSelect;
     }
 
-    // 부모 카테고리 변경 메서드
-    public void changeParentCategory(ProductOptionCategory parentCategory) {
-        this.parentCategory = parentCategory;
-    }
+//     부모 카테고리 변경 메서드
+//    public void changeParentCategory(ProductOptionCategory parentCategory) {
+//
+//    }
     public ProductOptionCategory(Product product, UpdateProductOptionCategoryDTO dto) {
         this.product = product;
         this.name = dto.name();
         this.isEssential = dto.isEssential();
         this.maxSelect = dto.maxSelect();
-        this.parentCategory = null;
+//        this.parentCategory = null;
     }
 }
