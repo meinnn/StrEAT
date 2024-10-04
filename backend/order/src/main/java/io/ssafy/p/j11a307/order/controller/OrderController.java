@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.controller;
 
 import io.ssafy.p.j11a307.order.dto.GetMyOrderDTO;
+import io.ssafy.p.j11a307.order.dto.GetOrderDetailDTO;
 import io.ssafy.p.j11a307.order.dto.GetStoreOrderDTO;
 import io.ssafy.p.j11a307.order.dto.GetStoreReviewDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
@@ -104,20 +105,27 @@ public class OrderController {
                 .body(DataResponse.of("내 주문내역 리스트 조회에 성공했습니다.", getMyOrderDTO));
     }
 
+    //주문 내역 상세조회(내 주문 상세 조회)
+    @GetMapping("/info/{ordersId}")
+    @Operation(summary = "주문 내역 상세조회", description = "해당 주문 id의 상세조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "주문내역 상세조회 성공"),
+            @ApiResponse(responseCode = "404", description = "주문내역 존재하지 않음"),
+            @ApiResponse(responseCode = "401", description = "상세조회 권한 없음"),
+    })
+    public ResponseEntity<DataResponse<GetOrderDetailDTO>> getOrderDetail(@PathVariable Integer ordersId,
+                                                                          @RequestHeader("Authorization") String token) {
 
+        GetOrderDetailDTO getOrderDetailDTO = orderService.getOrderDetail(ordersId, token);
 
-
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("주문 내역 상세조회에 성공했습니다.", getOrderDetailDTO));
+    }
 
 
     //주문 내역 검색
 
-
-
-    //주문 내역 상세조회
-
-    //대기 팀 조회
-
-    //내 주문 상세 조회
+    //대기 팀 조회(대기 팀, 대기 메뉴 개수)
 
     //주문 취소
 

@@ -4,8 +4,10 @@ package io.ssafy.p.j11a307.order.entity;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
 
 @Embeddable
+@Getter
 public class OrdersUserId {
     @ManyToOne
     @JoinColumn(name="order_product_id")

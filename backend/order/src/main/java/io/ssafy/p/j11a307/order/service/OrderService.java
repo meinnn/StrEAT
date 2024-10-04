@@ -8,6 +8,7 @@ import io.ssafy.p.j11a307.order.entity.Review;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
 import io.ssafy.p.j11a307.order.global.OrderCode;
+import io.ssafy.p.j11a307.order.repository.OrderProductOptionRepository;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import io.ssafy.p.j11a307.order.repository.ReviewRepository;
@@ -34,6 +35,7 @@ public class OrderService {
     private final ProductClient productClient;
     private final OrdersRepository ordersRepository;
     private final OrderProductRepository orderProductRepository;
+    private final OrderProductOptionRepository orderProductOptionRepository;
     private final ReviewRepository reviewRepository;
 
     @Value("${streat.internal-request}")
@@ -49,7 +51,7 @@ public class OrderService {
         if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
 
         //2. 만약 해당 유저가 store의 사장이 아니라면?
-        if(readStoreDTO.getUserId() != ownerId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        if(readStoreDTO.userId() != ownerId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
         List<String> statusList = new ArrayList<>();
 
@@ -116,7 +118,7 @@ public class OrderService {
         if(orders.isPresent()) {
             //2. 처리할 권한이 없다면?
             ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
-            if(ownerId != readStoreDTO.getUserId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+            if(ownerId != readStoreDTO.userId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
             //3. 내역이 대기 중인 상태가 아니라면?
             if(orders.get().getStatus().equals(OrderCode.WAITING_FOR_PROCESSING)) {
@@ -140,7 +142,7 @@ public class OrderService {
         if(orders.isPresent()) {
             //2. 처리할 권한이 없다면?
             ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
-            if(ownerId != readStoreDTO.getUserId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+            if(ownerId != readStoreDTO.userId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
             //3. 내역이 조리 중인 상태가 아니라면?
             if(orders.get().getStatus().equals(OrderCode.PROCESSING)) {
@@ -201,5 +203,64 @@ public class OrderService {
                 .build();
 
         return getMyOrderDTO;
+    }
+
+    @Transactional
+    public GetOrderDetailDTO getOrderDetail(Integer ordersId, String token) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+
+        //1. 해당 주문 내역이 존재하지 않는다면?
+        Optional<Orders> orders = ordersRepository.findById(ordersId);
+
+        if (orders.isPresent()) {
+            ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
+            ReadStoreBasicInfoDTO readStoreBasicInfoDTO = storeClient.getStoreBasicInfo(orders.get().getStoreId()).getData();
+            if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+
+            //2. 해당 주문 상세를 볼 자격이 없다면?
+            if(orders.get().getUserId() != userId && readStoreDTO.userId() != userId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+            //해당 주문 내역에 있는 상품들
+            List<GetOrderDetailProductListDTO> productList = new ArrayList<>();
+            List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(orders.get());
+
+            for (OrderProduct orderProduct : orderProducts) {
+                ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
+
+                List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
+                List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
+
+                List<GetOrderDetailProductOptionListDTO> productOptions = readProductOptionDTOS.stream().map(readProductOptionDTO -> new GetOrderDetailProductOptionListDTO(
+                        readProductOptionDTO.getProductOptionName(),
+                        readProductOptionDTO.getProductOptionPrice())).toList();
+
+                GetOrderDetailProductListDTO productDTO =GetOrderDetailProductListDTO.builder()
+                        .optionList(productOptions)
+                        .productName(readProductDTO.getName())
+                        .productPrice(readProductDTO.getPrice())
+                        .productSrc(readProductDTO.getSrc())
+                        .quantity(orderProduct.getCount())
+                        .build();
+
+                productList.add(productDTO);
+            }
+
+
+            GetOrderDetailDTO getOrderDetailDTO = GetOrderDetailDTO.builder()
+                    .productList(productList)
+                    .storeId(readStoreDTO.id())
+                    .storeSrc(readStoreBasicInfoDTO.src())
+                    .storeName(readStoreBasicInfoDTO.storeName())
+                    .menuCount(productList.size())
+                    .orderCreatedAt(orders.get().getCreatedAt())
+                    .orderNumber(orders.get().getOrderNumber())
+                    .totalPrice(orders.get().getTotalPrice())
+                    .ordersId(orders.get().getId())
+                    .status(orders.get().getStatus())
+                    .build();
+
+            return getOrderDetailDTO;
+        }
+        else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
     }
 }

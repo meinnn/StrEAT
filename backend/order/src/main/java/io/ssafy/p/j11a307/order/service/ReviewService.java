@@ -134,12 +134,12 @@ public class ReviewService {
 
             GetMyReviewListDTO getMyReviewListDTO = GetMyReviewListDTO.builder()
                     .reviewId(review.getId().getId().getId())
-                    .storeId(dataResponse.getData().getId())
+                    .storeId(dataResponse.getData().id())
                     .score(review.getScore())
                     .content(review.getContent())
                     .createdAt(review.getCreatedAt())
                     .srcList(srcList)
-                    .storeName(dataResponse.getData().getName())
+                    .storeName(dataResponse.getData().name())
                     .orderProducts(productNameResponse.getData())
                     .storePhoto(photoDataResponse.getData().src())
                     .build();

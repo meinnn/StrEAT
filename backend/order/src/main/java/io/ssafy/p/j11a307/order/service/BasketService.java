@@ -180,8 +180,8 @@ public class BasketService {
             ReadStoreBasicInfoDTO photoData = storeClient.getStoreBasicInfo(productData.getStoreId()).getData();
 
             GetBasketListDTO getBasketListDTO = GetBasketListDTO.builder()
-                    .storeId(storeData.getId())
-                    .storeName(storeData.getName())
+                    .storeId(storeData.id())
+                    .storeName(storeData.name())
                     .storeSrc(photoData.src())
                     .basketList(basketList)
                     .totalPageCount(shoppingCarts.getTotalPages())
