@@ -17,4 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     // storeId와 productId로 Product 조회
     Optional<Product> findByStoreIdAndId(Integer storeId, Integer productId);
+
+    @Query("SELECT p.id FROM Product p ORDER BY p.id DESC LIMIT 1")
+    Integer findLastProductId();
 }
