@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.entity;
 
 import io.ssafy.p.j11a307.order.global.OrderCode;
+import io.ssafy.p.j11a307.order.global.PayTypeCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,7 +33,9 @@ public class Orders {
     private LocalDateTime createdAt;
 
     private Integer totalPrice;
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private PayTypeCode paymentMethod;
     private LocalDateTime paidAt;
     private LocalDateTime receivedAt;
     private String phone;

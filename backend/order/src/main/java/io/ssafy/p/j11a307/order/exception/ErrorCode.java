@@ -20,7 +20,8 @@ public enum ErrorCode {
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 점포가 존재하지 않습니다."),
     WRONG_STATUS(HttpStatus.BAD_REQUEST, "올바른 Status 정보를 입력해주세요."),
     WRONG_ORDER_ID(HttpStatus.BAD_REQUEST, "주문이 유효하지 않은 상태입니다."),
-    WRONG_FLAG(HttpStatus.BAD_REQUEST,"올바른 flag 정보를 입력해주세요.");
+    WRONG_FLAG(HttpStatus.BAD_REQUEST,"올바른 flag 정보를 입력해주세요."),
+    WRONG_SEARCHTIME(HttpStatus.BAD_REQUEST, "올바른 검색 시간 정보를 입력하세요." );
 
 
     private final HttpStatus status;

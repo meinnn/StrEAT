@@ -2,12 +2,12 @@ package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.entity.OrderProduct;
-import io.ssafy.p.j11a307.order.entity.OrderProductOption;
 import io.ssafy.p.j11a307.order.entity.Orders;
 import io.ssafy.p.j11a307.order.entity.Review;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
 import io.ssafy.p.j11a307.order.global.OrderCode;
+import io.ssafy.p.j11a307.order.global.PayTypeCode;
 import io.ssafy.p.j11a307.order.repository.OrderProductOptionRepository;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -234,10 +235,13 @@ public class OrderService {
                         readProductOptionDTO.getProductOptionName(),
                         readProductOptionDTO.getProductOptionPrice())).toList();
 
+                int optionPriceSum = productOptions.stream()
+                        .mapToInt(GetOrderDetailProductOptionListDTO::optionPrice).sum();
+
                 GetOrderDetailProductListDTO productDTO =GetOrderDetailProductListDTO.builder()
                         .optionList(productOptions)
                         .productName(readProductDTO.getName())
-                        .productPrice(readProductDTO.getPrice())
+                        .productPrice(readProductDTO.getPrice() + optionPriceSum)
                         .productSrc(readProductDTO.getSrc())
                         .quantity(orderProduct.getCount())
                         .build();
@@ -252,15 +256,139 @@ public class OrderService {
                     .storeSrc(readStoreBasicInfoDTO.src())
                     .storeName(readStoreBasicInfoDTO.storeName())
                     .menuCount(productList.size())
+                    .orderReceivedAt(orders.get().getReceivedAt())
                     .orderCreatedAt(orders.get().getCreatedAt())
                     .orderNumber(orders.get().getOrderNumber())
                     .totalPrice(orders.get().getTotalPrice())
                     .ordersId(orders.get().getId())
+                    .paymentMethod(orders.get().getPaymentMethod())
                     .status(orders.get().getStatus())
                     .build();
 
             return getOrderDetailDTO;
         }
         else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+    }
+
+    @Transactional
+    public OrderSearchResponse getSearchOrders(Integer storeId, OrderSearchRequest orderSearchRequest, String token) {
+        Integer ownerId = ownerClient.getUserId(token, internalRequestKey);
+        Pageable pageable = PageRequest.of(orderSearchRequest.pgno(), orderSearchRequest.spp());
+
+        List<OrderCode> status = orderSearchRequest.statusTag();
+        List<PayTypeCode> paymentMethod = orderSearchRequest.paymentMethodTag();
+        LocalDateTime startTime= orderSearchRequest.startDate();
+        LocalDateTime endTime= orderSearchRequest.endDate();
+
+        //1. 해당 점포가 존재하지 않는다면?
+        ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
+        if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+
+        //2. 만약 해당 유저가 store의 사장이 아니라면?
+        if(readStoreDTO.userId() != ownerId) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+
+        //3. startTime이나 endTime이 null이라면?
+        if((startTime == null && endTime != null) || (startTime != null && endTime == null)) throw new BusinessException(ErrorCode.WRONG_SEARCHTIME);
+
+        Page<Orders> orders;
+
+        //검색 알고리즘
+        if(status != null && paymentMethod != null) {
+            if(startTime != null) {
+                orders = ordersRepository.findByStoreIdAndStatusInAndPaymentMethodInAndCreatedAtBetween(
+                        storeId, status, paymentMethod, startTime, endTime, pageable);
+            } else {
+                orders = ordersRepository.findByStoreIdAndStatusInAndPaymentMethodIn(storeId,status, paymentMethod, pageable);
+            }
+        }
+        else if(status != null) {
+            if(startTime != null) {
+                orders = ordersRepository.findByStoreIdAndStatusInAndCreatedAtBetween(
+                        storeId,status, startTime, endTime, pageable);
+            } else {
+                orders = ordersRepository.findByStoreIdAndStatusIn(storeId,status, pageable);
+            }
+        }
+        else if(paymentMethod != null) {
+            if(startTime != null) {
+                orders = ordersRepository.findByStoreIdAndPaymentMethodInAndCreatedAtBetween(
+                        storeId,paymentMethod, startTime, endTime, pageable);
+            } else {
+                orders = ordersRepository.findByStoreIdAndPaymentMethodIn(storeId,paymentMethod, pageable);
+            }
+
+        }
+        else {
+            if (startTime != null) {
+                orders = ordersRepository.findByStoreIdAndCreatedAtBetween(storeId,startTime, endTime, pageable);
+            }
+            else {
+                orders = ordersRepository.findAllByStoreId(storeId,pageable);
+            }
+        }
+
+        //검색한 결과를 삽입
+        List<GetOrderDetailDTO> searchOrderList = new ArrayList<>();
+
+        for(Orders order : orders.getContent()) {
+            //점포 조회
+            ReadStoreBasicInfoDTO readStoreBasicInfoDTO = storeClient.getStoreBasicInfo(order.getStoreId()).getData();
+
+            //메뉴 조회
+            List<GetOrderDetailProductListDTO> productList = new ArrayList<>();
+            List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(order);
+
+            for (OrderProduct orderProduct : orderProducts) {
+                ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
+
+                List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
+                List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
+
+                List<GetOrderDetailProductOptionListDTO> productOptions = readProductOptionDTOS.stream().map(readProductOptionDTO -> new GetOrderDetailProductOptionListDTO(
+                        readProductOptionDTO.getProductOptionName(),
+                        readProductOptionDTO.getProductOptionPrice())).toList();
+
+                int optionPriceSum = productOptions.stream()
+                        .mapToInt(GetOrderDetailProductOptionListDTO::optionPrice).sum();
+
+                GetOrderDetailProductListDTO productDTO =GetOrderDetailProductListDTO.builder()
+                        .optionList(productOptions)
+                        .productName(readProductDTO.getName())
+                        .productPrice(readProductDTO.getPrice() + optionPriceSum)
+                        .productSrc(readProductDTO.getSrc())
+                        .quantity(orderProduct.getCount())
+                        .build();
+
+                productList.add(productDTO);
+            }
+
+            //각 주문내역 id에 대해서 DTO 생성
+            GetOrderDetailDTO getOrderDetailDTO = GetOrderDetailDTO.builder()
+                    .orderReceivedAt(order.getReceivedAt())
+                    .orderCreatedAt(order.getCreatedAt())
+                    .ordersId(order.getId())
+                    .storeId(order.getStoreId())
+                    .paymentMethod(order.getPaymentMethod())
+                    .status(order.getStatus())
+                    .orderNumber(order.getOrderNumber())
+                    .totalPrice(order.getTotalPrice())
+                    .storeName(readStoreBasicInfoDTO.storeName())
+                    .storeSrc(readStoreBasicInfoDTO.src())
+                    .productList(productList)
+                    .menuCount(productList.size())
+                    .build();
+
+            searchOrderList.add(getOrderDetailDTO);
+        }
+
+        OrderSearchResponse orderSearchResponse = OrderSearchResponse.builder()
+                .searchOrderList(searchOrderList)
+                .totalDataCount(orders.getTotalElements())
+                .totalPageCount(orders.getTotalPages())
+                .totalCount(searchOrderList.size())
+                .build();
+
+
+        return orderSearchResponse;
     }
 }

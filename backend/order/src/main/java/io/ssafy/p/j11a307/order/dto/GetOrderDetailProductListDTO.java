@@ -13,7 +13,7 @@ public record GetOrderDetailProductListDTO (
         @Schema(description = "수량", example = "3")
         Integer quantity,
 
-        @Schema(description = "가격", example = "200000")
+        @Schema(description = "옵션 포함 가격", example = "200000")
         Integer productPrice,
 
         @Schema(description = "상품 사진", example = "https://streat-bucket.s3.ap-northeast-2.amazonaws.com/c7f8c1d0-42023.02.26%20%EA%B9%80%EB%AF%BC%EC%A7%80%EB%8B%98%28%ED%95%98%EB%A1%9C%297823.jpg")

@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.dto;
 
 import io.ssafy.p.j11a307.order.global.OrderCode;
+import io.ssafy.p.j11a307.order.global.PayTypeCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -17,6 +18,12 @@ public record GetOrderDetailDTO (
 
     @Schema(description = "주문 들어온 시각", example = "2024-09-30 12:34:56.000000")
     LocalDateTime orderCreatedAt,
+
+    @Schema(description = "수령 시각", example = "2024-09-30 14:34:56.000000")
+    LocalDateTime orderReceivedAt,
+
+    @Schema(description = "결제 타입", example = "CARD")
+    PayTypeCode paymentMethod,
 
     @Schema(description = "주문 상태", example = "PROCESSING")
     OrderCode status,

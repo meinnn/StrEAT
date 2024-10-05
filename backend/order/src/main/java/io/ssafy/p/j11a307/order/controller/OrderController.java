@@ -1,9 +1,6 @@
 package io.ssafy.p.j11a307.order.controller;
 
-import io.ssafy.p.j11a307.order.dto.GetMyOrderDTO;
-import io.ssafy.p.j11a307.order.dto.GetOrderDetailDTO;
-import io.ssafy.p.j11a307.order.dto.GetStoreOrderDTO;
-import io.ssafy.p.j11a307.order.dto.GetStoreReviewDTO;
+import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.global.DataResponse;
 import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.service.OrderService;
@@ -105,7 +102,6 @@ public class OrderController {
                 .body(DataResponse.of("내 주문내역 리스트 조회에 성공했습니다.", getMyOrderDTO));
     }
 
-    //주문 내역 상세조회(내 주문 상세 조회)
     @GetMapping("/info/{ordersId}")
     @Operation(summary = "주문 내역 상세조회", description = "해당 주문 id의 상세조회")
     @ApiResponses(value = {
@@ -123,14 +119,30 @@ public class OrderController {
     }
 
 
-    //주문 내역 검색
-
     //대기 팀 조회(대기 팀, 대기 메뉴 개수)
 
+
+    @PostMapping("/{storeId}/search")
+    @Operation(summary = "주문 내역 검색", description = "검색어와 태그, 날짜에 따른 검색 결과 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "점포 주문내역 검색 성공"),
+            @ApiResponse(responseCode = "404", description = "점포 존재하지 않음"),
+            @ApiResponse(responseCode = "401", description = "검색 권한 없음"),
+            @ApiResponse(responseCode = "400", description = "시작-끝 시간 중 하나만 입력함")
+    })
+    public ResponseEntity<DataResponse<OrderSearchResponse>> getSearchOrders(@PathVariable Integer storeId,
+                                                                          @RequestBody OrderSearchRequest orderSearchRequest,
+                                                                          @RequestHeader("Authorization") String token) {
+        OrderSearchResponse orderSearchResponse = orderService.getSearchOrders(storeId, orderSearchRequest, token);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("주문 내역 검색에 성공했습니다.", orderSearchResponse));
+    }
+
+
     //주문 취소
-
-
     //NFC 태그 후 손님의 가장 최근 주문번호 조회
+
 
     //NFC 태그 후 수령 완료하기
 
