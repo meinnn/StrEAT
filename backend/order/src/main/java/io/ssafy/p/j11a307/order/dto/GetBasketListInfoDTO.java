@@ -33,4 +33,7 @@ public class GetBasketListInfoDTO {
     @Schema(description = "옵션 이름 목록", example = "[\"매운맛\", \"소\"]")
     List<String> OptionNameList;
 
+    @Schema(description = "상품 품절 상태", example = "true")
+    Boolean stockStatus;
+
 }
