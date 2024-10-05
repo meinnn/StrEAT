@@ -228,6 +228,8 @@ public class OrderService {
             for (OrderProduct orderProduct : orderProducts) {
                 ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
 
+                if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+
                 List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
                 List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
 
@@ -242,7 +244,7 @@ public class OrderService {
                         .optionList(productOptions)
                         .productName(readProductDTO.getName())
                         .productPrice(readProductDTO.getPrice() + optionPriceSum)
-                        .productSrc(readProductDTO.getSrc())
+                        .productSrc(readProductDTO.getPhotos().get(0))
                         .quantity(orderProduct.getCount())
                         .build();
 
@@ -341,6 +343,8 @@ public class OrderService {
             for (OrderProduct orderProduct : orderProducts) {
                 ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
 
+                if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+
                 List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
                 List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
 
@@ -355,7 +359,7 @@ public class OrderService {
                         .optionList(productOptions)
                         .productName(readProductDTO.getName())
                         .productPrice(readProductDTO.getPrice() + optionPriceSum)
-                        .productSrc(readProductDTO.getSrc())
+                        .productSrc(readProductDTO.getPhotos().get(0))
                         .quantity(orderProduct.getCount())
                         .build();
 

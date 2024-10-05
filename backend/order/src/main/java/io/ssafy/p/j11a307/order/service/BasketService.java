@@ -157,6 +157,8 @@ public class BasketService {
             for (ShoppingCart shoppingCart : shoppingCarts) {
                 productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
 
+                if(productData.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+
                 List<Integer> optionIdList = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart).stream()
                         .map(ShoppingCartOption::getProductOptionId).toList();
 
@@ -170,7 +172,7 @@ public class BasketService {
                         .price(shoppingCart.getPrice())
                         .productId(productData.getId())
                         .productName(productData.getName())
-                        .productSrc(productData.getSrc())
+                        .productSrc(productData.getPhotos().get(0)) //없으면 디폴트 사진 나와야 함
                         .OptionNameList(readProductOptions)
                         .stockStatus((productData.getStockStatus()))
                         .build();
@@ -239,7 +241,7 @@ public class BasketService {
 
         GetBasketOptionDTO getBasketOptionDTO = GetBasketOptionDTO.builder()
                 .basketId(shoppingCart.getId())
-                .price(shoppingCart.getPrice())
+                .productPrice(productData.getPrice())
                 .quantity(shoppingCart.getQuantity())
                 .productName(productData.getName())
                 .getBasketOptionDetailDTOs(basketOptionDetailList)
