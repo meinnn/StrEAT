@@ -23,14 +23,15 @@ public class Product {
     private String name;
     private Integer price;
     private String description;
+    private Boolean stockStatus;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ProductCategory> categories;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ProductOptionCategory> optionCategories;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ProductPhoto> photos;
 
     // 이름 변경 메서드
@@ -57,10 +58,19 @@ public class Product {
         this.description = description; // 수정된 부분
     }
 
+    // 재고 상태 변경
+    public void changeStockStatus(Boolean stockStatus) {
+        if (stockStatus == null) {
+            throw new IllegalArgumentException("Stock status cannot be null.");
+        }
+        this.stockStatus = stockStatus;
+    }
+
     public Product updateWith(UpdateProductDTO request) {
         this.name = request.name() != null ? request.name() : this.name;
         this.price = request.price() != null ? request.price() : this.price;
-        this.description = request.description() != null ? request.description() : this.description; // 설명 필드 추가
+        this.description = request.description() != null ? request.description() : this.description;
+        this.stockStatus = request.stockStatus() != null ? request.stockStatus() : this.stockStatus;
 
         // 카테고리 및 옵션 카테고리 업데이트
         if (request.categories() != null) {
