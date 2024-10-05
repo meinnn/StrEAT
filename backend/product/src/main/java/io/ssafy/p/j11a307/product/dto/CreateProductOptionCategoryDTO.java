@@ -14,9 +14,6 @@ public record CreateProductOptionCategoryDTO(
         @Schema(description = "옵션 카테고리명", example = "맛고르기")
         String name,
 
-//        @Schema(description = "상위 옵션 카테고리 ID", example = "0")
-//        Integer parentOptionCategoryId,
-
         @Schema(description = "필수 여부", example = "true")
         Boolean isEssential,
 
@@ -41,6 +38,9 @@ public record CreateProductOptionCategoryDTO(
                         throw new BusinessException(ErrorCode.INVALID_MIN_SELECT);
                 }
         }
+        
+        
+        
 //, ProductOptionCategory parentCategory
         // DTO에서 ProductOptionCategory 엔티티로 변환하는 메서드
         public ProductOptionCategory toEntity(Product product) {
@@ -50,7 +50,16 @@ public record CreateProductOptionCategoryDTO(
                         .isEssential(this.isEssential)  // 필수 여부 설정
                         .maxSelect(this.maxSelect)  // 최대 선택 개수 설정
                         .minSelect(this.minSelect) // 최소 선택 개수 설정
-//                        .parentCategory(parentCategory)  // 부모 옵션 카테고리 설정
                         .build();
+        }
+
+        public CreateProductOptionCategoryDTO withProductId(Integer newProductId) {
+                return new CreateProductOptionCategoryDTO(
+                        newProductId,
+                        this.name,
+                        this.isEssential,
+                        this.maxSelect,
+                        this.minSelect
+                );
         }
 }

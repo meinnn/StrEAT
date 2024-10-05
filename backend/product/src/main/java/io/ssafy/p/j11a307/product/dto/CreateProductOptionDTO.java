@@ -28,4 +28,13 @@ public record CreateProductOptionDTO(
                 .productOptionPrice(this.productOptionPrice)
                 .build();
     }
+
+    public CreateProductOptionDTO withProductId(Integer newProductId) {
+        return new CreateProductOptionDTO(
+                newProductId,
+                this.productOptionCategoryId,
+                this.productOptionName,
+                this.productOptionPrice
+        );
+    }
 }

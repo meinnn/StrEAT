@@ -28,7 +28,7 @@ public class ProductService {
     private String internalRequestKey;
 
     @Transactional
-    public void createProduct(String token, CreateProductDTO createProduct) {
+    public Integer createProduct(String token, CreateProductDTO createProduct) {
         Integer storeId = getStoreIdByToken(token);
 
         // 상품 생성 (CreateProductDTO에서 정보 가져오기)
@@ -36,10 +36,14 @@ public class ProductService {
                 .storeId(storeId) // storeId 설정
                 .name(createProduct.name()) // 상품 이름 설정
                 .price(createProduct.price()) // 상품 가격 설정
+                .description(createProduct.description()) // 상품 설명 설정 (필요한 경우 추가)
                 .build();
 
         // 상품 저장
         productRepository.save(product);
+
+        // 저장된 상품의 productId 반환
+        return product.getId();
     }
 
     @Transactional(readOnly = true)
@@ -142,4 +146,8 @@ public class ProductService {
     }
 
 
+    @Transactional(readOnly = true)
+    public Integer getLastProductId() {
+        return productRepository.findLastProductId();
+    }
 }
