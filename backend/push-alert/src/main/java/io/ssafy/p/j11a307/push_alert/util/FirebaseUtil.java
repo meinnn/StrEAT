@@ -49,4 +49,17 @@ public class FirebaseUtil {
             throw new BusinessException(ErrorCode.PUSH_ALERT_FAILED);
         }
     }
+
+    public void pushAlertTopic(FcmAlertData fcmAlertData, String topic) {
+        Message message = Message.builder()
+                .putData("message", fcmAlertData.getMessage())
+                .setTopic(topic)
+                .build();
+
+        try {
+            FirebaseMessaging.getInstance().send(message);
+        } catch (FirebaseMessagingException e) {
+            throw new BusinessException(ErrorCode.PUSH_ALERT_FAILED);
+        }
+    }
 }
