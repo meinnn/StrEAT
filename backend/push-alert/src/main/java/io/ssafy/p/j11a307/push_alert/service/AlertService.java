@@ -16,6 +16,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AlertService {
 
+    private final String TOPIC_STORE_PREFIX = "store:";
+
     @Value("{streat.internal-request}")
     private String internalRequestKey;
 
@@ -36,6 +38,14 @@ public class AlertService {
                 .body(data.getMessage())
                 .build();
 
-        firebaseUtil.pushAlert(data, customerFcmToken, notification);
+        firebaseUtil.pushAlertToClient(data, customerFcmToken);
+    }
+
+    public void subscribeTopic(String token, Integer storeId) {
+        firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, token);
+    }
+
+    public void unsubscribeTopic(String token, Integer storeId) {
+        firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, token);
     }
 }
