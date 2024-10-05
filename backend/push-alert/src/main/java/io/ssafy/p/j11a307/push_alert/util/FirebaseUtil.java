@@ -3,12 +3,15 @@ package io.ssafy.p.j11a307.push_alert.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import io.ssafy.p.j11a307.push_alert.dto.FcmAlert;
 import io.ssafy.p.j11a307.push_alert.dto.FcmMessage;
 import io.ssafy.p.j11a307.push_alert.dto.FcmNotification;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
@@ -29,6 +32,18 @@ public class FirebaseUtil {
 
     @Value("${firebase.config-path}")
     private String firebaseConfigPath;
+
+    @PostConstruct
+    public void initializeFirebase() throws IOException {
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream());
+
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(credentials)
+                .build();
+
+        FirebaseApp.initializeApp(options);
+    }
 
     public void pushAlert(FcmAlertData fcmAlertData, String receiverFcmToken, FcmNotification fcmNotification) {
         try {
