@@ -41,6 +41,7 @@ public class BasketService {
         //1. 존재하지 않는 상품이라면?
         DataResponse<ReadProductDTO> readProducts = productClient.getProductById(id);
         if (readProducts.getData() == null) throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+        if (!readProducts.getData().getStockStatus()) throw new BusinessException(ErrorCode.PRODUCT_OUT_OF_STOCK);
 
         //상품 가격
         Integer priceP = readProducts.getData().getPrice();
@@ -171,6 +172,7 @@ public class BasketService {
                         .productName(productData.getName())
                         .productSrc(productData.getSrc())
                         .OptionNameList(readProductOptions)
+                        .stockStatus((productData.getStockStatus()))
                         .build();
 
                 basketList.add(getBasketListInfoDTO);
@@ -206,6 +208,7 @@ public class BasketService {
         if(customerId != shoppingCart.getCustomerId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
         ReadProductDTO productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
+
         List<GetBasketOptionDetailDTO> basketOptionDetailList = new ArrayList<>();
 
         //이 Product가 가지고 있는 옵션 리스트들을 돌면서 getBasketOptionDetailDTO를 만들고 list에 채운다.
@@ -240,6 +243,7 @@ public class BasketService {
                 .quantity(shoppingCart.getQuantity())
                 .productName(productData.getName())
                 .getBasketOptionDetailDTOs(basketOptionDetailList)
+                .stockStatus(productData.getStockStatus())
                 .build();
 
         return getBasketOptionDTO;

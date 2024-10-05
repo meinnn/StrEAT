@@ -119,4 +119,27 @@ public class ProductService {
 
         return storeId;
     }
+
+    @Transactional
+    public void toggleProductStockStatus(Integer productId, String token) {
+        // 1. 공통 메서드로 Token을 통해 사용자의 storeId 가져오기
+        Integer storeId = getStoreIdByToken(token);
+
+        // 2. Product가 해당 store의 상품인지 확인
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (!product.getStoreId().equals(storeId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER); // 다른 가게 상품에 접근하는 것을 방지
+        }
+
+        // 3. 현재 재고 상태를 반대로 변경 (true -> false, false -> true)
+        Boolean currentStockStatus = product.getStockStatus();
+        product.changeStockStatus(!currentStockStatus);
+
+        // 4. 변경된 정보를 저장
+        productRepository.save(product);
+    }
+
+
 }

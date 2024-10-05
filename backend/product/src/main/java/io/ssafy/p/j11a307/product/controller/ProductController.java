@@ -103,5 +103,16 @@ public class ProductController {
                 .body(DataResponse.of("상품 이름 리스트 조회 성공", productNames));
     }
 
+    @PutMapping("/{productId}/stock-status")
+    @Operation(summary = "상품 품절 여부 변경 (true : 재고 있음 / false : 품절)")
+    public ResponseEntity<Void> toggleProductStockStatus(@RequestHeader("Authorization") String token,
+                                                         @PathVariable Integer productId) {
+        // 1. 서비스 호출하여 재고 상태 변경
+        productService.toggleProductStockStatus(productId, token);
+
+        // 2. 성공적으로 처리되었으면 204 No Content 응답
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

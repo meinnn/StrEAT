@@ -25,6 +25,9 @@ public record ReadProductDTO(
         @Schema(description = "상품설명", example = "통통한 문어가 들어있는 타코야끼")
         String description,
 
+        @Schema(description = "재고 상태", example = "true")
+        Boolean stockStatus,
+
         @Schema(description = "카테고리 목록")
         List<Integer> categories,
 
@@ -41,7 +44,8 @@ public record ReadProductDTO(
                 product.getStoreId(),
                 product.getName(),
                 product.getPrice(),
-                product.getDescription(), // 설명 추가
+                product.getDescription(),
+                product.getStockStatus(),
                 product.getCategories() != null ?
                         product.getCategories().stream()
                                 .map(ProductCategory::getId) // ID로 변경
