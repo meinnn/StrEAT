@@ -29,10 +29,10 @@ public record CreateProductOptionDTO(
                 .build();
     }
 
-    public CreateProductOptionDTO withProductId(Integer newProductId) {
+    public CreateProductOptionDTO withProductIdAndCategoryId(Integer newProductId, Integer newProductOptionCategoryId) {
         return new CreateProductOptionDTO(
                 newProductId,
-                this.productOptionCategoryId,
+                newProductOptionCategoryId,
                 this.productOptionName,
                 this.productOptionPrice
         );

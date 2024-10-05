@@ -47,33 +47,47 @@ public class ProductController {
     }
 
 @Transactional
-@PostMapping(value = "/product-info", consumes = {"multipart/form-data"})
-@Operation(summary = "상품 관련 사진, 상품명, 설명, 가격 정보 등록")
+@PostMapping(value = "/all", consumes = {"multipart/form-data"})
+@Operation(summary = "상품 관련 전체 정보 등록")
 public ResponseEntity<MessageResponse> createProductAll(
         @RequestHeader("Authorization") String token,
-        @RequestPart("productInfo") CreateProductDTO productDTO,
+        @RequestPart("productInfo") CreateProductAllDTO productDTO,
         @RequestPart("images") List<MultipartFile> images) {
 
     // 1. 유효성 검증
     validateInput(productDTO, images);
 
-    // 2. productDTO에 새 productId 할당 후 저장
-    Integer productId = productService.createProduct(token, productDTO);
+    // 2. 상품 등록 및 상품 ID 반환
+    Integer productId = productService.createProduct(token, productDTO.toCreateProductDTO());
 
-    // 3. productId를 각 엔티티에 할당 후 저장
+    // 3. 상품 이미지 저장
     productPhotoService.createProductPhoto(token, productId, images);
+
+    // 4. 옵션 카테고리 및 옵션 저장
+    productDTO.optionCategories().forEach(optionCategory -> {
+        // 전달된 productId를 무시하고, 로직에서 고정된 productId 사용
+        CreateProductOptionCategoryDTO updatedOptionCategory = optionCategory.withProductId(productId);
+
+        // 1. 상품 옵션 카테고리 먼저 저장하고, 해당 카테고리의 ID를 받음
+        Integer productOptionCategoryId = productOptionCategoryService.createProductOptionCategory(updatedOptionCategory);
+
+        // 2. 저장된 상품 옵션 카테고리 ID를 각 상품 옵션에 할당하여 저장
+        updatedOptionCategory.productOptions().forEach(option -> {
+            // productId와 productOptionCategoryId를 직접 설정
+            productOptionService.createProductOption(token, option.withProductIdAndCategoryId(productId, productOptionCategoryId));  // 상품 옵션 저장
+        });
+
+
+    });
 
     // 성공 메시지 반환
     return ResponseEntity.status(HttpStatus.CREATED)
             .body(MessageResponse.of("상품 등록 성공"));
 }
 
-    private void validateInput(CreateProductDTO productDTO,
+    private void validateInput(CreateProductAllDTO productDTO,
                                List<MultipartFile> images) {
         // 1. 상품 정보 유효성 검사
-        if (productDTO == null) {
-            throw new BusinessException(ErrorCode.PRODUCT_EMPTY);
-        }
         if (productDTO.name() == null || productDTO.name().isEmpty()) {
             throw new BusinessException(ErrorCode.PRODUCT_NAME_NULL);
         }
@@ -91,6 +105,47 @@ public ResponseEntity<MessageResponse> createProductAll(
         for (MultipartFile image : images) {
             if (image.isEmpty()) {
                 throw new BusinessException(ErrorCode.PRODUCT_IMAGES_NULL);
+            }
+        }
+
+        // 3. 옵션 카테고리 유효성 검사
+        if (productDTO.optionCategories() == null || productDTO.optionCategories().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_EMPTY);
+        }
+        for (CreateProductOptionCategoryDTO category : productDTO.optionCategories()) {
+            if (category.name() == null || category.name().isEmpty()) {
+                throw new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NAME_NULL);
+            }
+            if (category.maxSelect() == null || category.maxSelect() < 0) {
+                throw new BusinessException(ErrorCode.INVALID_MAX_SELECT);
+            }
+            if (category.minSelect() == null || category.minSelect() < 0) {
+                throw new BusinessException(ErrorCode.INVALID_MIN_SELECT);
+            }
+        }
+
+        // 4. 옵션 유효성 검사
+        for (CreateProductOptionCategoryDTO category : productDTO.optionCategories()) {
+            if (category.productOptions() == null || category.productOptions().isEmpty()) {
+                throw new BusinessException(ErrorCode.PRODUCT_OPTION_EMPTY);
+            }
+            for (CreateProductOptionDTO option : category.productOptions()) {
+                if (option.productOptionName() == null || option.productOptionName().isEmpty()) {
+                    throw new BusinessException(ErrorCode.PRODUCT_OPTION_NAME_NULL);
+                }
+                if (option.productOptionPrice() == null || option.productOptionPrice() < 0) {
+                    throw new BusinessException(ErrorCode.INVALID_PRICE);
+                }
+            }
+        }
+
+        // 5. 카테고리 유효성 검사
+        if (productDTO.categories() == null || productDTO.categories().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_EMPTY);
+        }
+        for (CreateProductCategoryDTO category : productDTO.categories()) {
+            if (category.name() == null || category.name().isEmpty()) {
+                throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_NAME_NULL);
             }
         }
     }
