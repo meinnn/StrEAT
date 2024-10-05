@@ -1,38 +1,11 @@
-export interface MenuItemOption {
-  id: number
-  productOptionName: string
-}
-
-export interface MenuOptionCategory {
-  id: number
-  name: string
-  minSelect: number
-  maxSelect: number
-  isEssential: boolean
-  options: MenuItemOption[]
-}
-
-export interface MenuItem {
-  id: number
-  name: string
-  image: string
-  description: string
-  description_full: string
-  price: number
-  option_categories: MenuOptionCategory[]
-}
-
 export interface OptionCategoryItem {
   id: number
-  productId: number
-  productOptionCategoryId: 1
   productOptionName: string
   productOptionPrice: number
 }
 
 export interface OptionCategory {
   id: number
-  productId: number
   name: string
   isEssential: boolean
   minSelect: number
@@ -42,10 +15,17 @@ export interface OptionCategory {
 
 export interface Menu {
   id: number
+  storeId: number
   name: string
   price: number
   description: string
-  categories: number[]
   optionCategories: OptionCategory[]
-  photos: string[]
+  image: string
+}
+
+export interface CartMenu extends Omit<Menu, 'description'> {
+  cartId: number
+  quantity: number
+  optionNameList: string[] // 사용자가 선택한 옵션 이름 리스트
+  checked: boolean
 }

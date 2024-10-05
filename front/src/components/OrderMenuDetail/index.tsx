@@ -1,12 +1,7 @@
 import Image from 'next/image'
 import { OrderItem } from '@/types/order'
-import { CartItem } from '@/types/cart'
 
-export default function OrderMenuDetail({
-  item,
-}: {
-  item: OrderItem | CartItem
-}) {
+export default function OrderMenuDetail({ item }: { item: OrderItem }) {
   // 임시 type
   return (
     <div className="flex items-start space-x-4">

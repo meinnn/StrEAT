@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-interface MenuItem {
+interface MenuListItem {
   id: number // 메뉴 ID
   storeId: number // 가게 ID
   name: string // 메뉴 이름
@@ -12,7 +12,7 @@ interface MenuItem {
   photos: string[]
 }
 
-async function fetchMenuList(storeId: string): Promise<MenuItem[]> {
+async function fetchMenuList(storeId: string): Promise<MenuListItem[]> {
   const response = await fetch(
     `https://j11a307.p.ssafy.io/api/products/store/${storeId}`
   )

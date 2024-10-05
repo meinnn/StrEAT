@@ -4,7 +4,7 @@ import { Menu, OptionCategory } from '@/types/menu'
 
 async function fetchOptionCategory(id: number): Promise<OptionCategory> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/products/option-categories/${id}?`
+    `https://j11a307.p.ssafy.io/api/products/option-categories/${id}`
   )
 
   if (!response.ok) {
@@ -38,6 +38,7 @@ async function fetchMenuDetails(menuId: string): Promise<Menu> {
   return {
     ...menuData,
     optionCategories, // 메뉴에 옵션 카테고리 배열을 추가
+    image: menuData.photos[0] || '/images/default_img.jpg',
   }
 }
 
@@ -45,12 +46,8 @@ export default async function MenuDetails({ menuId }: { menuId: string }) {
   const menu = await fetchMenuDetails(menuId)
 
   return (
-    <div className="mb-20">
-      <BackButtonWithImage
-        src={menu.photos[0] || '/images/default_img.jpg'}
-        alt={menu.name}
-        title={menu.name}
-      />
+    <div className="pb-20">
+      <BackButtonWithImage src={menu.image} alt={menu.name} title={menu.name} />
 
       <div className="m-6">
         <h1 className="text-2xl font-bold">{menu.name}</h1>

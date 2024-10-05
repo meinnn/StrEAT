@@ -1,33 +1,29 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Checkbox from '@/components/Checkbox'
-import RadioButton from '@/components/RadioButton'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
-import { Menu } from '@/types/menu'
-import { CartItem } from '@/types/cart'
+import { CartMenu, Menu } from '@/types/menu'
+import { useRouter } from 'next/navigation'
+import OptionSelector from '@/containers/customer/home/stores/menu/OptionSelector'
+import QuantityControl from '@/containers/customer/home/stores/menu/QuantityControl'
 
 interface MenuOptionsProps {
   type?: 'default' | 'change'
-  menuInfo: Menu | CartItem
+  menuInfo: Menu | CartMenu
 }
 
 export default function MenuOptions({
   type = 'default',
   menuInfo,
 }: MenuOptionsProps) {
-  // CartItem일 경우 이미 quantity가 있으므로, CartItem을 사용한다면 해당 값을 설정
+  const router = useRouter()
+
   const initialQuantity = 'quantity' in menuInfo ? menuInfo.quantity : 1
   const [selectedOptions, setSelectedOptions] = useState<
     Record<number, number[]>
   >({})
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity] = useState(initialQuantity)
   const [showAlert, setShowAlert] = useState(false)
-  const [accordionOpen, setAccordionOpen] = useState<Record<number, boolean>>(
-    {}
-  ) // 아코디언 상태 관리
 
-  // 첫 번째 RadioButton 옵션 자동 선택
   useEffect(() => {
     const initialSelections: Record<number, number[]> = {}
     menuInfo.optionCategories.forEach((category) => {
@@ -37,15 +33,6 @@ export default function MenuOptions({
     })
     setSelectedOptions(initialSelections)
   }, [menuInfo])
-
-  // 아코디언 상태 초기화
-  useEffect(() => {
-    const initialAccordionState: Record<number, boolean> = {}
-    menuInfo.optionCategories.forEach((category) => {
-      initialAccordionState[category.id] = type !== 'change' // change일 때는 접혀있도록
-    })
-    setAccordionOpen(initialAccordionState)
-  }, [menuInfo, type])
 
   const handleOptionChange = (
     categoryId: number,
@@ -76,10 +63,6 @@ export default function MenuOptions({
     })
   }
 
-  const handleQuantityChange = (amount: number) => {
-    setQuantity((prev) => Math.max(1, prev + amount))
-  }
-
   const areAllRequiredOptionsSelected = () => {
     return menuInfo.optionCategories
       .filter((category) => category.isEssential)
@@ -89,20 +72,45 @@ export default function MenuOptions({
       })
   }
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (!areAllRequiredOptionsSelected()) {
       setShowAlert(true)
       setTimeout(() => setShowAlert(false), 3000)
+      return
     }
 
-    // 장바구니 작업
-  }
+    const selectedOptionIds = Object.values(selectedOptions).flat()
+    if (type === 'default') {
+      const response = await fetch(`/services/cart/item/${menuInfo.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          quantity,
+          productOptionIds: selectedOptionIds,
+        }),
+      })
 
-  const toggleAccordion = (categoryId: number) => {
-    if (type === 'change') {
-      setAccordionOpen((prev) => ({ ...prev, [categoryId]: !prev[categoryId] }))
+      if (!response.ok) {
+        throw new Error('Failed to add to cart')
+      }
+      router.push(`/customer/stores/${menuInfo.storeId}`)
     }
   }
+
+  const totalOptionPrice = menuInfo.optionCategories.reduce(
+    (total, category) => {
+      const selectedOptionIds = selectedOptions[category.id] || []
+      const selectedOptionPrices = category.options
+        .filter((option) => selectedOptionIds.includes(option.id))
+        .map((option) => option.productOptionPrice)
+      return total + selectedOptionPrices.reduce((sum, price) => sum + price, 0)
+    },
+    0
+  )
+
+  const totalPrice = (menuInfo.price + totalOptionPrice) * quantity
 
   return (
     <div>
@@ -121,144 +129,22 @@ export default function MenuOptions({
 
         {/* 옵션 카테고리들 */}
         {menuInfo.optionCategories.map((category) => (
-          <div
+          <OptionSelector
             key={category.id}
-            className={`${type === 'change' ? 'border border-gray-medium rounded-lg py-4 px-5 m-2' : 'p-6'}`}
-          >
-            <div
-              role="presentation"
-              className="flex justify-between items-center cursor-pointer"
-              onClick={() => toggleAccordion(category.id)}
-            >
-              <div
-                className={`flex justify-between items-center ${type === 'default' ? 'w-full' : ''}`}
-              >
-                <h2 className="text-lg font-bold flex items-center">
-                  {category.name}
-                </h2>
-                {category.isEssential ? (
-                  <span className="ml-2 bg-primary-50 px-3 py-1 rounded-full text-primary-500 font-semibold text-xs">
-                    필수
-                  </span>
-                ) : (
-                  <span className="ml-2 bg-gray-medium px-3 py-1 rounded-full text-gray-dark font-semibold text-xs">
-                    선택
-                  </span>
-                )}
-              </div>
-              {type === 'change' && (
-                <span>
-                  {accordionOpen[category.id] ? (
-                    <FaChevronDown />
-                  ) : (
-                    <FaChevronUp />
-                  )}
-                </span>
-              )}
-              {/* 아코디언 토글 화살표 */}
-            </div>
-
-            {/* 선택된 옵션 표시 */}
-            {type === 'change' && selectedOptions[category.id]?.length > 0 && (
-              <p className="text-sm text-gray-dark">
-                {selectedOptions[category.id].join(', ')}
-              </p>
-            )}
-
-            {/* 아코디언 내용: type이 change일 때만 접힘 */}
-            {(type !== 'change' || accordionOpen[category.id]) && (
-              <>
-                {category.maxSelect > 1 &&
-                  (category.minSelect === category.maxSelect ? (
-                    <p className="text-gray-dark text-sm">
-                      {category.maxSelect}개 선택 필수
-                    </p>
-                  ) : (
-                    <p className="text-gray-dark text-sm">
-                      최대 {category.maxSelect}개 선택
-                    </p>
-                  ))}
-
-                <div className="mt-5 mx-2 space-y-5">
-                  {category.options.map((option) =>
-                    category.maxSelect > 1 ? (
-                      <Checkbox
-                        key={option.id}
-                        onChange={() =>
-                          handleOptionChange(
-                            category.id,
-                            option.id,
-                            category.maxSelect
-                          )
-                        }
-                        checked={
-                          selectedOptions[category.id]?.includes(option.id) ||
-                          false
-                        }
-                        id={`option-${option.id}`}
-                        label={option.productOptionName}
-                        size={24}
-                      />
-                    ) : (
-                      <RadioButton
-                        key={option.id}
-                        onChange={() =>
-                          handleOptionChange(
-                            category.id,
-                            option.id,
-                            category.maxSelect
-                          )
-                        }
-                        checked={
-                          selectedOptions[category.id]?.includes(option.id) ||
-                          false
-                        }
-                        id={`option-${option.id}`}
-                        name={`option-${category.id}`}
-                        label={option.productOptionName}
-                        size={24}
-                      />
-                    )
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+            category={category}
+            selectedOptions={selectedOptions}
+            handleOptionChange={handleOptionChange}
+            type={type}
+          />
         ))}
 
-        {/* 수량 조절 */}
-        <div
-          className={`${type === 'change' ? 'border border-gray-medium rounded-lg py-4 px-5 m-2' : 'p-6'}`}
-        >
-          <div className="flex justify-between items-center text-lg font-bold">
-            <h2>수량</h2>
-            <div className="flex items-center">
-              <button
-                type="button"
-                className={`flex justify-center items-center rounded-full size-7 ${
-                  quantity === 1
-                    ? 'bg-gray-medium text-gray-dark'
-                    : 'border border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white active:bg-primary-600'
-                }`}
-                onClick={() => handleQuantityChange(-1)}
-                disabled={quantity === 1}
-              >
-                -
-              </button>
-              <span className="mx-4 text-xl">{quantity}</span>
-              <button
-                type="button"
-                className="flex justify-center items-center border border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white active:bg-primary-600 rounded-full size-7"
-                onClick={() => handleQuantityChange(1)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
+        <QuantityControl
+          quantity={quantity}
+          setQuantity={setQuantity}
+          type={type}
+        />
       </div>
 
-      {/* 주문 버튼 */}
       <div className="fixed bottom-0 inset-x-0 p-3 bg-white">
         <button
           type="button"
@@ -269,7 +155,7 @@ export default function MenuOptions({
           }`}
           onClick={handleButtonClick}
         >
-          {`${(menuInfo.price * quantity).toLocaleString()}원 ${type === 'default' ? '담기' : '변경하기'}`}
+          {`${totalPrice.toLocaleString()}원 ${type === 'default' ? '담기' : '변경하기'}`}
         </button>
       </div>
 
