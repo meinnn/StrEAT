@@ -200,7 +200,30 @@ public class ReviewService {
                 .build();
 
         return getStoreReviewDTO;
-    }  
+    }
+
+    @Transactional
+    public GetReviewSummaryDTO getReviewSummary(Integer storeId) {
+        //1. 해당 점포가 존재하지 않음
+        ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
+
+        if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+
+        //주문내역 중 storeid면서 review가 있는걸 골라야 함.
+        List<Orders> orders =  ordersRepository.findByStoreIdAndHasReview(storeId);
+
+        double totalavg = 0.0;
+        totalavg = orders.stream().mapToDouble(i -> reviewRepository.searchReview(i.getId()).getScore()).sum();
+
+        if(totalavg != 0.0) totalavg /= orders.size();
+
+        GetReviewSummaryDTO getReviewSummaryDTO = GetReviewSummaryDTO.builder()
+                .reviewTotalCount(orders.size())
+                .averageScore(totalavg)
+                .build();
+
+        return getReviewSummaryDTO;
+    }
 
     private String uploadImage(MultipartFile image) {
         //image 파일 확장자 검사
@@ -252,4 +275,5 @@ public class ReviewService {
             throw new BusinessException(ErrorCode.S3Exception);
         }
     }
+
 }

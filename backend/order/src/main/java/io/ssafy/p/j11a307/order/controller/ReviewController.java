@@ -99,4 +99,28 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포별 리뷰 조회에 성공했습니다.", getStoreReviewDTO));
     }
+
+
+    //가게의 총 리뷰 개수, 리뷰 평균 평점
+    @GetMapping("/stores/{storeId}/reviews/summary")
+    @Operation(summary = "리뷰 개수 및 평점", description = "점포별 리뷰 개수 및 평점 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "점포별 리뷰 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "점포 존재하지 않음"),
+    })
+    public ResponseEntity<DataResponse<GetReviewSummaryDTO>> getReviewSummary(@PathVariable Integer storeId) {
+
+        GetReviewSummaryDTO getStoreReviewDTO = reviewService.getReviewSummary(storeId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("점포별 리뷰 개수 및 평점 조회에 성공했습니다.", getStoreReviewDTO));
+    }
+
+
+
+
+
+
+
+
 }
