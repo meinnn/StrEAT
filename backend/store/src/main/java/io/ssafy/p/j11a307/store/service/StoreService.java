@@ -1,15 +1,16 @@
 package io.ssafy.p.j11a307.store.service;
 
-import io.ssafy.p.j11a307.store.dto.StoreResponse;
-import io.ssafy.p.j11a307.store.dto.StoreUpdateRequest;
+import io.ssafy.p.j11a307.store.dto.*;
+import io.ssafy.p.j11a307.store.entity.IndustryCategory;
 import io.ssafy.p.j11a307.store.entity.Store;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
+import io.ssafy.p.j11a307.store.repository.IndustryCategoryRepository;
 import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,71 +19,92 @@ import java.util.stream.Collectors;
 public class StoreService{
 
     private final StoreRepository storeRepository;
+    private final IndustryCategoryRepository industryCategoryRepository;
     private final OwnerClient ownerClient;
 
-    @Value("{streat.internal-request}")
+    @Value("${streat.internal-request}")  // "${}"로 수정
     private String internalRequestKey;
 
-    public Integer getOwnerIdByStoreId(Integer storeId) {
+    /**
+     * 특정 가게의 owner ID 반환
+     */
+    @Transactional(readOnly = true)
+    public Integer getUserIdByStoreId(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         return store.getUserId();
     }
 
-    public StoreResponse getStoreInfo(Integer storeId) {
+    /**
+     * 가게 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public ReadStoreDTO getStoreInfo(Integer storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-
-        return new StoreResponse(store);
+        return new ReadStoreDTO(store);  // ReadStoreDTO로 변환하여 반환
     }
 
-    public StoreResponse createStore(StoreUpdateRequest request, String token) {
-        // JWT 토큰에서 userID 추출
+    /**
+     * 가게 생성
+     */
+    @Transactional
+    public void createStore(CreateStoreDTO createStoreDTO, String token) {
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
-
         if (userId == null) {
-            // 조회된 owner 정보가 없으면 예외 발생
             throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
         }
 
-        Store store = Store.builder()
-                .name(request.name())
-                .address(request.address())
-                .latitude(request.latitude())
-                .longitude(request.longitude())
-                .type(request.type())
-                .bankAccount(request.bankAccount())
-                .bankName(request.bankName())
-                .ownerWord(request.ownerWord())
-                .status(request.status())
-                .userId(userId)
-                .build();
+        IndustryCategory industryCategory = industryCategoryRepository
+                .findById(createStoreDTO.industryCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
 
-        Store savedStore = storeRepository.save(store);
-        return new StoreResponse(savedStore);
+        Store store = createStoreDTO.toEntity(industryCategory);
+        store.assignOwner(userId);
+
+        storeRepository.save(store);
+    }
+    /**
+     * 가게 타입 조회 (Enum 타입 처리)
+     */
+    @Transactional(readOnly = true)
+    public String getStoreType(Integer storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        return store.getType().name();  // Enum 타입의 name() 사용
     }
 
-    public String getStoreType(Integer id) {
-        Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        return store.getType();
-    }
-
-    public List<StoreResponse> getAllStores() {
+    /**
+     * 모든 가게 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public List<ReadStoreDTO> getAllStores() {
         return storeRepository.findAll()
                 .stream()
-                .map(StoreResponse::new)  // Store -> StoreResponse 변환
+                .map(ReadStoreDTO::new)  // 각 Store 엔티티를 ReadStoreDTO로 변환
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 가게 정보 업데이트
+     */
+    @Transactional
+    public void updateStore(Integer id, UpdateStoreDTO request) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-    public StoreResponse updateStore(Integer id, StoreUpdateRequest request) {
-        Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        IndustryCategory industryCategory = industryCategoryRepository
+                .findById(request.industryCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
 
-        Store updatedStore = store.updateWith(request);
-
-        return new StoreResponse(storeRepository.save(updatedStore));
+        Store updatedStore = store.updateWith(request, industryCategory);
+        storeRepository.save(updatedStore);
     }
 
+    /**
+     * 가게 삭제
+     */
+    @Transactional
     public void deleteStore(Integer id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
@@ -90,9 +112,17 @@ public class StoreService{
         storeRepository.delete(store);
     }
 
-    public StoreResponse  updateStoreAddress(Integer id, String newAddress) {
-        Store store = storeRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+    /**
+     * 가게 주소 업데이트
+     */
+    @Transactional
+    public void updateStoreAddress(Integer storeId, String newAddress) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.changeAddress(newAddress);
-        return new StoreResponse(storeRepository.save(store));
+        storeRepository.save(store);
     }
+
+
+
 }

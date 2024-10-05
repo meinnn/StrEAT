@@ -1,11 +1,14 @@
 package io.ssafy.p.j11a307.store.entity;
 
-import io.ssafy.p.j11a307.store.dto.StoreUpdateRequest;
+import io.ssafy.p.j11a307.store.dto.UpdateStoreDTO;
+import io.ssafy.p.j11a307.store.exception.BusinessException;
+import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,21 +20,59 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer userId; // Owner ID만 저장
+    @Column(nullable = false)
+    private Integer userId;
+
+    @Column(nullable = false, length = 20)
+    private String businessRegistrationNumber;
+
+    @Column(nullable = false, length = 40)
     private String name;
+
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false, length = 20)
     private String latitude;
+
+    @Column(nullable = false, length = 20)
     private String longitude;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private StoreType type;
+
+    @Column(nullable = false, length = 50)
     private String bankAccount;
+
+    @Column(nullable = false, length = 20)
     private String bankName;
+
     private String ownerWord;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private StoreStatus status;
+
+    // 관계 설정
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<StorePhoto> storePhotos;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<StoreLocationPhoto> storeLocationPhotos;
+
+    @ManyToOne
+    @JoinColumn(name = "industry_category_id", nullable = false)
+    private IndustryCategory industryCategory;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<BusinessDay> businessDays;
+
 
     // 이름 변경 메서드
     public void changeName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty.");
+              throw new BusinessException(ErrorCode.STORE_NAME_NULL);
         }
         this.name = name;
     }
@@ -39,15 +80,24 @@ public class Store {
     // 주소 변경 메서드
     public void changeAddress(String address) {
         if (address == null || address.isEmpty()) {
-            throw new IllegalArgumentException("Address cannot be empty.");
+            throw new BusinessException(ErrorCode.STORE_ADDRESS_NULL);
         }
         this.address = address;
     }
 
-    public Store updateWith(StoreUpdateRequest request) {
+    // 사용자 ID 설정 메서드
+    public void assignOwner(Integer userId) {
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+        this.userId = userId;
+    }
+
+    public Store updateWith(UpdateStoreDTO request, IndustryCategory industryCategory) {
         return Store.builder()
                 .id(this.id)  // ID는 변경하지 않음
                 .userId(this.userId)  // Owner ID는 그대로 유지
+                .businessRegistrationNumber(request.businessRegistrationNumber() != null ? request.businessRegistrationNumber() : this.businessRegistrationNumber)  // 사업자 등록번호 처리 추가
                 .name(request.name() != null ? request.name() : this.name)
                 .address(request.address() != null ? request.address() : this.address)
                 .latitude(request.latitude() != null ? request.latitude() : this.latitude)
@@ -57,6 +107,7 @@ public class Store {
                 .bankName(request.bankName() != null ? request.bankName() : this.bankName)
                 .ownerWord(request.ownerWord() != null ? request.ownerWord() : this.ownerWord)
                 .status(request.status() != null ? request.status() : this.status)
+                .industryCategory(industryCategory)
                 .build();
     }
 

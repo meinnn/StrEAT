@@ -1,0 +1,7 @@
+server:
+  port: 8223
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/ # 해당 경로가 아니라도 설정이 반드시 필요함. 실행하지 않으면 docker-compose의 환경이 주입이 안됨.
