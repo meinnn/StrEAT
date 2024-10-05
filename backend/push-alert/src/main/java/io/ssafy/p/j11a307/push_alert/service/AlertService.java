@@ -36,6 +36,6 @@ public class AlertService {
                 .body(data.getMessage())
                 .build();
 
-        firebaseUtil.pushAlert(data, customerFcmToken, notification);
+        firebaseUtil.pushAlertToClient(data, customerFcmToken);
     }
 }
