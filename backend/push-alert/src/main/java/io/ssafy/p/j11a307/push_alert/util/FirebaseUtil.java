@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.TopicManagementResponse;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
@@ -15,6 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class FirebaseUtil {
@@ -60,6 +62,22 @@ public class FirebaseUtil {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
             throw new BusinessException(ErrorCode.PUSH_ALERT_FAILED);
+        }
+    }
+
+    public void subscribeTopic(String topic, String token) {
+        try {
+            FirebaseMessaging.getInstance().subscribeToTopic(List.of(token), topic);
+        } catch (FirebaseMessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void unsubscribeTopic(String topic, String token) {
+        try {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(List.of(token), topic);
+        } catch (FirebaseMessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -7,9 +7,7 @@ import io.ssafy.p.j11a307.push_alert.service.AlertService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,5 +30,25 @@ public class AlertController {
         String[] requestUri = request.getRequestURI().split("/");
         AlertType alertType = AlertType.getByRequestUri(requestUri[requestUri.length - 1]);
         alertService.sendOrderStatusChangeAlert(customerId, orderId, storeName, alertType);
+    }
+
+    @PostMapping("/dibs/{storeId}")
+    public void subscribeStore(@PathVariable Integer storeId,
+                               @RequestHeader(value = "X-Internal-Request") String internalRequest,
+                               String userFcmToken) {
+        if (!internalRequestKey.equals(internalRequest)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+        alertService.subscribeTopic(userFcmToken, storeId);
+    }
+
+    @DeleteMapping("/dibs/{storeId}")
+    public void unsubscribeStore(@PathVariable Integer storeId,
+                                 @RequestHeader(value = "X-Internal-Request") String internalRequest,
+                                 String userFcmToken) {
+        if (!internalRequestKey.equals(internalRequest)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+        alertService.unsubscribeTopic(userFcmToken, storeId);
     }
 }
