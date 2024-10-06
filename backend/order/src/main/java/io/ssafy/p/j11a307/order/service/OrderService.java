@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ public class OrderService {
     @Transactional
     public GetStoreOrderDTO getStoreOrderList(Integer storeId, Integer pgno, Integer spp, String status, String token) {
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
-        Pageable pageable = PageRequest.of(pgno, spp);
+        Pageable pageable = PageRequest.of(pgno, spp, Sort.by("created_at").descending());
 
         //1. 해당 점포가 존재하지 않는다면?
         ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
@@ -157,7 +158,7 @@ public class OrderService {
     @Transactional
     public GetMyOrderDTO getMyOrderList(Integer pgno, Integer spp, String token) {
         Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
-        Pageable pageable = PageRequest.of(pgno, spp);
+        Pageable pageable = PageRequest.of(pgno, spp, Sort.by("createdAt").descending());
 
         //나의 주문내역 리스트를 가져온다.
         Page<Orders> orders = ordersRepository.findByUserId(customerId, pageable);
