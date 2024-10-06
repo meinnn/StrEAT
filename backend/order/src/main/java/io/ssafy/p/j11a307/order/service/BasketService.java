@@ -118,8 +118,16 @@ public class BasketService {
         //2. 그 내역을 가진 본인이 아니라면?
         if(customerId != shoppingCart.getCustomerId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
+        //가격 계산
+        Integer priceP = productClient.getProductById(shoppingCart.getProductId()).getData().getPrice();
+        Integer quan = modifyOptionFromBasketDTO.getQuantity();
+
+        //상품 옵션 리스트의 가격 합
+        List<Integer> optionList = modifyOptionFromBasketDTO.getOptionList();
+        Integer priceO = productClient.sumProductOption(optionList, internalRequestKey);
+
         //가격, 개수 수정
-        shoppingCart.modifyOption(modifyOptionFromBasketDTO.getPrice(), modifyOptionFromBasketDTO.getQuantity());
+        shoppingCart.modifyOption((priceO+priceP)*quan, quan);
 
         //옵션 대체
         List<ShoppingCartOption> shoppingCartOptions = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart);
