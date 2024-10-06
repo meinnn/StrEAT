@@ -5,6 +5,7 @@ import io.ssafy.p.j11a307.push_alert.dto.FcmNotification;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmOrderStatusChangeAlert;
+import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmStoreOpenAlert;
 import io.ssafy.p.j11a307.push_alert.util.FirebaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,22 @@ public class AlertService {
                 .build();
 
         firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
+    }
+
+    public void sendOpenStoreAlert(Integer storeId, String storeName, AlertType alertType) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
+        String topic = TOPIC_STORE_PREFIX + storeId;
+        FcmAlertData fcmAlertData = FcmStoreOpenAlert.builder()
+                .storeId(String.valueOf(storeId))
+                .storeName(storeName)
+                .createdAt(simpleDateFormat.format(new Date()))
+                .alertType(alertType)
+                .build();
+        Notification notification = Notification.builder()
+                .setTitle(fcmAlertData.getTitle())
+                .setBody(fcmAlertData.getMessage())
+                .build();
+        firebaseUtil.pushAlertTopic(fcmAlertData, topic, notification);
     }
 
     public void subscribeTopic(Integer userId, Integer storeId) {
