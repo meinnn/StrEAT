@@ -36,8 +36,8 @@ public class ProductOptionController {
     // 1. 상품 옵션 생성
     @PostMapping
     @Operation(summary = "상품 옵션 생성")
-    public ResponseEntity<MessageResponse> createProductOption(@RequestBody CreateProductOptionDTO createProductOption) {
-        productOptionService.createProductOption(createProductOption);
+    public ResponseEntity<MessageResponse> createProductOption(@RequestHeader("Authorization") String token, @RequestBody CreateProductOptionDTO createProductOption) {
+        productOptionService.createProductOption(token, createProductOption);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("상품 옵션 등록 성공"));
     }
@@ -63,8 +63,8 @@ public class ProductOptionController {
     // 4. 상품 옵션 업데이트
     @PutMapping("/{optionId}")
     @Operation(summary = "상품 옵션 업데이트")
-    public ResponseEntity<MessageResponse> updateProductOption(@PathVariable Integer optionId, @RequestBody UpdateProductOptionDTO updateProductOption) {
-        productOptionService.updateProductOption(optionId, updateProductOption);
+    public ResponseEntity<MessageResponse> updateProductOption(@RequestHeader("Authorization") String token, @PathVariable Integer optionId, @RequestBody UpdateProductOptionDTO updateProductOption) {
+        productOptionService.updateProductOption(token, optionId, updateProductOption);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 옵션 수정 성공"));
     }
@@ -72,8 +72,8 @@ public class ProductOptionController {
     // 5. 상품 옵션 삭제
     @DeleteMapping("/{optionId}")
     @Operation(summary = "상품 옵션 삭제")
-    public ResponseEntity<MessageResponse> deleteProductOption(@PathVariable Integer optionId) {
-        productOptionService.deleteProductOption(optionId);
+    public ResponseEntity<MessageResponse> deleteProductOption(@RequestHeader("Authorization") String token, @PathVariable Integer optionId) {
+        productOptionService.deleteProductOption(token, optionId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("상품 옵션 삭제 성공"));
     }
