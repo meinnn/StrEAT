@@ -106,15 +106,6 @@ export default function TransactionList({
       ) : (
         <p>해당 날짜에 거래 내역이 없습니다.</p>
       )}
-
-      {/* 스크롤 끝에 도달했을 때 로더를 표시 */}
-      <div ref={loader} className="text-center">
-        {hasMore ? (
-          <p>더 많은 거래 내역을 불러오는 중...</p>
-        ) : (
-          <p>모든 거래 내역을 불러왔습니다.</p>
-        )}
-      </div>
     </div>
   )
 }
