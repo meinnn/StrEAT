@@ -1,9 +1,11 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.dto.UserFcmTokenResponse;
 import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
 import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
+import io.ssafy.p.j11a307.user.global.DataResponse;
 import io.ssafy.p.j11a307.user.service.UserService;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -178,5 +181,23 @@ public class UserController {
     public ResponseEntity<String> createToken(@RequestParam Integer userId) {
         String token = jwtUtil.createAccessToken(userId);
         return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/{userId}/fcmToken")
+    @Operation(summary = "유저 아이디로 fcm token 받기", description = "유저 아이디로 fcm token 받기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "fcm token 발급 완료"),
+            @ApiResponse(responseCode = "400", description = "내부에서만 요청 가능한 서비스입니다."),
+            @ApiResponse(responseCode = "404", description = "id에 해당하는 user가 업습니다.")
+    })
+    @Tag(name = "내부 서비스 간 요청")
+    public ResponseEntity<DataResponse<UserFcmTokenResponse>> getUserFcmToken(
+            @PathVariable Integer userId, @RequestHeader("X-Internal-Request") String internalRequest) {
+        if (!internalRequestKey.equals(internalRequest)) {
+            throw new BusinessException(ErrorCode.BAD_INNER_SERVICE_REQUEST);
+        }
+        UserFcmTokenResponse userFcmTokenResponse = userService.getFcmTokenByUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("fcm token 조회에 성공했습니다.", userFcmTokenResponse));
     }
 }
