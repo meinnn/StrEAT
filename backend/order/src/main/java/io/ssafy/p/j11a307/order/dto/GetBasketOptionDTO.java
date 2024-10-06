@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -28,6 +29,7 @@ public class GetBasketOptionDTO {
     Boolean stockStatus;
 
     @Schema(description = "옵션 상세 리스트")
-    List<GetBasketOptionDetailDTO> getBasketOptionDetailDTOs;
+    Map<Integer, List<GetBasketOptionDetailDTO>> getBasketOptionDetailMap;
+    //List<GetBasketOptionDetailDTO> getBasketOptionDetailDTOs;
 
 }

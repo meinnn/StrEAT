@@ -211,7 +211,8 @@ public class BasketService {
 
         ReadProductDTO productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
 
-        List<GetBasketOptionDetailDTO> basketOptionDetailList = new ArrayList<>();
+        //List<GetBasketOptionDetailDTO> basketOptionDetailList = new ArrayList<>();
+        Map<Integer, List<GetBasketOptionDetailDTO>> optionDetailMap = new HashMap<>();
 
         //이 Product가 가지고 있는 옵션 리스트들을 돌면서 getBasketOptionDetailDTO를 만들고 list에 채운다.
         List<ReadProductOptionDTO> productOptionData = productClient.getProductOptionListByProductId(productData.getId(), internalRequestKey);
@@ -236,7 +237,15 @@ public class BasketService {
                     .minSelectCategory(categoryData.minSelect())
                     .build();
 
-            basketOptionDetailList.add(getBasketOptionDetailDTO);
+            if(optionDetailMap.containsKey(option.getProductOptionCategoryId())) {
+                optionDetailMap.get(option.getProductOptionCategoryId()).add(getBasketOptionDetailDTO);
+            } else {
+                List<GetBasketOptionDetailDTO> li = new ArrayList<>();
+                li.add(getBasketOptionDetailDTO);
+                optionDetailMap.put(option.getProductOptionCategoryId(), li);
+            }
+
+            //basketOptionDetailList.add(getBasketOptionDetailDTO);
         }
 
         GetBasketOptionDTO getBasketOptionDTO = GetBasketOptionDTO.builder()
@@ -244,7 +253,7 @@ public class BasketService {
                 .productPrice(productData.getPrice())
                 .quantity(shoppingCart.getQuantity())
                 .productName(productData.getName())
-                .getBasketOptionDetailDTOs(basketOptionDetailList)
+                .getBasketOptionDetailMap(optionDetailMap)
                 .stockStatus(productData.getStockStatus())
                 .build();
 
