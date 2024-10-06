@@ -32,6 +32,15 @@ public class AlertController {
         alertService.sendOrderStatusChangeAlert(customerId, orderId, storeName, alertType);
     }
 
+    @GetMapping("/open-store")
+    public void sendOpenStoreAlert(Integer storeId, String storeName, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+        if (!internalRequestKey.equals(internalRequest)) {
+            // MSA 내부 접속이 아닌 경우 에러 발생
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+
+    }
+
     @PostMapping("/dibs/{storeId}")
     public void subscribeStore(@PathVariable Integer storeId,
                                @RequestHeader(value = "X-Internal-Request") String internalRequest,
