@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.store.controller;
 
 import io.ssafy.p.j11a307.store.dto.*;
+import io.ssafy.p.j11a307.store.entity.StoreStatus;
 import io.ssafy.p.j11a307.store.global.DataResponse;
 import io.ssafy.p.j11a307.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
+
+    /**
+     * 점포 상태 변경
+     */
+    @PatchMapping("/{storeId}/status")
+    @Operation(summary = "점포 상태 변경(영업중 -> 영업종료)")
+    public ResponseEntity<MessageResponse> updateStoreStatus(
+            @RequestHeader("Authorization") String token,
+            @RequestParam StoreStatus status) {
+        storeService.updateStoreStatus(token, status);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("Store 상태 업데이트 성공"));
+    }
+
 
     // 1. 점포 생성
     @PostMapping
