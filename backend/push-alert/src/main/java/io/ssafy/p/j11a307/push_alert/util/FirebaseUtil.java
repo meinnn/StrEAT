@@ -3,10 +3,7 @@ package io.ssafy.p.j11a307.push_alert.util;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.TopicManagementResponse;
+import com.google.firebase.messaging.*;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
@@ -39,9 +36,10 @@ public class FirebaseUtil {
         FirebaseApp.initializeApp(options);
     }
 
-    public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken) {
+    public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken, Notification notification) {
         Message message = Message.builder()
-                .putData("message", fcmAlertData.getMessage())
+                .putAllData(fcmAlertData.getData())
+                .setNotification(notification)
                 .setToken(receiverFcmToken)
                 .build();
 
@@ -52,9 +50,10 @@ public class FirebaseUtil {
         }
     }
 
-    public void pushAlertTopic(FcmAlertData fcmAlertData, String topic) {
+    public void pushAlertTopic(FcmAlertData fcmAlertData, String topic, Notification notification) {
         Message message = Message.builder()
-                .putData("message", fcmAlertData.getMessage())
+                .putAllData(fcmAlertData.getData())
+                .setNotification(notification)
                 .setTopic(topic)
                 .build();
 

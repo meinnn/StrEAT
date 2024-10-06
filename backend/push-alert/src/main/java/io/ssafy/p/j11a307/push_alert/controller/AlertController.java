@@ -35,20 +35,20 @@ public class AlertController {
     @PostMapping("/dibs/{storeId}")
     public void subscribeStore(@PathVariable Integer storeId,
                                @RequestHeader(value = "X-Internal-Request") String internalRequest,
-                               String userFcmToken) {
+                               @RequestParam Integer userId) {
         if (!internalRequestKey.equals(internalRequest)) {
             throw new BusinessException(ErrorCode.BAD_REQUEST);
         }
-        alertService.subscribeTopic(userFcmToken, storeId);
+        alertService.subscribeTopic(userId, storeId);
     }
 
     @DeleteMapping("/dibs/{storeId}")
     public void unsubscribeStore(@PathVariable Integer storeId,
                                  @RequestHeader(value = "X-Internal-Request") String internalRequest,
-                                 String userFcmToken) {
+                                 @RequestParam Integer userId) {
         if (!internalRequestKey.equals(internalRequest)) {
             throw new BusinessException(ErrorCode.BAD_REQUEST);
         }
-        alertService.unsubscribeTopic(userFcmToken, storeId);
+        alertService.unsubscribeTopic(userId, storeId);
     }
 }

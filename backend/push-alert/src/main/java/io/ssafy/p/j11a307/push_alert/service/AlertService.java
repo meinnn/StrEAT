@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.push_alert.service;
 
+import com.google.firebase.messaging.Notification;
 import io.ssafy.p.j11a307.push_alert.dto.FcmNotification;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
@@ -34,18 +35,24 @@ public class AlertService {
                 .createdAt(simpleDateFormat.format(new Date()))
                 .alertType(alertType)
                 .build();
-        FcmNotification notification = FcmNotification.builder()
-                .body(data.getMessage())
+//        FcmNotification notification = FcmNotification.builder()
+//                .body(data.getMessage())
+//                .build();
+        Notification notification = Notification.builder()
+                .setTitle(data.getTitle())
+                .setBody(data.getMessage())
                 .build();
 
-        firebaseUtil.pushAlertToClient(data, customerFcmToken);
+        firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
     }
 
-    public void subscribeTopic(String token, Integer storeId) {
-        firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, token);
+    public void subscribeTopic(Integer userId, Integer storeId) {
+        String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 
-    public void unsubscribeTopic(String token, Integer storeId) {
-        firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, token);
+    public void unsubscribeTopic(Integer userId, Integer storeId) {
+        String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 }
