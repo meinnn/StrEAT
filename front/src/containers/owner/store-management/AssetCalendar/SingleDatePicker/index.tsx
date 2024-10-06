@@ -5,73 +5,127 @@ import DatePicker from 'react-datepicker'
 import { ko } from 'date-fns/locale'
 import '@/containers/owner/store-management/AssetCalendar/SingleDatePicker/singleDatePicker.css'
 
-// 입출금 더미 데이터
-const transactionData: {
-  [key: string]: {
-    income: number
-    outcome: number
-  }
-} = {
-  '2024-10-01': {
-    income: 50000,
-    outcome: 30000,
-  },
-  '2024-10-02': {
-    income: 45000,
-    outcome: 32000,
-  },
-  '2024-10-03': {
-    income: 47000,
-    outcome: 35000,
-  },
-  // 더미 데이터 추가...
-}
+// 거래 데이터를 기반으로 입출금 금액을 표시하는 함수
+const dayContents = (day: number, date: Date, transactions: any[]) => {
+  const dateString = date
+    .toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .replace(/. /g, '-')
+    .replace('.', '') // 날짜를 로컬 문자열로 변환
+  const transaction = transactions.find((t) => t.date === dateString) // 문자열로 비교
 
-// dayContents 함수 외부 정의
-const dayContents = (day: number, date: Date) => {
-  const dateString = date.toISOString().split('T')[0]
-  const transaction = transactionData[dateString]
-  const total = transaction ? transaction.income - transaction.outcome : null
   return (
     <div className="day-container">
       <span>{day}</span>
-      {total !== null && (
-        <div className="transaction-amount">
-          {total > 0
-            ? `+${total.toLocaleString()}`
-            : `${total.toLocaleString()}`}{' '}
-          원
-        </div>
+      {transaction && (
+        <>
+          <div style={{ color: 'blue', fontSize: '0.8rem' }}>
+            +{transaction.income.toLocaleString()} 원
+          </div>
+          <div style={{ color: 'red', fontSize: '0.8rem' }}>
+            -{transaction.outcome.toLocaleString()} 원
+          </div>
+        </>
       )}
     </div>
   )
 }
 
-export default function SingleDatePicker() {
+export default function SingleDatePicker({
+  onChange,
+  transactions,
+}: {
+  onChange: (date: string) => void
+  transactions: any[]
+}) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
 
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      console.log('날짜 변경됨: ', date)
+      setSelectedDate(date)
+      const formattedDate = date
+        .toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        })
+        .replace(/. /g, '-')
+        .replace('.', '') // 로컬 날짜로 변환 후 문자열로 전달
+      onChange(formattedDate)
+    }
+  }
+
+  const renderDayContents = (day: number, date: Date) => {
+    const dateString = date
+      .toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
+      .replace(/. /g, '-')
+      .replace('.', '')
+    const transaction = transactions.find((t) => t.date === dateString)
+
+    return (
+      <div>
+        <span>{day}</span>
+        {transaction && (
+          <div style={{ fontSize: '0.7rem', color: 'blue' }}>
+            +{transaction.income.toLocaleString()}
+          </div>
+        )}
+        {transaction && (
+          <div style={{ fontSize: '0.7rem', color: 'red' }}>
+            -{transaction.outcome.toLocaleString()}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <div className="calendar-container">
+    <div>
       <DatePicker
         selected={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
+        onChange={handleDateChange}
         dateFormat="yyyy.MM.dd"
         inline
         locale={ko}
         maxDate={new Date()}
         renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-          <div className="flex justify-between items-center px-6 pb-4">
-            <button onClick={decreaseMonth}>&lt;</button>
+          <div className="flex justify-between items-center px-20 pb-4">
+            {/* 이전 달 버튼 */}
+            <button
+              onClick={decreaseMonth}
+              aria-label="이전 달"
+              className="text-primary-400"
+            >
+              ◀
+            </button>
+
+            {/* 가운데 월 표시 */}
             <span className="text-lg font-semibold">
               {date.toLocaleDateString('ko-KR', {
                 year: 'numeric',
                 month: 'long',
               })}
             </span>
-            <button onClick={increaseMonth}>&gt;</button>
+
+            {/* 다음 달 버튼 */}
+            <button
+              onClick={increaseMonth}
+              aria-label="다음 달"
+              className="text-primary-400"
+            >
+              ▶
+            </button>
           </div>
         )}
-        dayContents={dayContents} // dayContents 함수를 전달
+        renderDayContents={renderDayContents}
       />
     </div>
   )
