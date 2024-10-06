@@ -31,7 +31,7 @@ public class StoreService{
     private final StorePhotoRepository storePhotoRepository;
     private final ProductClient productClient;
 
-    @Value("${streat.internal-request}")  // "${}"로 수정
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
 
     /**
@@ -168,7 +168,9 @@ public class StoreService{
                     storePhotoSrc,
                     store.getStatus(),
                     categories,
-                    distance
+                    distance,
+                    store.getLatitude(),
+                    store.getLongitude()
             );
         }).collect(Collectors.toList());
     }
@@ -364,5 +366,14 @@ public class StoreService{
         double distance = R * c * 1000; // 거리 (단위: m)
 
         return (int) distance;
+    }
+
+    @Transactional
+    public void updateStoreStatus(String token, StoreStatus status) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token으로 userId 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        store.changeStatus(status);  // 상태 변경 메서드 호출
+        storeRepository.save(store); // 변경된 상태를 저장
     }
 }

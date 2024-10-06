@@ -68,6 +68,9 @@ public class Store {
     @JsonIgnore  // 순환 참조 방지
     private List<StoreLocationPhoto> storeLocationPhotos;
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoreSimpleLocation> simpleLocations;
+
     @ManyToOne
     @JoinColumn(name = "industry_category_id", nullable = false)
     @JsonIgnore  // 순환 참조 방지
@@ -139,5 +142,16 @@ public class Store {
 
     public Integer getStoreId() {
         return this.id;
+    }
+
+    public void updateLocationAndStatus(String address, Double latitude, Double longitude, String open) {
+
+    }
+
+    public void changeStatus(StoreStatus status) {
+        if (status == null) {
+            throw new BusinessException(ErrorCode.STORE_STATUS_NULL);
+        }
+        this.status = status;
     }
 }
