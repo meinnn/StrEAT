@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -23,7 +24,14 @@ public class IndustryCategory {
     private String name;  // 업종명
 
     @OneToMany(mappedBy = "industryCategory", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Store> stores;
+
+    public void removeStore(Store store) {
+        if (this.stores != null) {
+            this.stores.remove(store);  // stores 리스트에서 해당 store 삭제
+        }
+    }
 
     public void changeName(String newName) {
         if (newName == null || newName.isEmpty()) {

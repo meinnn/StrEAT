@@ -29,41 +29,30 @@ public class IndustryCategoryController {
      */
     @PostMapping
     @Operation(summary = "IndustryCategory 생성")
-    public ResponseEntity<MessageResponse> createIndustryCategory(@RequestBody CreateIndustryCategoryDTO createDTO) {
-        industryCategoryService.createIndustryCategory(createDTO);
+    public ResponseEntity<MessageResponse> createIndustryCategory(@RequestHeader("Authorization") String token, @RequestBody CreateIndustryCategoryDTO createDTO) {
+        industryCategoryService.createIndustryCategory(token, createDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageResponse.of("IndustryCategory 생성 성공"));
     }
 
     /**
-     * IndustryCategory 조회 (단건)
+     * IndustryCategory 조회 (storeId 기반)
      */
-    @GetMapping("/{id}")
-    @Operation(summary = "IndustryCategory 단일 조회")
-    public ResponseEntity<DataResponse<ReadIndustryCategoryDTO>> getIndustryCategoryById(@PathVariable Integer id) {
-        ReadIndustryCategoryDTO industryCategory = industryCategoryService.getIndustryCategoryById(id);
+    @GetMapping("/{storeId}")
+    @Operation(summary = "storeId를 통한 IndustryCategory 조회")
+    public ResponseEntity<DataResponse<ReadIndustryCategoryDTO>> getIndustryCategoryByStoreId(@PathVariable Integer storeId) {
+        ReadIndustryCategoryDTO industryCategory = industryCategoryService.getIndustryCategoryByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("IndustryCategory 조회 성공", industryCategory));
     }
 
     /**
-     * IndustryCategory 전체 조회
-     */
-    @GetMapping
-    @Operation(summary = "IndustryCategory 전체 조회")
-    public ResponseEntity<DataResponse<List<ReadIndustryCategoryDTO>>> getAllIndustryCategories() {
-        List<ReadIndustryCategoryDTO> industryCategories = industryCategoryService.getAllIndustryCategories();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(DataResponse.of("IndustryCategory 전체 조회 성공", industryCategories));
-    }
-
-    /**
      * IndustryCategory 수정
      */
-    @PutMapping("/{id}")
+    @PutMapping
     @Operation(summary = "IndustryCategory 수정")
-    public ResponseEntity<MessageResponse> updateIndustryCategory(@PathVariable Integer id, @RequestBody UpdateIndustryCategoryDTO updateDTO) {
-        industryCategoryService.updateIndustryCategory(id, updateDTO);
+    public ResponseEntity<MessageResponse> updateIndustryCategory(@RequestHeader("Authorization") String token, @RequestBody UpdateIndustryCategoryDTO updateDTO) {
+        industryCategoryService.updateIndustryCategory(token, updateDTO);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("IndustryCategory 수정 성공"));
     }
@@ -71,10 +60,10 @@ public class IndustryCategoryController {
     /**
      * IndustryCategory 삭제
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @Operation(summary = "IndustryCategory 삭제")
-    public ResponseEntity<MessageResponse> deleteIndustryCategory(@PathVariable Integer id) {
-        industryCategoryService.deleteIndustryCategory(id);
+    public ResponseEntity<MessageResponse> deleteIndustryCategory(@RequestHeader("Authorization") String token) {
+        industryCategoryService.deleteIndustryCategory(token);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("IndustryCategory 삭제 성공"));
     }

@@ -11,17 +11,13 @@ import java.time.LocalDateTime;
 
 @Schema(description = "StoreLocationPhoto 생성 DTO")
 public record CreateStoreLocationPhotoDTO(
-        @Schema(description = "가게 ID", example = "1")
-        @NotNull(message = "가게 ID는 필수 입력 항목입니다.")
-        Integer storeId,
-
         @Schema(description = "위도", example = "37.5665")
         @NotEmpty(message = "위도는 필수 입력 항목입니다.")
-        String latitude,
+        Double latitude,
 
         @Schema(description = "경도", example = "126.9780")
         @NotEmpty(message = "경도는 필수 입력 항목입니다.")
-        String longitude,
+        Double longitude,
 
         @Schema(description = "이미지 파일", example = "사진")
         @NotNull(message = "이미지 파일은 필수 입력 항목입니다.")
@@ -29,7 +25,7 @@ public record CreateStoreLocationPhotoDTO(
 ) {
     public StoreLocationPhoto toEntity(Store store, String imageUrl) {
         return StoreLocationPhoto.builder()
-                .store(store)
+                .store(store)  // store를 엔티티에 설정
                 .latitude(this.latitude)
                 .longitude(this.longitude)
                 .src(imageUrl)  // S3에서 업로드된 이미지 URL 사용

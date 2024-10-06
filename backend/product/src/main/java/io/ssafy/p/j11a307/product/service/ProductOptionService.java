@@ -13,10 +13,13 @@ import io.ssafy.p.j11a307.product.repository.ProductRepository;
 import io.ssafy.p.j11a307.product.repository.ProductOptionCategoryRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,11 +29,39 @@ public class ProductOptionService {
     private final ProductOptionRepository productOptionRepository;
     private final ProductRepository productRepository;
     private final ProductOptionCategoryRepository productOptionCategoryRepository;
+    private final StoreClient storeClient;
+    private final OwnerClient ownerClient;
+
+    @Value("${streat.internal-request}")
+    private String internalRequestKey;
+
+    private Integer getStoreIdByToken(String token) {
+        // token을 통해 userId 조회
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND); // 유저가 없을 때 예외 처리
+        }
+
+        // userId로 storeId 조회 (StoreClient 사용)
+        Integer storeId = storeClient.getStoreIdByUserId(userId);
+        if (storeId == null) {
+            throw new BusinessException(ErrorCode.STORE_NOT_FOUND); // storeId를 찾을 수 없을 때 예외 처리
+        }
+
+        return storeId;
+    }
+
 
     @Transactional
-    public void createProductOption(CreateProductOptionDTO createProductOption) {
+    public void createProductOption(String token, CreateProductOptionDTO createProductOption) {
+        Integer storeId = getStoreIdByToken(token);
+
         Product product = productRepository.findById(createProductOption.productId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (!product.getStoreId().equals(storeId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
 
         ProductOptionCategory productOptionCategory = productOptionCategoryRepository.findById(createProductOption.productOptionCategoryId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
@@ -53,12 +84,18 @@ public class ProductOptionService {
     }
 
     @Transactional
-    public void updateProductOption(Integer productOptionId, UpdateProductOptionDTO updateProductOption) {
+    public void updateProductOption(String token, Integer productOptionId, UpdateProductOptionDTO updateProductOption) {
+        Integer storeId = getStoreIdByToken(token);
+
         ProductOption productOption = productOptionRepository.findById(productOptionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
 
         Product product = productRepository.findById(updateProductOption.productId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (!product.getStoreId().equals(storeId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
 
         ProductOptionCategory productOptionCategory = productOptionCategoryRepository.findById(updateProductOption.productOptionCategoryId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
@@ -69,10 +106,59 @@ public class ProductOptionService {
     }
 
     @Transactional
-    public void deleteProductOption(Integer productOptionId) {
+    public void deleteProductOption(String token, Integer productOptionId) {
+        Integer storeId = getStoreIdByToken(token);
         ProductOption productOption = productOptionRepository.findById(productOptionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
 
+        if (!productOption.getProduct().getStoreId().equals(storeId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         productOptionRepository.delete(productOption);
+    }
+
+    @Transactional
+    public Integer sumProductOption(List<Integer> optionList) {
+        int sum = 0;
+
+        for (Integer optionId : optionList) {
+            //해당 옵션이 겨냥한 상품에 대한 옵션이 아니면 에러
+            Optional<ProductOption> productOption = productOptionRepository.findById(optionId);
+
+            if(productOption.isPresent()) sum += productOption.get().getProductOptionPrice();
+            else throw new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND);
+        }
+
+        return sum;
+    }
+
+    @Transactional
+    public List<ReadProductOptionDTO> getProductOptionList(List<Integer> optionList) {
+        List<ReadProductOptionDTO> readProductOptionDTOs = new ArrayList<>();
+
+        for(Integer optionId : optionList) {
+            //해당 옵션이 겨냥한 상품에 대한 옵션이 아니면 에러
+            Optional<ProductOption> productOption = productOptionRepository.findById(optionId);
+
+            if(productOption.isPresent()) {
+                ReadProductOptionDTO readProductOptionDTO = new ReadProductOptionDTO(productOption.get());
+                readProductOptionDTOs.add(readProductOptionDTO);
+            }
+            else throw new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND);
+
+        }
+
+        return readProductOptionDTOs;
+    }
+
+    @Transactional
+    public List<ReadProductOptionDTO> getProductOptionListByProductId(Integer productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        List<ReadProductOptionDTO> readProductOptionDTOs = new ArrayList<>();
+
+        if(product.isPresent()) readProductOptionDTOs = productOptionRepository.findAllByProduct(product.get());
+
+        return readProductOptionDTOs;
     }
 }
