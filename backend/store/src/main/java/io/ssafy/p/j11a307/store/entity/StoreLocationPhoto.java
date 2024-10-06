@@ -21,6 +21,11 @@ public class StoreLocationPhoto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @ManyToOne(fetch = FetchType.LAZY) // N:1 관계 설정
+    @JoinColumn(name = "location_id", nullable = true)
+    @JsonIgnore
+    private StoreSimpleLocation storeSimpleLocation;
+
     @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     @JsonIgnore

@@ -3,6 +3,8 @@ package io.ssafy.p.j11a307.store.controller;
 import io.ssafy.p.j11a307.store.dto.CreateStorePhotoDTO;
 import io.ssafy.p.j11a307.store.dto.ReadStorePhotoDTO;
 import io.ssafy.p.j11a307.store.dto.UpdateStorePhotoDTO;
+import io.ssafy.p.j11a307.store.exception.BusinessException;
+import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import io.ssafy.p.j11a307.store.global.DataResponse;
 import io.ssafy.p.j11a307.store.global.MessageResponse;
 import io.ssafy.p.j11a307.store.service.StorePhotoService;
@@ -33,19 +35,22 @@ public class StorePhotoController {
     @Operation(summary = "StorePhoto 생성 (이미지 파일 업로드)")
     public ResponseEntity<MessageResponse> createStorePhoto(
             @RequestHeader("Authorization") String token,  // 첫 번째로 token을 받음
-            @RequestPart("image") MultipartFile image){
+            @RequestPart("images") List<MultipartFile> images){
 
         // token을 통해 storeId를 조회
         Integer storeId = storePhotoService.getStoreIdByToken(token);
 
-        // CreateStorePhotoDTO 생성
-        CreateStorePhotoDTO createStorePhotoDTO = new CreateStorePhotoDTO(storeId, image);
+        // 각 이미지를 처리하여 StorePhoto 생성
+        for (MultipartFile image : images) {
+            // CreateStorePhotoDTO 생성
+            CreateStorePhotoDTO createStorePhotoDTO = new CreateStorePhotoDTO(storeId, images);
 
-        // StorePhoto 생성 서비스 호출
-        storePhotoService.createStorePhoto(token, image);
+            // StorePhoto 생성 서비스 호출
+            storePhotoService.createStorePhotos(token, images);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(MessageResponse.of("StorePhoto 생성 성공"));
+                .body(MessageResponse.of("StorePhoto 여러 개 생성 성공"));
     }
 
     /**
@@ -78,18 +83,19 @@ public class StorePhotoController {
     public ResponseEntity<MessageResponse> updateStorePhoto(
             @RequestHeader("Authorization") String token,  // 첫 번째로 token을 받음
             @PathVariable Integer id,
-            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+            @RequestPart(value = "images") MultipartFile image) {
 
-        // UpdateStorePhotoDTO 생성
-        UpdateStorePhotoDTO updateStorePhotoDTO = new UpdateStorePhotoDTO(image);
+        // 이미지 파일이 제공되지 않으면 오류 처리
+        if (image == null || image.isEmpty()) {
+            throw new BusinessException(ErrorCode.STORE_PHOTO_NULL);
+        }
 
         // StorePhoto 수정 서비스 호출
-        storePhotoService.updateStorePhoto(token, id, updateStorePhotoDTO, image);
+        storePhotoService.updateStorePhoto(token, id, image);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("StorePhoto 수정 성공"));
     }
-
     /**
      * StorePhoto 삭제
      */

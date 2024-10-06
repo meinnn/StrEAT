@@ -7,9 +7,9 @@ import java.util.Map;
 
 @Builder
 @Getter
-public class FcmOrderStatusChangeAlert implements FcmAlertData {
+public class FcmStoreOpenAlert implements FcmAlertData {
 
-    private String orderId;
+    private String storeId;
     private String storeName;
     private String createdAt;
     private AlertType alertType;
@@ -27,7 +27,7 @@ public class FcmOrderStatusChangeAlert implements FcmAlertData {
     @Override
     public Map<String, String> getData() {
         return Map.of(
-                "orderId", orderId,
+                "storeId", storeId,
                 "storeName", storeName,
                 "createdAt", createdAt
         );
