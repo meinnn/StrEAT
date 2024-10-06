@@ -31,7 +31,7 @@ public class StoreService{
     private final StorePhotoRepository storePhotoRepository;
     private final ProductClient productClient;
 
-    @Value("${streat.internal-request}")  // "${}"로 수정
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
 
     /**
