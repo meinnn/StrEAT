@@ -28,16 +28,15 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND EXISTS (SELECT * FROM review r WHERE r.review_id = o.id)", nativeQuery = true)
     List<Orders> findByStoreIdAndHasReview(Integer storeId);
 
+    @Query(value="SELECT * FROM orders WHERE user_id = :userId AND (status= 'PROCESSING' OR STATUS= 'WAITING_FOR_RECEIPT')", nativeQuery = true)
+    List<Orders> findByUserIdAndOngoing(Integer userId);
+
     Page<Orders> findByStoreIdAndStatusInAndPaymentMethodIn(Integer storeId, List<OrderCode> status, List<PayTypeCode> paymentMethod, Pageable pageable);
     Page<Orders> findByStoreIdAndStatusIn(Integer storeId,List<OrderCode> status, Pageable pageable);
     Page<Orders> findByStoreIdAndPaymentMethodIn(Integer storeId,List<PayTypeCode> paymentMethod, Pageable pageable);
-
     Page<Orders> findByStoreIdAndStatusInAndPaymentMethodInAndCreatedAtBetween(Integer storeId,List<OrderCode> status, List<PayTypeCode> paymentMethod, LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
     Page<Orders> findByStoreIdAndStatusInAndCreatedAtBetween(Integer storeId,List<OrderCode> status, LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
-
     Page<Orders> findByStoreIdAndPaymentMethodInAndCreatedAtBetween(Integer storeId,List<PayTypeCode> paymentMethod, LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
-
     Page<Orders> findByStoreIdAndCreatedAtBetween(Integer storeId,LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
-
     Page<Orders> findAllByStoreId(Integer storeId, Pageable pageable);
 }

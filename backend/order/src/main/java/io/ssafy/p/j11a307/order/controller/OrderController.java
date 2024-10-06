@@ -119,9 +119,6 @@ public class OrderController {
     }
 
 
-    //대기 팀 조회(대기 팀, 대기 메뉴 개수)
-
-
     @PostMapping("/{storeId}/search")
     @Operation(summary = "주문 내역 검색", description = "검색어와 태그, 날짜에 따른 검색 결과 반환")
     @ApiResponses(value = {
@@ -139,10 +136,28 @@ public class OrderController {
                 .body(DataResponse.of("주문 내역 검색에 성공했습니다.", orderSearchResponse));
     }
 
+    //현재 진행중인 주문 내역 조회
+    @GetMapping("/mine/list/ongoing")
+    @Operation(summary = "진행중인 내 주문 내역 조회", description = "내 주문 내역 중 진행중인 주문 목록 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "진행중인 내 주문 내역 조회 성공"),
+    })
+     public ResponseEntity<DataResponse<GetMyOngoingOrderDTO>> getMyOngoingOrder(@RequestHeader("Authorization") String token) {
 
-    //주문 취소
+        GetMyOngoingOrderDTO getMyOngoingOrderDTO = orderService.getMyOngoingOrder(token);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("진행중인 내 주문 내역 조회에 성공했습니다.", getMyOngoingOrderDTO));
+    }
+
+
+
+
+        //주문 취소
+
     //NFC 태그 후 손님의 가장 최근 주문번호 조회
 
+    //대기 팀 조회(대기 팀, 대기 메뉴 개수)
 
     //NFC 태그 후 수령 완료하기
 

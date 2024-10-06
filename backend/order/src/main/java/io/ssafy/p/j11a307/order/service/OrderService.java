@@ -395,4 +395,31 @@ public class OrderService {
 
         return orderSearchResponse;
     }
+
+    @Transactional
+    public GetMyOngoingOrderDTO getMyOngoingOrder(String token) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        //주문 상태가 PROCESSING, WAITING_FOR_RECEIPT인 목록들 보내줌
+        List<Orders> ordersList = ordersRepository.findByUserIdAndOngoing(customerId);
+        List<GetMyOngoingOrderDetailDTO> orderDetailList = new ArrayList<>();
+
+        for(Orders order : ordersList) {
+            ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(order.getStoreId()).getData();
+
+            GetMyOngoingOrderDetailDTO getMyOngoingOrderDetailDTO = GetMyOngoingOrderDetailDTO.builder()
+                    .ordersId(order.getId())
+                    .status(order.getStatus())
+                    .storeName(readStoreDTO.name())
+                    .build();
+
+            orderDetailList.add(getMyOngoingOrderDetailDTO);
+        }
+
+        GetMyOngoingOrderDTO getMyOngoingOrderDTO = GetMyOngoingOrderDTO.builder()
+                .orderList(orderDetailList)
+                .build();
+
+        return getMyOngoingOrderDTO;
+    }
 }
