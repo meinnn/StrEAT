@@ -38,7 +38,7 @@ public class AlertController {
             // MSA 내부 접속이 아닌 경우 에러 발생
             throw new BusinessException(ErrorCode.BAD_REQUEST);
         }
-
+        alertService.sendOpenStoreAlert(storeId, storeName, AlertType.OPEN_STORE);
     }
 
     @PostMapping("/dibs/{storeId}")
