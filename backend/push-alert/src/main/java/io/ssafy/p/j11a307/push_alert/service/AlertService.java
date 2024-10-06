@@ -28,11 +28,10 @@ public class AlertService {
 
     public void sendOrderStatusChangeAlert(Integer customerId, Integer orderId, String storeName, AlertType alertType) {
         String customerFcmToken = userService.getFcmTokenByUserId(customerId, internalRequestKey);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
         FcmAlertData data = FcmOrderStatusChangeAlert.builder()
                 .orderId(String.valueOf(orderId))
                 .storeName(storeName)
-                .createdAt(simpleDateFormat.format(new Date()))
+                .createdAt(convertDateFormat(new Date()))
                 .alertType(alertType)
                 .build();
         Notification notification = Notification.builder()
@@ -44,12 +43,11 @@ public class AlertService {
     }
 
     public void sendOpenStoreAlert(Integer storeId, String storeName, AlertType alertType) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
         String topic = TOPIC_STORE_PREFIX + storeId;
         FcmAlertData fcmAlertData = FcmStoreOpenAlert.builder()
                 .storeId(String.valueOf(storeId))
                 .storeName(storeName)
-                .createdAt(simpleDateFormat.format(new Date()))
+                .createdAt(convertDateFormat(new Date()))
                 .alertType(alertType)
                 .build();
         Notification notification = Notification.builder()
@@ -67,5 +65,10 @@ public class AlertService {
     public void unsubscribeFromStore(Integer userId, Integer storeId) {
         String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
         firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
+    }
+
+    private String convertDateFormat(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
+        return simpleDateFormat.format(date);
     }
 }
