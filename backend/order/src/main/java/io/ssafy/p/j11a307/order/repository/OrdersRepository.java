@@ -19,6 +19,9 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status = :status1 OR o.status = :status2)", nativeQuery = true)
     Page<Orders> findByStoreId(Integer storeId, String status1,String status2, Pageable pageable);
 
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status = :status1 OR o.status = :status2)", nativeQuery = true)
+    List<Orders> findByStoreId(Integer storeId, String status1,String status2);
+
     @Query(value = "SELECT * FROM orders o WHERE o.user_id = :userId AND EXISTS (SELECT * FROM review r WHERE r.review_id = o.id)", nativeQuery = true)
     Page<Orders> findByUserIdAndHasReview(Integer userId, Pageable pageable);
 

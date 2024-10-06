@@ -422,4 +422,22 @@ public class OrderService {
 
         return getMyOngoingOrderDTO;
     }
+
+    @Transactional
+    public GetStoreWaitingDTO getStoreWaiting(Integer storeId) {
+        List<Orders> orders = ordersRepository.findByStoreId(storeId, "WAITING_FOR_PROCESSING", "PROCESSING");
+
+        int menuTotal = 0;
+
+        for(Orders order : orders) {
+            menuTotal += orderProductRepository.findByOrdersId(order).stream().mapToInt(OrderProduct::getCount).sum();
+        }
+
+        GetStoreWaitingDTO getStoreWaitingDTO = GetStoreWaitingDTO.builder()
+                .waitingMenu(menuTotal)
+                .waitingTeam(orders.size())
+                .build();
+
+        return getStoreWaitingDTO;
+    }
 }
