@@ -18,7 +18,12 @@ public enum ErrorCode {
     STORE_LOCATION_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 위치 사진이 없습니다."),
     STORE_LOCATION_PHOTO_SRC_NULL(HttpStatus.BAD_REQUEST, "가게 위치 사진은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "사진 업로드에 실패하였습니다."),
-    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "해당하는 ID의 가게 간편 위치 정보가 없습니다."),
+    //Store Location
+    LOCATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
+    UNAUTHORIZED_USER(HttpStatus.BAD_REQUEST, "간편 위치 저장 정보를 지울 권한이 없습니다."),
+    //Store Simple Location
+    STORE_SIMPLE_PHOTO_NULL(HttpStatus.BAD_REQUEST, "가게 위치 사진은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     // User
     INVALID_USER(HttpStatus.BAD_REQUEST, "해당하는 ID의 유저가 없습니다."),
 
