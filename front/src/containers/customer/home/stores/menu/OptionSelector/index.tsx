@@ -2,14 +2,18 @@ import { useState } from 'react'
 import Checkbox from '@/components/Checkbox'
 import RadioButton from '@/components/RadioButton'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
-import { OptionCategory } from '@/types/menu'
+import {
+  CartOptionCategory,
+  OptionCategory,
+  OptionCategoryItem,
+} from '@/types/menu'
 
 interface OptionSelectorProps {
-  category: OptionCategory
-  selectedOptions: Record<number, number[]>
+  category: OptionCategory | CartOptionCategory
+  selectedOptions: Record<number, OptionCategoryItem[]> // 변경된 타입
   handleOptionChange: (
     categoryId: number,
-    optionId: number,
+    option: OptionCategoryItem,
     maxSelect: number
   ) => void
   type: 'default' | 'change'
@@ -28,6 +32,10 @@ export default function OptionSelector({
       setAccordionOpen((prev) => !prev)
     }
   }
+
+  const selectedOptionNames = selectedOptions[category.id]
+    ?.map((option) => option.productOptionName)
+    .join(', ')
 
   return (
     <div
@@ -64,10 +72,8 @@ export default function OptionSelector({
       </div>
 
       {/* 선택된 옵션 표시 */}
-      {type === 'change' && selectedOptions[category.id]?.length > 0 && (
-        <p className="text-sm text-gray-dark">
-          {selectedOptions[category.id].join(', ')}
-        </p>
+      {type === 'change' && (
+        <p className="text-sm text-gray-dark">{selectedOptionNames}</p>
       )}
 
       {/* 아코디언 내용: type이 change일 때만 접힘 */}
@@ -90,14 +96,10 @@ export default function OptionSelector({
                 <Checkbox
                   key={option.id}
                   onChange={() =>
-                    handleOptionChange(
-                      category.id,
-                      option.id,
-                      category.maxSelect
-                    )
+                    handleOptionChange(category.id, option, category.maxSelect)
                   }
                   checked={
-                    selectedOptions[category.id]?.includes(option.id) || false
+                    selectedOptions[category.id]?.includes(option) || false
                   }
                   id={`option-${option.id}`}
                   label={`${option.productOptionName}${option.productOptionPrice > 0 ? ` (+${option.productOptionPrice.toLocaleString()}원)` : ''}`}
@@ -107,14 +109,10 @@ export default function OptionSelector({
                 <RadioButton
                   key={option.id}
                   onChange={() =>
-                    handleOptionChange(
-                      category.id,
-                      option.id,
-                      category.maxSelect
-                    )
+                    handleOptionChange(category.id, option, category.maxSelect)
                   }
                   checked={
-                    selectedOptions[category.id]?.includes(option.id) || false
+                    selectedOptions[category.id]?.includes(option) || false
                   }
                   id={`option-${option.id}`}
                   name={`option-${category.id}`}

@@ -1,119 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import StoreLink from '@/components/StoreLink'
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { CartMenu } from '@/types/menu'
 import CartItem from '@/containers/customer/home/cart/CartItem'
 import CartSkeletonPage from '@/components/skeleton/CartSkeleton'
-
-interface BasketItem {
-  basketId: number
-  productId: number
-  productName: string
-  productSrc: string | null
-  quantity: number
-  price: number
-  optionNameList: string[]
-}
-
-interface CartResponseData {
-  storeId: number
-  storeName: string
-  storeSrc: string
-  basketList: BasketItem[]
-  totalPageCount: number
-  totalDataCount: number
-}
-
-async function fetchCartItems({
-  pageParam = 0,
-}: {
-  pageParam: number
-}): Promise<CartResponseData> {
-  const response = await fetch(`/services/cart/list?page=${pageParam}`)
-  if (!response.ok) {
-    throw new Error('Failed to fetch cart items')
-  }
-  const result = await response.json()
-
-  const updatedBasketList = result.data.basketList.map((item: BasketItem) => ({
-    ...item,
-    checked: true,
-  }))
-
-  return {
-    ...result.data,
-    basketList: updatedBasketList,
-  }
-}
+import { useCart } from '@/contexts/CartContext'
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartMenu[]>([]) // cartItems 상태 추가
-
   const {
-    data,
+    cartItems,
+    cartStore,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    status,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ['cartItems'],
-    queryFn: fetchCartItems,
-    getNextPageParam: (lastPage, pages) => {
-      return pages.length < lastPage.totalPageCount ? pages.length : undefined
-    },
-    initialPageParam: 0,
-  })
-
-  // 데이터가 변경될 때마다 cartItems 업데이트
-  useEffect(() => {
-    if (data) {
-      const allItems = data.pages.flatMap((page) => page.basketList)
-      const cartMenus: CartMenu[] = allItems.map((item) => ({
-        cartId: item.basketId,
-        id: item.productId,
-        storeId: data.pages[0].storeId,
-        name: item.productName,
-        image: item.productSrc || '/images/default_img.jpg',
-        quantity: item.quantity,
-        optionNameList: item.optionNameList,
-        price: item.price,
-        checked: true,
-        optionCategories: [], // Option categories는 초기값으로 빈 배열
-      }))
-      setCartItems(cartMenus)
-    }
-  }, [data])
-
-  // 체크박스 상태 업데이트 로직
-  const handleItemCheck = (id: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.cartId === id ? { ...item, checked: !item.checked } : item
-      )
-    )
-  }
-
-  // 아이템 제거 로직
-  const handleRemoveItem = async (id: number) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.cartId !== id))
-
-    try {
-      const response = await fetch(`/services/cart/item/${id}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        return new Error('Failed to delete cart item')
-      }
-    } catch (err) {
-      console.error('Error adding item to cart:', error)
-    }
-    return () => {}
-  }
+    handleItemCheck,
+    handleRemoveItem,
+  } = useCart()
 
   const totalPrice =
     cartItems
@@ -122,8 +24,7 @@ export default function CartPage() {
 
   const totalQuantity = cartItems.filter((item) => item.checked).length ?? 0
 
-  if (status === 'pending') return <CartSkeletonPage />
-  if (status === 'error') return <p>Error: {error.message}</p>
+  if (!cartItems.length) return <CartSkeletonPage />
 
   return (
     <div
@@ -132,15 +33,15 @@ export default function CartPage() {
       onScroll={(e) => {
         const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
         if (scrollHeight - scrollTop === clientHeight && hasNextPage) {
-          fetchNextPage().then()
+          fetchNextPage()
         }
       }}
     >
       <div>
         <StoreLink
-          storeId={1}
-          storeName={data?.pages[0]?.storeName ?? ''}
-          storeSrc={data?.pages[0]?.storeSrc ?? '/images/default_img.jpg'}
+          storeId={cartStore?.storeId || 1}
+          storeName={cartStore?.storeName || ''}
+          storeSrc={cartStore?.storeSrc || '/images/default_img.jpg'}
         />
 
         {cartItems.map((item) => (

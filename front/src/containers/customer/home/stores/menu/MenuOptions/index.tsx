@@ -1,62 +1,81 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { CartMenu, Menu } from '@/types/menu'
+import { useState } from 'react'
+import { CartMenu, Menu, OptionCategoryItem } from '@/types/menu'
 import { useRouter } from 'next/navigation'
 import OptionSelector from '@/containers/customer/home/stores/menu/OptionSelector'
 import QuantityControl from '@/containers/customer/home/stores/menu/QuantityControl'
+import { useCart } from '@/contexts/CartContext'
 
 interface MenuOptionsProps {
   type?: 'default' | 'change'
   menuInfo: Menu | CartMenu
+  closeDrawer?: () => void
 }
 
 export default function MenuOptions({
   type = 'default',
   menuInfo,
+  closeDrawer,
 }: MenuOptionsProps) {
-  const router = useRouter()
+  const { reloadCartItems } = useCart()
 
   const initialQuantity = 'quantity' in menuInfo ? menuInfo.quantity : 1
+  // 초기 선택된 옵션 설정
+  const initialSelectedOptions = menuInfo.optionCategories.reduce(
+    (acc, category) => {
+      if (type === 'change') {
+        // 'change' 타입일 때 isSelected가 true인 옵션만 초기값으로 설정
+        const selectedOptionsInCategory = category.options.filter(
+          (option) => 'isSelected' in option && option.isSelected
+        )
+        if (selectedOptionsInCategory.length > 0) {
+          acc[category.id] = selectedOptionsInCategory
+        }
+      } else if (category.maxSelect === 1 && category.options.length > 0) {
+        // 'default' 타입일 때, maxSelect가 1인 경우 첫 번째 옵션을 선택
+        acc[category.id] = [category.options[0]]
+      }
+      return acc
+    },
+    {} as Record<number, OptionCategoryItem[]>
+  )
+
   const [selectedOptions, setSelectedOptions] = useState<
-    Record<number, number[]>
-  >({})
+    Record<number, OptionCategoryItem[]>
+  >(initialSelectedOptions)
   const [quantity, setQuantity] = useState(initialQuantity)
   const [showAlert, setShowAlert] = useState(false)
 
-  useEffect(() => {
-    const initialSelections: Record<number, number[]> = {}
-    menuInfo.optionCategories.forEach((category) => {
-      if (category.maxSelect === 1 && category.options.length > 0) {
-        initialSelections[category.id] = [category.options[0].id]
-      }
-    })
-    setSelectedOptions(initialSelections)
-  }, [menuInfo])
+  const router = useRouter()
 
   const handleOptionChange = (
     categoryId: number,
-    optionId: number,
+    option: OptionCategoryItem,
     maxSelect: number
   ) => {
     setSelectedOptions((prev) => {
       const currentSelections = prev[categoryId] || []
 
       if (maxSelect === 1) {
-        return { ...prev, [categoryId]: [optionId] }
+        return { ...prev, [categoryId]: [option] }
       }
 
-      if (currentSelections.includes(optionId)) {
+      if (
+        currentSelections.some(
+          (selectedOption) => selectedOption.id === option.id
+        )
+      ) {
         return {
           ...prev,
           [categoryId]: currentSelections.filter(
-            (selectedOption) => selectedOption !== optionId
+            (selectedOption) => selectedOption.id !== option.id
           ),
         }
       }
 
       if (currentSelections.length < maxSelect) {
-        return { ...prev, [categoryId]: [...currentSelections, optionId] }
+        return { ...prev, [categoryId]: [...currentSelections, option] }
       }
 
       return prev
@@ -79,8 +98,11 @@ export default function MenuOptions({
       return
     }
 
-    const selectedOptionIds = Object.values(selectedOptions).flat()
+    const selectedOptionIds = Object.values(selectedOptions)
+      .flat()
+      .map((option) => option.id)
     if (type === 'default') {
+      // 장바구니 담기
       const response = await fetch(`/services/cart/item/${menuInfo.id}`, {
         method: 'POST',
         headers: {
@@ -95,16 +117,37 @@ export default function MenuOptions({
       if (!response.ok) {
         throw new Error('Failed to add to cart')
       }
+      reloadCartItems()
       router.push(`/customer/stores/${menuInfo.storeId}`)
+    } else if ('cartId' in menuInfo) {
+      // 장바구니 변경하기
+      const response = await fetch(`/services/cart/item/${menuInfo.cartId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          optionList: selectedOptionIds, // selectedOptions의 id들
+          quantity, // 수량
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update cart item')
+      }
+      if (closeDrawer) {
+        reloadCartItems()
+        closeDrawer()
+      }
     }
   }
 
   const totalOptionPrice = menuInfo.optionCategories.reduce(
     (total, category) => {
-      const selectedOptionIds = selectedOptions[category.id] || []
-      const selectedOptionPrices = category.options
-        .filter((option) => selectedOptionIds.includes(option.id))
-        .map((option) => option.productOptionPrice)
+      const selectedOptionItems = selectedOptions[category.id] || []
+      const selectedOptionPrices = selectedOptionItems.map(
+        (option) => option.productOptionPrice
+      )
       return total + selectedOptionPrices.reduce((sum, price) => sum + price, 0)
     },
     0

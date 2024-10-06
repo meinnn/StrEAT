@@ -24,7 +24,7 @@ export default function OngoingOrder() {
   }
 
   return (
-    <div className="m-6 p-6 fixed top-0 inset-x-0 z-50 bg-white shadow-lg rounded-lg">
+    <div className="m-6 p-6 fixed top-0 inset-x-0 z-[300] bg-white shadow-lg rounded-lg">
       {/* 닫기 버튼 */}
       <button
         type="button"

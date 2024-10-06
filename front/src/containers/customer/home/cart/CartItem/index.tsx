@@ -1,11 +1,14 @@
 import Checkbox from '@/components/Checkbox'
 import { IoCloseOutline } from 'react-icons/io5'
 import Image from 'next/image'
-import { CartMenu, OptionCategory } from '@/types/menu'
-import { useState } from 'react'
+import {
+  CartMenu,
+  CartOptionCategory,
+  CartOptionCategoryItem,
+} from '@/types/menu'
+import { useEffect, useState } from 'react'
 import Drawer from '@/components/Drawer'
 import MenuOptions from '@/containers/customer/home/stores/menu/MenuOptions'
-import OrderMenuDetail from '@/components/OrderMenuDetail'
 
 interface CartItemProps {
   item: CartMenu
@@ -13,7 +16,7 @@ interface CartItemProps {
   onRemove: (id: number) => void
 }
 
-interface OptionResponseData {
+interface OptionResponse {
   optionId: number
   optionName: string
   optionPrice: number
@@ -25,12 +28,16 @@ interface OptionResponseData {
   maxSelectCategory: number
 }
 
-interface CartDetailResponseData {
+interface OptionCategoryResponse {
+  [key: string]: OptionResponse[]
+}
+
+interface CartDetailResponse {
   basketId: number
   productName: string
   productPrice: number
   stockStatus: boolean
-  getBasketOptionDetailDTOs: OptionResponseData[]
+  getBasketOptionDetailMap: OptionCategoryResponse
 }
 
 async function fetchCartDetails(cartId: number) {
@@ -39,32 +46,36 @@ async function fetchCartDetails(cartId: number) {
     throw new Error('Failed to fetch menu details')
   }
 
-  const result: CartDetailResponseData = await response.json()
+  const result: CartDetailResponse = await response.json()
 
   // optionCategory 추출
-  const updatedOptionCategories: OptionCategory[] =
-    result.getBasketOptionDetailDTOs.map((option) => ({
-      id: option.optionCategoryId,
-      productId: cartId,
-      name: option.optionCategoryName,
-      isEssential: option.isEssentialCategory,
-      minSelect: option.minSelectCategory,
-      maxSelect: option.maxSelectCategory,
-      options: [
-        {
-          id: option.optionId,
-          productId: cartId,
-          productOptionCategoryId: option.optionCategoryId,
-          productOptionName: option.optionName,
-          productOptionPrice: option.optionPrice,
-        },
-      ],
-      selectedOption: option.optionName,
+  const updatedOptionCategories: CartOptionCategory[] = Object.keys(
+    result.getBasketOptionDetailMap
+  ).map((categoryId) => {
+    const options: CartOptionCategoryItem[] = result.getBasketOptionDetailMap[
+      categoryId
+    ].map((option) => ({
+      id: option.optionId,
+      productOptionName: option.optionName,
+      productOptionPrice: option.optionPrice,
+      isSelected: option.isSelected,
     }))
 
+    // 같은 카테고리의 첫 번째 옵션을 기준으로 카테고리 정보 추출
+    const firstOption = result.getBasketOptionDetailMap[categoryId][0]
+
+    return {
+      id: firstOption.optionCategoryId,
+      name: firstOption.optionCategoryName,
+      isEssential: firstOption.isEssentialCategory,
+      minSelect: firstOption.minSelectCategory,
+      maxSelect: firstOption.maxSelectCategory,
+      options,
+    }
+  })
+
   return {
-    ...result,
-    price: result.productPrice,
+    price: result.productPrice, // 원래 상품 가격으로 표시
     optionCategories: updatedOptionCategories,
   }
 }
@@ -73,19 +84,25 @@ export default function CartItem({ item, onCheck, onRemove }: CartItemProps) {
   const [showDrawer, setShowDrawer] = useState(false)
   const [menuDetails, setMenuDetails] = useState<CartMenu>(item)
 
-  const handleOptionChange = async () => {
-    try {
-      // fetchCartOptionCategories 호출해서 optionCategories 업데이트
-      const updatedMenuDetails = await fetchCartDetails(item.cartId)
-      console.log(updatedMenuDetails)
-      setMenuDetails((prevDetails) => ({
-        ...prevDetails,
-        ...updatedMenuDetails,
-      }))
-      setShowDrawer(true)
-    } catch (error) {
-      console.error('Failed to fetch option categories', error)
+  // 컴포넌트 렌더링 시점에 옵션 카테고리 미리 불러오기
+  useEffect(() => {
+    const loadOptionCategories = async () => {
+      try {
+        const updatedMenuDetails = await fetchCartDetails(item.cartId)
+        setMenuDetails((prevDetails) => ({
+          ...prevDetails,
+          ...updatedMenuDetails,
+        }))
+      } catch (error) {
+        console.error('Failed to fetch option categories', error)
+      }
     }
+
+    loadOptionCategories().then()
+  }, [item.cartId])
+
+  const handleOptionChangeButtonClick = () => {
+    setShowDrawer(true)
   }
 
   return (
@@ -131,7 +148,7 @@ export default function CartItem({ item, onCheck, onRemove }: CartItemProps) {
         <button
           type="button"
           className="p-3 py-1 text-primary-500 border border-primary-300 rounded-full text-xs w-20"
-          onClick={handleOptionChange}
+          onClick={handleOptionChangeButtonClick}
         >
           옵션 변경
         </button>
@@ -141,7 +158,11 @@ export default function CartItem({ item, onCheck, onRemove }: CartItemProps) {
       {showDrawer && (
         <Drawer title={item.name} onClose={() => setShowDrawer(false)}>
           <div className="mb-20">
-            <MenuOptions type="change" menuInfo={menuDetails} />
+            <MenuOptions
+              type="change"
+              menuInfo={menuDetails}
+              closeDrawer={() => setShowDrawer(false)}
+            />
           </div>
         </Drawer>
       )}

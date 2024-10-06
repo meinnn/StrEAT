@@ -39,7 +39,7 @@ export async function POST(
     const result = await response.json()
     return NextResponse.json(result, { status: 201 })
   } catch (error) {
-    console.error('Error fetching option category:', error)
+    console.error('Error adding cart item:', error)
     return NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 }
@@ -66,7 +66,6 @@ export async function DELETE(
         },
       }
     )
-    console.log(response)
 
     if (!response.ok) {
       return NextResponse.json(
@@ -77,7 +76,51 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Remove item successful' })
   } catch (error) {
-    console.error('Error fetching option category:', error)
+    console.error('Error removing cart item:', error)
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const token = await getAccessToken()
+  if (!token) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    const { optionList, quantity } = await request.json()
+
+    const response = await fetch(
+      `https://j11a307.p.ssafy.io/api/orders/${params.id}/basket`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          optionList,
+          quantity,
+        }),
+      }
+    )
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { message: 'Failed to patch menu to cart' },
+        { status: response.status }
+      )
+    }
+
+    return NextResponse.json({ message: 'Patch item successful' })
+  } catch (error) {
+    console.error('Error patching cart item:', error)
     return NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 }

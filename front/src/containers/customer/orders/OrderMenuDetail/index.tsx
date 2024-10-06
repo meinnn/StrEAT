@@ -2,7 +2,6 @@ import Image from 'next/image'
 import { ProductItem } from '@/types/order'
 
 export default function OrderMenuDetail({ item }: { item: ProductItem }) {
-  // 임시 type
   return (
     <div className="flex items-start space-x-4">
       <Image
