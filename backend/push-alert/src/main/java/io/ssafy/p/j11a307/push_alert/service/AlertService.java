@@ -1,7 +1,6 @@
 package io.ssafy.p.j11a307.push_alert.service;
 
 import com.google.firebase.messaging.Notification;
-import io.ssafy.p.j11a307.push_alert.dto.FcmNotification;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmOrderStatusChangeAlert;
@@ -29,16 +28,12 @@ public class AlertService {
 
     public void sendOrderStatusChangeAlert(Integer customerId, Integer orderId, String storeName, AlertType alertType) {
         String customerFcmToken = userService.getFcmTokenByUserId(customerId, internalRequestKey);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
         FcmAlertData data = FcmOrderStatusChangeAlert.builder()
                 .orderId(String.valueOf(orderId))
                 .storeName(storeName)
-                .createdAt(simpleDateFormat.format(new Date()))
+                .createdAt(convertDateFormat(new Date()))
                 .alertType(alertType)
                 .build();
-//        FcmNotification notification = FcmNotification.builder()
-//                .body(data.getMessage())
-//                .build();
         Notification notification = Notification.builder()
                 .setTitle(data.getTitle())
                 .setBody(data.getMessage())
@@ -48,12 +43,11 @@ public class AlertService {
     }
 
     public void sendOpenStoreAlert(Integer storeId, String storeName, AlertType alertType) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
         String topic = TOPIC_STORE_PREFIX + storeId;
         FcmAlertData fcmAlertData = FcmStoreOpenAlert.builder()
                 .storeId(String.valueOf(storeId))
                 .storeName(storeName)
-                .createdAt(simpleDateFormat.format(new Date()))
+                .createdAt(convertDateFormat(new Date()))
                 .alertType(alertType)
                 .build();
         Notification notification = Notification.builder()
@@ -63,13 +57,18 @@ public class AlertService {
         firebaseUtil.pushAlertTopic(fcmAlertData, topic, notification);
     }
 
-    public void subscribeTopic(Integer userId, Integer storeId) {
+    public void subscribeToStore(Integer userId, Integer storeId) {
         String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
         firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 
-    public void unsubscribeTopic(Integer userId, Integer storeId) {
+    public void unsubscribeFromStore(Integer userId, Integer storeId) {
         String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
         firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
+    }
+
+    private String convertDateFormat(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
+        return simpleDateFormat.format(date);
     }
 }
