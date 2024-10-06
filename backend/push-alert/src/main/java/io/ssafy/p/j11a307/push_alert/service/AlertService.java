@@ -46,11 +46,13 @@ public class AlertService {
         firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
     }
 
-    public void subscribeTopic(String token, Integer storeId) {
-        firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, token);
+    public void subscribeTopic(Integer userId, Integer storeId) {
+        String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 
-    public void unsubscribeTopic(String token, Integer storeId) {
-        firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, token);
+    public void unsubscribeTopic(Integer userId, Integer storeId) {
+        String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 }
