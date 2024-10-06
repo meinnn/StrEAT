@@ -87,7 +87,7 @@ public class AlertController {
         if (!internalRequestKey.equals(internalRequest)) {
             throw new BusinessException(ErrorCode.BAD_REQUEST);
         }
-        alertService.subscribeTopic(userId, storeId);
+        alertService.subscribeToStore(userId, storeId);
     }
 
     @DeleteMapping("/dibs/{storeId}")
@@ -109,6 +109,6 @@ public class AlertController {
         if (!internalRequestKey.equals(internalRequest)) {
             throw new BusinessException(ErrorCode.BAD_REQUEST);
         }
-        alertService.unsubscribeTopic(userId, storeId);
+        alertService.unsubscribeFromStore(userId, storeId);
     }
 }

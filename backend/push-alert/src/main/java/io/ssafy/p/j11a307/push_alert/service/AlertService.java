@@ -1,7 +1,6 @@
 package io.ssafy.p.j11a307.push_alert.service;
 
 import com.google.firebase.messaging.Notification;
-import io.ssafy.p.j11a307.push_alert.dto.FcmNotification;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmOrderStatusChangeAlert;
@@ -36,9 +35,6 @@ public class AlertService {
                 .createdAt(simpleDateFormat.format(new Date()))
                 .alertType(alertType)
                 .build();
-//        FcmNotification notification = FcmNotification.builder()
-//                .body(data.getMessage())
-//                .build();
         Notification notification = Notification.builder()
                 .setTitle(data.getTitle())
                 .setBody(data.getMessage())
@@ -63,12 +59,12 @@ public class AlertService {
         firebaseUtil.pushAlertTopic(fcmAlertData, topic, notification);
     }
 
-    public void subscribeTopic(Integer userId, Integer storeId) {
+    public void subscribeToStore(Integer userId, Integer storeId) {
         String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
         firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 
-    public void unsubscribeTopic(Integer userId, Integer storeId) {
+    public void unsubscribeFromStore(Integer userId, Integer storeId) {
         String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
         firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
