@@ -147,4 +147,11 @@ public class Store {
     public void updateLocationAndStatus(String address, Double latitude, Double longitude, String open) {
 
     }
+
+    public void changeStatus(StoreStatus status) {
+        if (status == null) {
+            throw new BusinessException(ErrorCode.STORE_STATUS_NULL);
+        }
+        this.status = status;
+    }
 }

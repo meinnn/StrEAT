@@ -367,4 +367,13 @@ public class StoreService{
 
         return (int) distance;
     }
+
+    @Transactional
+    public void updateStoreStatus(String token, StoreStatus status) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token으로 userId 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        store.changeStatus(status);  // 상태 변경 메서드 호출
+        storeRepository.save(store); // 변경된 상태를 저장
+    }
 }
