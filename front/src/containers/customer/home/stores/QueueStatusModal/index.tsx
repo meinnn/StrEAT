@@ -2,7 +2,35 @@ import ModalLayout from '@/components/ModalLayout'
 import { IoCloseCircleOutline } from 'react-icons/io5'
 import Link from 'next/link'
 
-export default function QueueStatusModal({ storeId }: { storeId: string }) {
+interface WaitingList {
+  waitingTeam: number
+  waitingMenu: number
+}
+
+async function fetchWaitingList(storeId: string): Promise<WaitingList> {
+  const response = await fetch(
+    `https://j11a307.p.ssafy.io/api/orders/order-request/${storeId}/list/waiting`,
+    {
+      method: 'GET',
+      cache: 'no-store', // 항상 새 정보
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch waiting list')
+  }
+
+  const result = await response.json()
+  return result.data
+}
+
+export default async function QueueStatusModal({
+  storeId,
+}: {
+  storeId: string
+}) {
+  const waitingList = await fetchWaitingList(storeId)
+
   return (
     <ModalLayout>
       <div className="relative">
@@ -14,11 +42,15 @@ export default function QueueStatusModal({ storeId }: { storeId: string }) {
         </Link>
         <div className="bg-white p-6 rounded-full aspect-square flex flex-col items-center justify-center">
           <p>
-            현재 대기 <span className="font-bold text-xl">5팀</span>,
+            현재 대기{' '}
+            <span className="font-bold text-xl">
+              {waitingList.waitingTeam}팀
+            </span>
+            ,
           </p>
           <p>
             <span className="font-bold text-xl text-primary-500">
-              메뉴 10개
+              메뉴 {waitingList.waitingMenu}개
             </span>
             가 준비 중이에요
           </p>
