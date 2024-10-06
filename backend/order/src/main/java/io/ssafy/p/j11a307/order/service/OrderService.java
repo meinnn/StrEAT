@@ -251,6 +251,13 @@ public class OrderService {
                 productList.add(productDTO);
             }
 
+            List<Orders> waitingOrders = ordersRepository.findByStoreId(readStoreDTO.id(), "PROCESSING", ordersId);
+
+            int menuTotal = 0;
+
+            for(Orders order : waitingOrders) {
+                menuTotal += orderProductRepository.findByOrdersId(order).stream().mapToInt(OrderProduct::getCount).sum();
+            }
 
             GetOrderDetailDTO getOrderDetailDTO = GetOrderDetailDTO.builder()
                     .productList(productList)
@@ -263,6 +270,8 @@ public class OrderService {
                     .orderNumber(orders.get().getOrderNumber())
                     .totalPrice(orders.get().getTotalPrice())
                     .ordersId(orders.get().getId())
+                    .waitingMenu(menuTotal)
+                    .waitingTeam(waitingOrders.size())
                     .paymentMethod(orders.get().getPaymentMethod())
                     .status(orders.get().getStatus())
                     .build();

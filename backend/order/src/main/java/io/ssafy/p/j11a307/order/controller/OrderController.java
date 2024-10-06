@@ -149,7 +149,7 @@ public class OrderController {
                 .body(DataResponse.of("진행중인 내 주문 내역 조회에 성공했습니다.", getMyOngoingOrderDTO));
     }
 
-    
+
     @GetMapping("/{storeId}/list/waiting")
     @Operation(summary = "전체 대기 팀/메뉴 조회", description = "해당 점포에서 현재 대기중인 팀과 메뉴 개수를 반환한다.")
     public ResponseEntity<DataResponse<GetStoreWaitingDTO>> getStoreWaiting(@PathVariable Integer storeId) {

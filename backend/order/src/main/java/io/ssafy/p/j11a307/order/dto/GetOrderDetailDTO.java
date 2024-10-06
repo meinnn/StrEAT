@@ -43,6 +43,12 @@ public record GetOrderDetailDTO (
     @Schema(description = "점포 사진", example = "https://streat-bucket.s3.ap-northeast-2.amazonaws.com/c7f8c1d0-42023.02.26%20%EA%B9%80%EB%AF%BC%EC%A7%80%EB%8B%98%28%ED%95%98%EB%A1%9C%297823.jpg")
     String storeSrc,
 
+    @Schema(description = "대기중인 팀", example = "3")
+    Integer waitingTeam,
+
+    @Schema(description = "대기중인 메뉴", example = "6")
+    Integer waitingMenu,
+
     @Schema(description = "상품 리스트")
     List<GetOrderDetailProductListDTO> productList
 
