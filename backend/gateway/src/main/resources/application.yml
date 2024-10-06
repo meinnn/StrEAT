@@ -25,6 +25,10 @@ spring:
           uri: http://streat-payment:8080
           predicates:
             - Path=/api/payments/**
+        - id: push-alert
+          uri: http://streat-push-alert:8080
+          predicates:
+            - Path=/api/push-alert/**
     config:
       uri: http://localhost:8888
       label: main
