@@ -94,7 +94,7 @@ export default function DateGraph() {
 
   return (
     <div className="custom-graph p-2">
-      <div className="flex justify-start space-x-4 mb-4 mt-2 ml-2">
+      <div className="flex justify-start space-x-2 mb-4 mt-2 ml-2">
         <button
           onClick={() => handleRangeChange('daily')}
           className={`w-20 px-4 py-2 rounded-full ${
