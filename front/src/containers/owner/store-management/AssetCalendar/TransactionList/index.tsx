@@ -43,13 +43,15 @@ export default function TransactionList({
       { threshold: 1.0 }
     )
 
-    if (loader.current) {
-      observer.observe(loader.current) // 로더 div를 관찰
+    const currentLoader = loader.current
+
+    if (currentLoader) {
+      observer.observe(currentLoader) // 로더 div를 관찰
     }
 
     return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current) // 컴포넌트가 언마운트될 때 관찰 중지
+      if (currentLoader) {
+        observer.unobserve(currentLoader) // 컴포넌트가 언마운트될 때 관찰 중지
       }
     }
   }, [loader, hasMore, loadMoreTransactions])
