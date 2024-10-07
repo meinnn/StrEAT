@@ -1,17 +1,17 @@
-import CartButton from '@/containers/customer/home/stores/CartButton'
-import StoreDetails from '@/containers/customer/home/stores/StoreDetails'
-import MenuList from '@/containers/customer/home/stores/MenuList'
+import StoreDetailPage from '@/containers/customer/home/stores'
+import QueueStatusModal from '@/containers/customer/home/stores/QueueStatusModal'
 
 export default function StoreDetail({
   params,
+  searchParams,
 }: {
   params: { storeId: string }
+  searchParams: { fromNFC: boolean | undefined }
 }) {
   return (
     <div>
-      <StoreDetails />
-      <MenuList storeId={params.storeId} />
-      <CartButton />
+      {searchParams.fromNFC && <QueueStatusModal storeId={params.storeId} />}
+      <StoreDetailPage storeId={params.storeId} />
     </div>
   )
 }
