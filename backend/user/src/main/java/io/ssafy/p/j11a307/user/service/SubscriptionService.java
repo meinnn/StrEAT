@@ -1,6 +1,8 @@
 package io.ssafy.p.j11a307.user.service;
 
 import io.ssafy.p.j11a307.user.entity.Subscription;
+import io.ssafy.p.j11a307.user.exception.BusinessException;
+import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,5 +35,18 @@ public class SubscriptionService {
         Subscription.SubscriptionId subscriptionId = new Subscription.SubscriptionId(userId, storeId);
         fcmService.unsubscribeStore(storeId, internalRequestKey, userId);
         subscriptionRepository.deleteById(subscriptionId);
+    }
+
+    @Transactional
+    public void changeStoreAlertStatus(String accessToken, Integer storeId, boolean alertOn) {
+        Integer userId = userService.getUserId(accessToken);
+        if (!userService.isCustomer(userId)) {
+            throw new BusinessException(ErrorCode.CUSTOMER_NOT_FOUND);
+        }
+        // 찜한 가게가 아니면 알림 켜고 끌 수 없음
+        Subscription.SubscriptionId subscriptionId = new Subscription.SubscriptionId(userId, storeId);
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_SUBSCRIBED_STORE));
+        subscription.changeAlertStatus(alertOn);
     }
 }

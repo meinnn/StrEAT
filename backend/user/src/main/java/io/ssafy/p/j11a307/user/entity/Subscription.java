@@ -26,6 +26,10 @@ public class Subscription {
         this.subscriptionId = subscriptionId;
     }
 
+    public void changeAlertStatus(Boolean alertOn) {
+        this.alertOn = alertOn;
+    }
+
     @Embeddable
     @NoArgsConstructor
     @EqualsAndHashCode
