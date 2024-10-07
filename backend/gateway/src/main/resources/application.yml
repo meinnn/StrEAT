@@ -25,6 +25,10 @@ spring:
           uri: http://streat-payment:8080
           predicates:
             - Path=/api/payments/**
+        - id: announcement
+          uri: http://streat-announcement:8080
+          predicates:
+            - Path=/api/announcements/**
         - id: push-alert
           uri: http://streat-push-alert:8080
           predicates:
@@ -53,3 +57,5 @@ springdoc:
         url: https://j11a307.p.ssafy.io/api/products/v3/api-docs
       - name: Payment API
         url: https://j11a307.p.ssafy.io/api/payments/v3/api-docs
+      - name: Announcement API
+        url: https://j11a307.p.ssafy.io/api/announcements/v3/api-docs
