@@ -25,6 +25,10 @@ spring:
           uri: http://localhost:8223
           predicates:
             - Path=/api/payments/**
+        - id: push-alert
+          uri: http://localhost:8848
+          predicates:
+            - Path=/api/push-alert/**
 server:
   port: 8787
 

@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.service;
 
+import io.ssafy.p.j11a307.user.dto.UserFcmTokenResponse;
 import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
 import io.ssafy.p.j11a307.user.entity.LeftUser;
 import io.ssafy.p.j11a307.user.entity.User;
@@ -94,5 +95,12 @@ public class UserService {
     public UserInfoResponse getUserInfoById(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return UserInfoResponse.builder().name(user.getUsername()).profileImgSrc(user.getProfileImgSrc()).build();
+    }
+
+    public UserFcmTokenResponse getFcmTokenByUserId(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return UserFcmTokenResponse.builder()
+                .fcmToken(user.getFcmToken())
+                .build();
     }
 }
