@@ -29,6 +29,10 @@ spring:
           uri: http://localhost:8848
           predicates:
             - Path=/api/push-alert/**
+  data:
+    redis:
+      host: localhost
+      port: 6379
 server:
   port: 8787
 
