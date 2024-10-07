@@ -13,6 +13,9 @@ public enum ErrorCode {
     STORE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"해당 사용자ID로 이미 가게가 존재합니다."),
     OWNER_WORD_NULL(HttpStatus.BAD_REQUEST,"사장님 한마디가 null이거나 비어있습니다."),
     STORE_STATUS_NULL(HttpStatus.BAD_REQUEST,"가게 상태가 null이거나 비어있습니다."),
+    STORE_LATITUDE_NULL(HttpStatus.BAD_REQUEST,"위도 값이 null이거나 비어있습니다."),
+    STORE_LONGITUDE_NULL(HttpStatus.BAD_REQUEST,"경도 값이 null이거나 비어있습니다."),
+
     // Store Location Photo
     STORE_LOCATION_PHOTO_LATITUDE_NULL(HttpStatus.BAD_REQUEST, "위도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     STORE_LOCATION_PHOTO_LONGITUDE_NULL(HttpStatus.BAD_REQUEST, "경도 값은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),

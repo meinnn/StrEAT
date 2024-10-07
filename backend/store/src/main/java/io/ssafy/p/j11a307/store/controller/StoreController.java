@@ -40,10 +40,9 @@ public class StoreController {
     // 1. 점포 생성
     @PostMapping
     @Operation(summary = "점포 생성")
-    public ResponseEntity<MessageResponse> createStore(@RequestHeader("Authorization") String token, @RequestBody CreateStoreDTO storeRequest) {
-        storeService.createStore(token, storeRequest);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(MessageResponse.of("가게 생성 성공"));
+    public ResponseEntity<DataResponse<Integer>> createStore(@RequestHeader("Authorization") String token, @RequestBody CreateStoreDTO storeRequest) {
+        Integer storeId = storeService.createStore(token, storeRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("가게 생성 성공", storeId));
     }
 
     // 2. userId에 해당하는 storeId 반환
@@ -98,8 +97,6 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 상세 정보 조회 성공", storeDetails));
     }
-
-
 
 
     // 5. 점포 기본 정보 조회(리뷰 조회시 storeId로 검색했을 떄 점포 사진과 점포이름 반환)
@@ -171,8 +168,8 @@ public class StoreController {
     // 7. 점포 주소 변경
     @PatchMapping("/store/address")
     @Operation(summary = "점포 주소 변경")
-    public ResponseEntity<MessageResponse> updateStoreAddress(@RequestHeader("Authorization") String token, @RequestBody String newAddress) {
-        storeService.updateStoreAddress(token, newAddress);  // token을 통해 점포 주소 업데이트
+    public ResponseEntity<MessageResponse> updateStoreAddress(@RequestHeader("Authorization") String token, @RequestBody UpdateAddressDTO updateAddressDTO) {
+        storeService.updateStoreAddress(token, updateAddressDTO);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 주소 변경 성공"));
     }

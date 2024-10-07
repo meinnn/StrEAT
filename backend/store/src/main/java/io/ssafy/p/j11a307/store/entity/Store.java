@@ -108,6 +108,32 @@ public class Store {
         this.address = address;
     }
 
+    public void changeLatitude(Double latitude) {
+        if (latitude == null) {
+            throw new BusinessException(ErrorCode.STORE_LATITUDE_NULL);
+        }
+        this.latitude = latitude;
+    }
+
+    // 경도 변경 메서드
+    public void changeLongitude(Double longitude) {
+        if (longitude == null) {
+            throw new BusinessException(ErrorCode.STORE_LONGITUDE_NULL);
+        }
+        this.longitude = longitude;
+    }
+
+    public void changeClosedDays(String closedDays) {
+        this.closedDays = closedDays;
+    }
+
+    public void changeStatus(StoreStatus status) {
+        if (status == null) {
+            throw new BusinessException(ErrorCode.STORE_STATUS_NULL);
+        }
+        this.status = status;
+    }
+
     // 사용자 ID 설정 메서드
     public void assignOwner(Integer userId) {
         if (userId == null) {
@@ -136,22 +162,9 @@ public class Store {
                 .build();
     }
 
-    public void changeClosedDays(String closedDays) {
-        this.closedDays = closedDays;
-    }
+
 
     public Integer getStoreId() {
         return this.id;
-    }
-
-    public void updateLocationAndStatus(String address, Double latitude, Double longitude, String open) {
-
-    }
-
-    public void changeStatus(StoreStatus status) {
-        if (status == null) {
-            throw new BusinessException(ErrorCode.STORE_STATUS_NULL);
-        }
-        this.status = status;
     }
 }

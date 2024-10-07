@@ -93,7 +93,6 @@ public class StoreSimpleLocationService {
         }
 
         // Store 정보 업데이트 (address, latitude, longitude, status)
-        store.updateLocationAndStatus(dto.address(), dto.latitude(), dto.longitude(), "OPEN");
         storeRepository.save(store);
     }
 
