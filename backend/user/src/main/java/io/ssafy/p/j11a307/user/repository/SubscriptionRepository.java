@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Subscription.SubscriptionId> {
 
-    List<Subscription> findByUserId(Integer userId);
+    List<Subscription> findBySubscriptionIdUserId(Integer userId);
 }
