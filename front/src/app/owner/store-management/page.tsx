@@ -1,3 +1,11 @@
-export default function OwnerManagePage() {
-  return <div>매장 관리 페이지</div>
+import StoreManagement from '@/containers/owner/store-management'
+
+export default function StoreManagementPage() {
+  return (
+    <div>
+      <div>
+        <StoreManagement />
+      </div>
+    </div>
+  )
 }
