@@ -26,6 +26,7 @@ public class User {
     private String kakaoAccessToken;
     private String kakaoRefreshToken;
     private String profileImgSrc;
+    private String fcmToken;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

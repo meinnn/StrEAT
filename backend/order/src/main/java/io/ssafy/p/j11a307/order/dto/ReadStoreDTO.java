@@ -7,12 +7,12 @@ import java.util.List;
 
 @Getter
 @Setter
-public class StoreResponse {
+public class ReadStoreDTO {
         Integer id;
         String name;
         String address;
-        String latitude;
-        String longitude;
+        Double latitude;
+        Double longitude;
         String type;
         String bankAccount;
         String bankName;
@@ -21,6 +21,6 @@ public class StoreResponse {
         Integer userId;
 
         //사진
-        List<String> images;
+        //List<String> images;
 
 }

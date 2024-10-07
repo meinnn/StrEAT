@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -22,6 +23,7 @@ public class StorePhoto {
 
     @ManyToOne
     @JoinColumn(name = "store_id")
+    @JsonIgnore
     private Store store;
 
     @Column(nullable = false)
