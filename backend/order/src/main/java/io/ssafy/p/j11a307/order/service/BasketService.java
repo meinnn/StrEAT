@@ -267,4 +267,11 @@ public class BasketService {
 
         return getBasketOptionDTO;
     }
+
+    @Transactional
+    public void deleteBasket(String token) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        shoppingCartRepository.deleteByCustomerId(customerId);
+    }
 }
