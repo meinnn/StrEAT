@@ -43,6 +43,7 @@ interface CartContextProps {
   fetchNextPage: () => void
   hasNextPage: boolean | undefined
   isFetchingNextPage: boolean
+  status: 'error' | 'success' | 'pending'
   reloadCartItems: () => void
   handleItemCheck: (id: number) => void
   handleRemoveItem: (id: number) => void
@@ -154,6 +155,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       fetchNextPage,
       hasNextPage,
       isFetchingNextPage,
+      status,
       reloadCartItems,
       handleItemCheck,
       handleRemoveItem,
@@ -164,7 +166,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       fetchNextPage,
       hasNextPage,
       isFetchingNextPage,
+      status,
       reloadCartItems,
+      handleItemCheck,
+      handleRemoveItem,
     ]
   )
 
