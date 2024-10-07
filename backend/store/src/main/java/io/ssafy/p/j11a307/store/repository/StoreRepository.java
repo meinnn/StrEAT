@@ -20,5 +20,14 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
             "(s.latitude BETWEEN :latitude - 0.1 AND :latitude + 0.1) AND " +
             "(s.longitude BETWEEN :longitude - 0.1 AND :longitude + 0.1)")
     Page<Store> findAllByLocationRange(@Param("latitude") double latitude, @Param("longitude") double longitude, Pageable pageable);
+
+    @Query("SELECT s FROM Store s WHERE " +
+            "(6371 * acos(cos(radians(:latitude)) * cos(radians(s.latitude)) * " +
+            "cos(radians(s.longitude) - radians(:longitude)) + " +
+            "sin(radians(:latitude)) * sin(radians(s.latitude)))) <= :distance")
+    Page<Store> find1KMByLocationRange(@Param("latitude") double latitude,
+                                       @Param("longitude") double longitude,
+                                       @Param("distance") double distance,
+                                       Pageable pageable);
 }
 
