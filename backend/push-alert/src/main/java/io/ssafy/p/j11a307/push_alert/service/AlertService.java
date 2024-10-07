@@ -19,7 +19,7 @@ public class AlertService {
 
     private final String TOPIC_STORE_PREFIX = "store:";
 
-    @Value("{streat.internal-request}")
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
 
     private final UserService userService;
