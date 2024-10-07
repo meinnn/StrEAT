@@ -11,7 +11,7 @@ public interface FcmService {
                         @RequestHeader(value = "X-Internal-Request") String internalRequest,
                         @RequestParam Integer userId);
 
-    @DeleteMapping("/dibs/{storeId}")
+    @DeleteMapping("/api/push-alert/dibs/{storeId}")
     void unsubscribeStore(@PathVariable Integer storeId,
                           @RequestHeader(value = "X-Internal-Request") String internalRequest,
                           @RequestParam Integer userId);
