@@ -80,6 +80,12 @@ public class Store {
     @JsonIgnore  // 순환 참조 방지
     private BusinessDay businessDay;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "selected_simple_location_id")
+    private StoreSimpleLocation selectedSimpleLocation;
+
+
+
     // Store 삭제 전 IndustryCategory와의 연관관계를 끊는 메서드 추가
     public void removeFromCategory() {
         if (this.industryCategory != null) {
@@ -140,6 +146,14 @@ public class Store {
             throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
         }
         this.userId = userId;
+    }
+
+    public void updateSelectedSimpleLocation(StoreSimpleLocation simpleLocation) {
+        if (simpleLocation == null) {
+            throw new BusinessException(ErrorCode.SIMPLE_LOCATION_NOT_FOUND);
+        }
+
+        this.selectedSimpleLocation = simpleLocation;
     }
 
     public Store updateWith(UpdateStoreDTO request, IndustryCategory industryCategory) {

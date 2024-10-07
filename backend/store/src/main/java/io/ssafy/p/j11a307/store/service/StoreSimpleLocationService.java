@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -31,6 +32,7 @@ public class StoreSimpleLocationService {
 
     private final StoreSimpleLocationRepository simpleLocationRepository;
     private final StoreLocationPhotoRepository storeLocationPhotoRepository;
+    private final StoreSimpleLocationRepository storeSimpleLocationRepository;
     private final StoreRepository storeRepository;
     private final AmazonS3 amazonS3;
 
@@ -54,56 +56,44 @@ public class StoreSimpleLocationService {
     }
 
     /**
-     * 간편 위치 생성 및 Store 정보 업데이트
+     * 간편 위치 ID로 가게 정보 업데이트
      */
     @Transactional
-    public void createSimpleLocation(String token, StoreSimpleLocationDTO dto,  List<MultipartFile> images) {
+    public void updateStoreLocationFromSimpleLocation(String token, Integer storeSimpleLocationId) {
+        // 토큰을 이용해 storeId 조회
         Integer storeId = getStoreIdByToken(token);
+
+        // storeSimpleLocationId를 이용해 StoreSimpleLocation 조회
+        StoreSimpleLocation simpleLocation = storeSimpleLocationRepository.findById(storeSimpleLocationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SIMPLE_LOCATION_NOT_FOUND));
+
+        // storeId랑 simpleLocation 정보의 storeId가 다르면 에러 처리
+        if (!storeId.equals(simpleLocation.getStore().getId())) {
+            throw new BusinessException(ErrorCode.STORE_MISMATCH);
+        }
+
+        // storeId를 이용해 Store 조회
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // StoreSimpleLocation 생성
-        StoreSimpleLocation simpleLocation = StoreSimpleLocation.builder()
-                .store(store)
-                .address(dto.address())
-                .latitude(dto.latitude())
-                .longitude(dto.longitude())
-                .nickname(dto.nickname())
-                .createdAt(LocalDateTime.now())
-                .build();
+        // Store의 위치 정보 업데이트
+        store.changeAddress(store.getAddress());
+        store.changeLatitude(store.getLatitude());
+        store.changeLongitude(store.getLongitude());
+        store.updateSelectedSimpleLocation(simpleLocation);
 
-        // StoreSimpleLocation 저장
-        simpleLocationRepository.save(simpleLocation);
-
-        for (MultipartFile image : images) {
-            validateImageFile(image);  // 이미지 파일 검증
-            String imageUrl = uploadImageToS3(image);  // 이미지 S3에 업로드 후 URL 반환
-
-            // StoreLocationPhoto 엔티티 생성 및 저장
-            StoreLocationPhoto locationPhoto = StoreLocationPhoto.builder()
-                    .storeSimpleLocation(simpleLocation)  // 연관된 StoreSimpleLocation 설정
-                    .store(store)  // 연관된 Store 설정
-                    .latitude(dto.latitude())  // DTO에서 가져온 위도 설정
-                    .longitude(dto.longitude())  // DTO에서 가져온 경도 설정
-                    .src(imageUrl)  // 업로드된 이미지 URL 설정
-                    .createdAt(LocalDateTime.now())  // 현재 시간 설정
-                    .build();
-
-            storeLocationPhotoRepository.save(locationPhoto);
-        }
-
-        // Store 정보 업데이트 (address, latitude, longitude, status)
+        // 변경된 Store 저장
         storeRepository.save(store);
     }
 
 
 
     /**
-     * 간편 위치 정보만 생성
+     * 간편 위치 정보 생성
      * 가게 정보는 수정하지 않고 위치 정보만 생성하는 메소드
      */
     @Transactional
-    public void createSimpleLocationOnly(String token, StoreSimpleLocationDTO dto, List<MultipartFile> images) {
+    public Integer createSimpleLocationOnly(String token, StoreSimpleLocationDTO dto, List<MultipartFile> images) {
         Integer storeId = getStoreIdByToken(token);
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
@@ -138,6 +128,7 @@ public class StoreSimpleLocationService {
 
             storeLocationPhotoRepository.save(locationPhoto);
         }
+        return simpleLocation.getId();
     }
 
     /**
