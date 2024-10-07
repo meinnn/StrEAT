@@ -8,8 +8,8 @@ import OwnerTabList from '@/components/OwnerTabList'
 
 const TAB_LIST = [
   { id: 'asset-calendar', name: '자산 캘린더', href: '' },
-  { id: 'buiseness-area-report', name: '매출관리', href: '' },
-  { id: 'sales-management', name: '상권 리포트', href: '' },
+  { id: 'sales-management', name: '매출 관리', href: '' },
+  { id: 'buiseness-area-report', name: '상권 리포트', href: '' },
 ]
 
 const renderView = (activeTab: string): React.ReactNode => {
