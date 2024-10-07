@@ -5,6 +5,8 @@ import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmOrderStatusChangeAlert;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmStoreOpenAlert;
+import io.ssafy.p.j11a307.push_alert.dto.internalapi.ApiResponse;
+import io.ssafy.p.j11a307.push_alert.dto.internalapi.FcmTokenResponse;
 import io.ssafy.p.j11a307.push_alert.util.FirebaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +19,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AlertService {
 
-    private final String TOPIC_STORE_PREFIX = "store:";
+    private final String TOPIC_STORE_PREFIX = "store-";
 
-    @Value("{streat.internal-request}")
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
 
     private final UserService userService;
@@ -27,7 +29,8 @@ public class AlertService {
     private final FirebaseUtil firebaseUtil;
 
     public void sendOrderStatusChangeAlert(Integer customerId, Integer orderId, String storeName, AlertType alertType) {
-        String customerFcmToken = userService.getFcmTokenByUserId(customerId, internalRequestKey);
+        ApiResponse<FcmTokenResponse> fcmTokenResponse = userService.getFcmTokenByUserId(customerId, internalRequestKey);
+        String customerFcmToken = fcmTokenResponse.getData().fcmToken();
         FcmAlertData data = FcmOrderStatusChangeAlert.builder()
                 .orderId(String.valueOf(orderId))
                 .storeName(storeName)
@@ -58,12 +61,14 @@ public class AlertService {
     }
 
     public void subscribeToStore(Integer userId, Integer storeId) {
-        String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        ApiResponse<FcmTokenResponse> fcmTokenResponse = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        String userFcmToken = fcmTokenResponse.getData().fcmToken();
         firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 
     public void unsubscribeFromStore(Integer userId, Integer storeId) {
-        String userFcmToken = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        ApiResponse<FcmTokenResponse> fcmTokenResponse = userService.getFcmTokenByUserId(userId, internalRequestKey);
+        String userFcmToken = fcmTokenResponse.getData().fcmToken();
         firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
     }
 
