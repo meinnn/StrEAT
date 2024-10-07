@@ -105,11 +105,12 @@ public ResponseEntity<MessageResponse> createProductAll(
             }
         }
 
-        // 3. 옵션 카테고리 유효성 검사
+        // 3. 옵션 카테고리 및 옵션 유효성 검사
         if (productDTO.optionCategories() == null || productDTO.optionCategories().isEmpty()) {
             throw new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_EMPTY);
         }
-        for (CreateProductOptionCategoryDTO category : productDTO.optionCategories()) {
+        for (CreateProductOptionCategoryWithoutProductIdDTO category : productDTO.optionCategories()) {
+            // 옵션 카테고리 검증
             if (category.name() == null || category.name().isEmpty()) {
                 throw new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NAME_NULL);
             }
@@ -119,10 +120,8 @@ public ResponseEntity<MessageResponse> createProductAll(
             if (category.minSelect() == null || category.minSelect() < 0) {
                 throw new BusinessException(ErrorCode.INVALID_MIN_SELECT);
             }
-        }
 
-        // 4. 옵션 유효성 검사
-        for (CreateProductOptionCategoryDTO category : productDTO.optionCategories()) {
+            // 옵션 검증
             if (category.productOptions() == null || category.productOptions().isEmpty()) {
                 throw new BusinessException(ErrorCode.PRODUCT_OPTION_EMPTY);
             }
@@ -136,7 +135,7 @@ public ResponseEntity<MessageResponse> createProductAll(
             }
         }
 
-        // 5. 카테고리 유효성 검사
+        // 4. 카테고리 유효성 검사
         if (productDTO.categories() == null || productDTO.categories().isEmpty()) {
             throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_EMPTY);
         }
