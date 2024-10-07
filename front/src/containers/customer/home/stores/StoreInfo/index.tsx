@@ -91,13 +91,10 @@ export default async function StoreInfo({ storeId }: { storeId: string }) {
               </p>
             </div>
             {store.closedDays && (
-              <div>
+              <>
                 <p className="font-semibold">휴무일</p>
-                <div>
-                  <p>매주 월요일</p>
-                  <p>09/16~09/18 추석 연휴 휴무</p>
-                </div>
-              </div>
+                <p>{store.closedDays}</p>
+              </>
             )}
             <p className="font-semibold">전화번호</p>
             <p>{store.storePhoneNumber}</p>
@@ -108,17 +105,17 @@ export default async function StoreInfo({ storeId }: { storeId: string }) {
         <div className="mb-8">
           <h3 className="text-lg font-bold mb-2">사업자 정보</h3>
           <div className="grid grid-cols-[100px_1fr] gap-2 text-sm">
-            <p className="font-semibold">대표자명</p>
-            <p>김사장</p>
-            <p className="font-semibold">상호명</p>
-            <p>이게진짜상호명 강남점</p>
-            <p className="font-semibold">사업자주소</p>
-            <div>
-              <p>서울특별시 강남구 역삼동 123-123 1층 01호</p>
-              <p className="text-xs text-gray-dark">
-                위 주소는 사업자등록증에 표기된 정보입니다
-              </p>
-            </div>
+            {/* <p className="font-semibold">대표자명</p> */}
+            {/* <p>김사장</p> */}
+            {/* <p className="font-semibold">상호명</p> */}
+            {/* <p>이게진짜상호명 강남점</p> */}
+            {/* <p className="font-semibold">사업자주소</p> */}
+            {/* <div> */}
+            {/*  <p>서울특별시 강남구 역삼동 123-123 1층 01호</p> */}
+            {/*  <p className="text-xs text-gray-dark"> */}
+            {/*    위 주소는 사업자등록증에 표기된 정보입니다 */}
+            {/*  </p> */}
+            {/* </div> */}
             <p className="font-semibold">사업자등록번호</p>
             <p>{store.businessRegistrationNumber}</p>
           </div>

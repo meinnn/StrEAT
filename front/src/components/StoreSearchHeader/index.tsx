@@ -7,11 +7,13 @@ import { useRouter } from 'next/navigation'
 type StoreSearchHeaderProps = {
   view: 'map' | 'list'
   currentAddress: string
+  onReSearch?: () => void
 }
 
 export default function StoreSearchHeader({
   view,
   currentAddress,
+  onReSearch,
 }: StoreSearchHeaderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedMenu, setSelectedMenu] = useState<string | null>(null) // 선택된 메뉴 저장
@@ -51,6 +53,7 @@ export default function StoreSearchHeader({
         {view === 'map' && (
           <button
             type="button"
+            onClick={onReSearch}
             className="bg-primary-500 text-white rounded-full px-6 h-9 text-sm"
           >
             현재 지도에서 가게 재검색

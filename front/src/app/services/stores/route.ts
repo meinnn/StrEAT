@@ -8,6 +8,7 @@ export async function GET(request: Request) {
   const lng = searchParams.get('lng')
 
   try {
+    // 일단 최대 20개만 가져옴
     const response = await fetch(
       `https://j11a307.p.ssafy.io/api/stores/nearby?latitude=${lat}&longitude=${lng}&page=0&size=20`
     )
@@ -19,8 +20,8 @@ export async function GET(request: Request) {
       )
     }
 
-    const data = await response.json()
-    return NextResponse.json(data, { status: 200 })
+    const result = await response.json()
+    return NextResponse.json(result.data, { status: 200 })
   } catch (error) {
     console.error('Error fetching store list:', error)
     return NextResponse.json(

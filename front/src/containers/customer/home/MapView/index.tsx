@@ -1,23 +1,39 @@
 import StoreSearchHeader from '@/components/StoreSearchHeader'
-import StoreCard from '@/containers/customer/home/StoreCard'
 import { FiList } from 'react-icons/fi'
 import useNaverMap from '@/hooks/useNaverMap'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useMapCenter } from '@/contexts/MapCenterContext'
 import { TbCurrentLocation } from 'react-icons/tb'
+import { Store } from '@/types/store'
+import StoreListItem from '@/containers/customer/home/StoreListItem'
+
+const fetchStores = async (lat: number, lng: number): Promise<Store[]> => {
+  const response = await fetch(`/services/stores?lat=${lat}&lng=${lng}`)
+  if (!response.ok) {
+    throw new Error('Failed to fetch store list')
+  }
+  return response.json()
+}
 
 export default function MapView({
   setView,
   currentAddress,
   setCurrentAddress,
+  storeList,
+  setStoreList,
 }: {
   setView: (view: 'map' | 'list') => void
   currentAddress: string
   setCurrentAddress: (address: string) => void
+  storeList: Store[]
+  setStoreList: (stores: Store[]) => void
 }) {
   const { center, setCenter } = useMapCenter()
   // 지도 생성 및 초기화
   const { map, currentLocation } = useNaverMap('map', { zoom: 16 })
+  const markersRef = useRef<naver.maps.Marker[]>([]) // 마커 배열
+  const isInitialRender = useRef(true) // 처음 렌더링 여부를 추적하는 useRef
+  const [showAlert, setShowAlert] = useState(false) // 알림 메시지 상태
 
   // 좌표로부터 주소를 가져오는 함수
   const fetchAddressFromCoords = useCallback(
@@ -38,6 +54,26 @@ export default function MapView({
     },
     [setCurrentAddress]
   )
+
+  // 가게 목록을 재검색하는 함수
+  const onReSearch = useCallback(async () => {
+    if (center) {
+      const latitude = center.y
+      const longitude = center.x
+      try {
+        const stores = await fetchStores(latitude, longitude)
+        setStoreList(stores)
+
+        if (stores.length === 0) {
+          // storeList가 빈 배열일 경우, 알림 메시지를 3초 동안 표시
+          setShowAlert(true)
+          setTimeout(() => setShowAlert(false), 3000)
+        }
+      } catch (error) {
+        console.error('Error fetching store list:', error)
+      }
+    }
+  }, [center, setStoreList])
 
   // 현 위치 버튼 클릭했을 때
   const handleCurrentLocationClick = () => {
@@ -77,8 +113,55 @@ export default function MapView({
     return () => {}
   }, [map, fetchAddressFromCoords, setCenter, center])
 
+  // storeList를 기반으로 마커 추가
+  useEffect(() => {
+    if (map && storeList.length > 0) {
+      // 이전 마커 제거
+      markersRef.current.forEach((marker) => marker.setMap(null))
+      markersRef.current = []
+
+      // 새로운 마커 추가
+      storeList.forEach((store) => {
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(store.latitude, store.longitude),
+          map,
+          title: store.storeName,
+        })
+
+        // 마커 클릭 시 해당 마커 위치로 지도 중심 이동
+        marker.addListener('click', () => {
+          const markerPosition = marker.getPosition()
+          if (markerPosition) {
+            map.setCenter(markerPosition) // 지도 중심을 마커 위치로 설정
+            setCenter(markerPosition) // Context의 center도 업데이트
+          }
+        })
+
+        markersRef.current.push(marker)
+      })
+    }
+  }, [map, storeList, setCenter])
+
+  // 처음 렌더링 시만 onReSearch 실행
+  useEffect(() => {
+    if (center && isInitialRender.current) {
+      onReSearch().then() // 처음 렌더링 시 실행
+      isInitialRender.current = false // 첫 렌더링 이후로는 false로 변경
+    }
+  }, [center, onReSearch])
+
   return (
     <div className="relative h-screen w-full">
+      {showAlert && (
+        <div
+          className={`z-[300] fixed top-1/2 left-1/2 transform -translate-x-1/2 bg-white text-primary-500 font-semibold border-2 border-primary-500 py-2 px-4 rounded-xl shadow-lg transition-all duration-500 ease-in-out ${
+            showAlert ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          검색 결과가 없습니다
+        </div>
+      )}
+
       <div
         id="map"
         className="fixed inset-0 w-full flex items-center justify-center text-center"
@@ -86,7 +169,11 @@ export default function MapView({
       />
 
       <div className="fixed top-0 inset-x-0 z-[200]">
-        <StoreSearchHeader view="map" currentAddress={currentAddress} />
+        <StoreSearchHeader
+          view="map"
+          currentAddress={currentAddress}
+          onReSearch={onReSearch}
+        />
       </div>
 
       <div className="absolute bottom-20 w-full">
@@ -111,10 +198,14 @@ export default function MapView({
         </div>
 
         <div className="px-4 my-2 flex overflow-x-auto whitespace-nowrap gap-4">
-          <StoreCard />
-          <StoreCard />
-          <StoreCard />
-          <StoreCard />
+          {storeList.map((store) => (
+            <div
+              key={store.id}
+              className="relative bg-[#371B1B] text-white rounded-xl min-w-72 h-28 px-1"
+            >
+              <StoreListItem store={store} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
