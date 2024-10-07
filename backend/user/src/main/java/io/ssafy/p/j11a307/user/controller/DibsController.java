@@ -1,29 +1,24 @@
 package io.ssafy.p.j11a307.user.controller;
 
-import io.ssafy.p.j11a307.user.dto.SubscriptionStoreResponse;
-import io.ssafy.p.j11a307.user.global.DataResponse;
 import io.ssafy.p.j11a307.user.global.MessageResponse;
-import io.ssafy.p.j11a307.user.service.SubscriptionService;
+import io.ssafy.p.j11a307.user.service.DibsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/dibs")
 @RequiredArgsConstructor
-public class SubscriptionController {
+public class DibsController {
 
     private final String HEADER_AUTH = "Authorization";
 
-    private final SubscriptionService subscriptionService;
+    private final DibsService dibsService;
 
     @PostMapping("/{storeId}")
     @Operation(summary = "가게 구독", description = "가게 구독")
@@ -32,7 +27,7 @@ public class SubscriptionController {
     })
     public ResponseEntity<Void> subscriptStore(@PathVariable Integer storeId, HttpServletRequest request) {
         String accessToken = request.getHeader(HEADER_AUTH);
-        subscriptionService.subscript(accessToken, storeId);
+        dibsService.subscript(accessToken, storeId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -43,7 +38,7 @@ public class SubscriptionController {
     })
     public ResponseEntity<Void> unsubscriptStore(@PathVariable Integer storeId, HttpServletRequest request) {
         String accessToken = request.getHeader(HEADER_AUTH);
-        subscriptionService.unsubscribe(accessToken, storeId);
+        dibsService.unsubscribe(accessToken, storeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -56,7 +51,7 @@ public class SubscriptionController {
     })
     public ResponseEntity<MessageResponse> storeAlertOn(@PathVariable Integer storeId, HttpServletRequest request) {
         String accessToken = request.getHeader(HEADER_AUTH);
-        subscriptionService.changeStoreAlertStatus(accessToken, storeId, true);
+        dibsService.changeStoreAlertStatus(accessToken, storeId, true);
         return ResponseEntity.status(HttpStatus.CREATED).body(MessageResponse.of("알림 켜기 성공"));
     }
 
@@ -69,7 +64,7 @@ public class SubscriptionController {
     })
     public ResponseEntity<MessageResponse> storeAlertOff(@PathVariable Integer storeId, HttpServletRequest request) {
         String accessToken = request.getHeader(HEADER_AUTH);
-        subscriptionService.changeStoreAlertStatus(accessToken, storeId, false);
+        dibsService.changeStoreAlertStatus(accessToken, storeId, false);
         return ResponseEntity.status(HttpStatus.CREATED).body(MessageResponse.of("알림 끄기 성공"));
     }
 }

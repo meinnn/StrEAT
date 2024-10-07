@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.service;
 
+import io.ssafy.p.j11a307.user.dto.StoreDibsResponse;
 import io.ssafy.p.j11a307.user.entity.Subscription;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
@@ -9,9 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-public class SubscriptionService {
+public class DibsService {
 
     @Value("{streat.internal-request}")
     private String internalRequestKey;
@@ -54,4 +57,6 @@ public class SubscriptionService {
             fcmService.unsubscribeStore(storeId, internalRequestKey, userId);
         }
     }
+
+    public List<StoreDibsResponse> getAllDibs
 }
