@@ -162,9 +162,7 @@ public class OrderController {
     }
 
 
-
     //주문표 인쇄
-
 
     //주문 취소
 
@@ -172,5 +170,6 @@ public class OrderController {
 
     //NFC 태그 후 수령 완료하기
 
+    //월욜: NFC 관련 완성. 주문표 인쇄. ㅋ
 
 }
