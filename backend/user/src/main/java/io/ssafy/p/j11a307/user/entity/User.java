@@ -56,6 +56,7 @@ public class User {
         this.createdAt = user.createdAt;
         this.orderStatusAlert = user.orderStatusAlert;
         this.dibsStoreAlert = user.dibsStoreAlert;
+        this.fcmToken = user.fcmToken;
     }
 
     public void refreshKakaoTokens(String kakaoAccessToken, String kakaoRefreshToken) {
