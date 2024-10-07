@@ -198,7 +198,7 @@ public class UserController {
         return ResponseEntity.ok(token);
     }
 
-    @GetMapping("/{userId}/fcmToken")
+    @GetMapping("/{userId}/fcm-token")
     @Operation(summary = "유저 아이디로 fcm token 받기", description = "유저 아이디로 fcm token 받기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "fcm token 발급 완료"),
