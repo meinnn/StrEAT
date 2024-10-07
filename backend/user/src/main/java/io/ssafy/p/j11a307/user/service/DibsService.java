@@ -57,6 +57,4 @@ public class DibsService {
             fcmService.unsubscribeStore(storeId, internalRequestKey, userId);
         }
     }
-
-    public List<StoreDibsResponse> getAllDibs
 }
