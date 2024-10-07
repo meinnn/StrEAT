@@ -1,9 +1,12 @@
 import Orders from '@/containers/customer/orders'
+import ClientWrapper from '@/utils/ClientWrapper'
 
 export default function CustomerOrders() {
   return (
     <div>
-      <Orders />
+      <ClientWrapper>
+        <Orders />
+      </ClientWrapper>
     </div>
   )
 }
