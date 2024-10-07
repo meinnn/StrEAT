@@ -57,4 +57,18 @@ public class DibsService {
             fcmService.unsubscribeStore(storeId, internalRequestKey, userId);
         }
     }
+
+    public List<StoreDibsResponse> getAllDibs(String accessToken) {
+        Integer userId = userService.getUserId(accessToken);
+        if (!userService.isCustomer(userId)) {
+            throw new BusinessException(ErrorCode.CUSTOMER_NOT_FOUND);
+        }
+        // store이름, 별점 구해오는 api 연결하기
+        List<Subscription> subscriptions = subscriptionRepository.findByUserId(userId);
+        List<StoreDibsResponse> storeDibsResponses = subscriptions.stream().map(subscription ->
+                StoreDibsResponse.builder()
+                        .storeId(subscription.getSubscriptionId().getStoreId())
+                        .alertOn(subscription.getAlertOn()).build()).toList();
+        return storeDibsResponses;
+    }
 }

@@ -1,5 +1,7 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.dto.StoreDibsResponse;
+import io.ssafy.p.j11a307.user.global.DataResponse;
 import io.ssafy.p.j11a307.user.global.MessageResponse;
 import io.ssafy.p.j11a307.user.service.DibsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/dibs")
@@ -66,5 +70,18 @@ public class DibsController {
         String accessToken = request.getHeader(HEADER_AUTH);
         dibsService.changeStoreAlertStatus(accessToken, storeId, false);
         return ResponseEntity.status(HttpStatus.CREATED).body(MessageResponse.of("알림 끄기 성공"));
+    }
+
+    @GetMapping
+    @Operation(summary = "찜 목록 조회", description = "찜 목록 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "찜 목록 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "잘못된 유저입니다.")
+    })
+    public ResponseEntity<DataResponse<List<StoreDibsResponse>>> getAllDibs(HttpServletRequest request) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        List<StoreDibsResponse> allDibs = dibsService.getAllDibs(accessToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("찜 목록 조회에 성공했습니다.", allDibs));
     }
 }

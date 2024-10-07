@@ -33,6 +33,7 @@ public class Subscription {
     @Embeddable
     @NoArgsConstructor
     @EqualsAndHashCode
+    @Getter
     public static class SubscriptionId implements Serializable {
 
         private Integer userId;
