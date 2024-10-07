@@ -48,5 +48,10 @@ public class SubscriptionService {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_SUBSCRIBED_STORE));
         subscription.changeAlertStatus(alertOn);
+        if (alertOn) {
+            fcmService.subscribeStore(storeId, internalRequestKey, userId);
+        } else {
+            fcmService.unsubscribeStore(storeId, internalRequestKey, userId);
+        }
     }
 }
