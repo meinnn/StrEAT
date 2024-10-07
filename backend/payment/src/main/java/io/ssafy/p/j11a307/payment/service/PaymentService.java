@@ -3,30 +3,33 @@ package io.ssafy.p.j11a307.payment.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.ssafy.p.j11a307.payment.dto.PaymentResponse;
-import io.ssafy.p.j11a307.payment.dto.TossPaymentBaseRequest;
+import io.ssafy.p.j11a307.payment.dto.*;
 import io.ssafy.p.j11a307.payment.entity.CardPayment;
 import io.ssafy.p.j11a307.payment.entity.Payment;
+import io.ssafy.p.j11a307.payment.entity.TossCancel;
 import io.ssafy.p.j11a307.payment.entity.TossEasyPayment;
 import io.ssafy.p.j11a307.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
-    @Value("${toss.confirm-url}")
+    @Value("${toss.payments.confirm-url}")
     private String confirmUrl;
 
     @Value("${toss.secret-key}")
     private String tossSecretKey;
+
+    @Value("${toss.payments.base-url}")
+    private String tossBaseUrl;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -66,5 +69,25 @@ public class PaymentService {
 
         paymentRepository.save(payment);
         return new PaymentResponse(payment.getId(), payment.getOrderId());
+    }
+
+    @Transactional
+    public void cancelTossPayment(Integer orderId, TossPaymentCancelRequest tossPaymentCancelRequest) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.set(HEADER_AUTH, "Basic " + tossSecretKey);
+        Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow();
+        RestTemplate restTemplate = new RestTemplate();
+        String url = tossBaseUrl + "/" + payment.getPaymentKey() + "/cancel";
+
+        HttpEntity<TossPaymentCancelRequest> requestHttpEntity = new HttpEntity<>(tossPaymentCancelRequest, httpHeaders);
+
+        ResponseEntity<TossPaymentCancelResponse> response =
+                restTemplate.exchange(url, HttpMethod.POST, requestHttpEntity, TossPaymentCancelResponse.class);
+
+        TossPaymentCancelResponse tossPaymentCancelResponse = response.getBody();
+        List<CancelDetail> cancels = tossPaymentCancelResponse.cancels();
+        List<TossCancel> tossCancels = cancels.stream().map(TossCancel::new).toList();
+        payment.addTossCancels(tossCancels);
     }
 }

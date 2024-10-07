@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,6 +22,9 @@ public class Payment {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "payment")
     private TossEasyPayment tossEasyPayment;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TossCancel> tossCancels;
 
     private String mid;
     private String version;
@@ -62,6 +67,10 @@ public class Payment {
 
     public void addTossEasyPayPayment(TossEasyPayment tossEasyPayment) {
         this.tossEasyPayment = tossEasyPayment;
+    }
+
+    public void addTossCancels(List<TossCancel> tossCancels) {
+        this.tossCancels = tossCancels;
     }
 
     public Payment(JsonNode jsonNode) {
