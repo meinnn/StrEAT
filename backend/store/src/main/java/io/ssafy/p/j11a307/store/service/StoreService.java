@@ -139,15 +139,15 @@ public class StoreService{
     /**
      * 위도와 경도로 근처 가게 조회
      */
-    public List<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude, int page, int size) {
+    public Page<ReadNearByStoreDTO> getStoresByLocation(double latitude, double longitude, int page, int size) {
         // 페이지네이션을 위한 PageRequest 생성
         Pageable pageable = PageRequest.of(page, size);
 
-        // JPQL로 가까운 가게들을 페이지네이션 처리하여 가져옵니다.
+        // JPQL로 가까운 가게들을 페이지네이션 처리하여 가져옴
         Page<Store> storePage = storeRepository.findAllByLocationRange(latitude, longitude, pageable);
 
-        // Store 엔티티를 ReadNearByStoreDTO로 변환
-        return storePage.stream().map(store -> {
+        // Store 엔티티를 ReadNearByStoreDTO로 변환하여 Page로 반환
+        return storePage.map(store -> {
             // Store의 사진 가져오기
             String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
                     .stream().findFirst()
@@ -164,6 +164,7 @@ public class StoreService{
 
             // ReadNearByStoreDTO 생성
             return new ReadNearByStoreDTO(
+                    store.getId(),
                     store.getName(),
                     storePhotoSrc,
                     store.getStatus(),
@@ -172,7 +173,7 @@ public class StoreService{
                     store.getLatitude(),
                     store.getLongitude()
             );
-        }).collect(Collectors.toList());
+        });
     }
 
 
@@ -180,7 +181,7 @@ public class StoreService{
      * 가게 생성
      */
     @Transactional
-    public void createStore(String token,CreateStoreDTO createStoreDTO) {
+    public Integer createStore(String token,CreateStoreDTO createStoreDTO) {
         // token을 통해 userId 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
         if (userId == null) {
@@ -201,6 +202,8 @@ public class StoreService{
         Store store = createStoreDTO.toEntity(industryCategory);
         store.assignOwner(userId);
         storeRepository.save(store);
+
+        return store.getId();
     }
 
     /**
@@ -275,7 +278,7 @@ public class StoreService{
      * 가게 주소 업데이트
      */
     @Transactional
-    public void updateStoreAddress(String token, String newAddress) {
+    public void updateStoreAddress(String token, UpdateAddressDTO updateAddressDTO) {
         // token을 통해 userId 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
         if (userId == null) {
@@ -287,7 +290,10 @@ public class StoreService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         // store 주소 업데이트
-        store.changeAddress(newAddress);
+        store.changeAddress(updateAddressDTO.newAddress());
+        store.changeLatitude(updateAddressDTO.newLatitude());
+        store.changeLongitude(updateAddressDTO.newLongitude());
+
         storeRepository.save(store);
     }
 

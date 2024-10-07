@@ -3,11 +3,13 @@ package io.ssafy.p.j11a307.store.controller;
 import io.ssafy.p.j11a307.store.dto.*;
 import io.ssafy.p.j11a307.store.entity.StoreStatus;
 import io.ssafy.p.j11a307.store.global.DataResponse;
+import io.ssafy.p.j11a307.store.global.PagedDataResponse;
 import io.ssafy.p.j11a307.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,10 +40,9 @@ public class StoreController {
     // 1. 점포 생성
     @PostMapping
     @Operation(summary = "점포 생성")
-    public ResponseEntity<MessageResponse> createStore(@RequestHeader("Authorization") String token, @RequestBody CreateStoreDTO storeRequest) {
-        storeService.createStore(token, storeRequest);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(MessageResponse.of("가게 생성 성공"));
+    public ResponseEntity<DataResponse<Integer>> createStore(@RequestHeader("Authorization") String token, @RequestBody CreateStoreDTO storeRequest) {
+        Integer storeId = storeService.createStore(token, storeRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("가게 생성 성공", storeId));
     }
 
     // 2. userId에 해당하는 storeId 반환
@@ -98,8 +99,6 @@ public class StoreController {
     }
 
 
-
-
     // 5. 점포 기본 정보 조회(리뷰 조회시 storeId로 검색했을 떄 점포 사진과 점포이름 반환)
     @GetMapping("/{id}/photo-name")
     @Operation(summary = "점포 기본 정보 조회 (가게 이름, 점포 사진(점포 사진이 null이면 위치 사진으로 대체))")
@@ -127,10 +126,9 @@ public class StoreController {
                 .body(DataResponse.of("점포 사장님 ID 조회 성공", userId));
     }
 
-    // 6. 위도와 경도로 근처 가게 조회
     @GetMapping("/nearby")
     @Operation(summary = "위도와 경도로 근처 가게 20개씩 페이지네이션 조회")
-    public ResponseEntity<List<ReadNearByStoreDTO>> getNearbyStores(
+    public ResponseEntity<PagedDataResponse<List<ReadNearByStoreDTO>>> getNearbyStores(
             @RequestParam
             @Parameter(description = "위도", example = "37.123456") double latitude,
             @RequestParam
@@ -139,10 +137,25 @@ public class StoreController {
             @Parameter(description = "페이지 번호", example = "0") int page,
             @RequestParam(defaultValue = "20")
             @Parameter(description = "페이지 크기", example = "20") int size) {
-        List<ReadNearByStoreDTO> stores = storeService.getStoresByLocation(latitude, longitude, page, size);
-        return ResponseEntity.ok(stores);
-    }
 
+        // 페이징된 결과를 Page 객체로 받음
+        Page<ReadNearByStoreDTO> storePage = storeService.getStoresByLocation(latitude, longitude, page, size);
+
+        // Page 객체에서 List로 변환
+        List<ReadNearByStoreDTO> storesList = storePage.getContent();
+
+        // lastPage는 총 페이지 수에서 1을 뺀 값으로 설정
+        int lastPage = Math.max(storePage.getTotalPages() - 1, 0);
+        PagedDataResponse<List<ReadNearByStoreDTO>> response = PagedDataResponse.of(
+                "20개씩 가게 리스트 가져오기 성공",
+                storesList,
+                storePage.getTotalElements(),
+                lastPage,
+                storePage.getNumber()
+        );
+
+        return ResponseEntity.ok(response);
+    }
     // 6. 점포 정보 수정
     @PutMapping("/update")
     @Operation(summary = "점포 정보 수정")
@@ -155,8 +168,8 @@ public class StoreController {
     // 7. 점포 주소 변경
     @PatchMapping("/store/address")
     @Operation(summary = "점포 주소 변경")
-    public ResponseEntity<MessageResponse> updateStoreAddress(@RequestHeader("Authorization") String token, @RequestBody String newAddress) {
-        storeService.updateStoreAddress(token, newAddress);  // token을 통해 점포 주소 업데이트
+    public ResponseEntity<MessageResponse> updateStoreAddress(@RequestHeader("Authorization") String token, @RequestBody UpdateAddressDTO updateAddressDTO) {
+        storeService.updateStoreAddress(token, updateAddressDTO);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("점포 주소 변경 성공"));
     }
