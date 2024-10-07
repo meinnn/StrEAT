@@ -181,7 +181,7 @@ public class StoreService{
      * 가게 생성
      */
     @Transactional
-    public void createStore(String token,CreateStoreDTO createStoreDTO) {
+    public Integer createStore(String token,CreateStoreDTO createStoreDTO) {
         // token을 통해 userId 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
         if (userId == null) {
@@ -202,6 +202,8 @@ public class StoreService{
         Store store = createStoreDTO.toEntity(industryCategory);
         store.assignOwner(userId);
         storeRepository.save(store);
+
+        return store.getId();
     }
 
     /**
@@ -276,7 +278,7 @@ public class StoreService{
      * 가게 주소 업데이트
      */
     @Transactional
-    public void updateStoreAddress(String token, String newAddress) {
+    public void updateStoreAddress(String token, UpdateAddressDTO updateAddressDTO) {
         // token을 통해 userId 조회
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
         if (userId == null) {
@@ -288,7 +290,10 @@ public class StoreService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         // store 주소 업데이트
-        store.changeAddress(newAddress);
+        store.changeAddress(updateAddressDTO.newAddress());
+        store.changeLatitude(updateAddressDTO.newLatitude());
+        store.changeLongitude(updateAddressDTO.newLongitude());
+
         storeRepository.save(store);
     }
 

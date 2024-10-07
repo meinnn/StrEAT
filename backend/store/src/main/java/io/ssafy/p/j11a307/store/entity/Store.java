@@ -80,6 +80,12 @@ public class Store {
     @JsonIgnore  // 순환 참조 방지
     private BusinessDay businessDay;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "selected_simple_location_id")
+    private StoreSimpleLocation selectedSimpleLocation;
+
+
+
     // Store 삭제 전 IndustryCategory와의 연관관계를 끊는 메서드 추가
     public void removeFromCategory() {
         if (this.industryCategory != null) {
@@ -108,12 +114,46 @@ public class Store {
         this.address = address;
     }
 
+    public void changeLatitude(Double latitude) {
+        if (latitude == null) {
+            throw new BusinessException(ErrorCode.STORE_LATITUDE_NULL);
+        }
+        this.latitude = latitude;
+    }
+
+    // 경도 변경 메서드
+    public void changeLongitude(Double longitude) {
+        if (longitude == null) {
+            throw new BusinessException(ErrorCode.STORE_LONGITUDE_NULL);
+        }
+        this.longitude = longitude;
+    }
+
+    public void changeClosedDays(String closedDays) {
+        this.closedDays = closedDays;
+    }
+
+    public void changeStatus(StoreStatus status) {
+        if (status == null) {
+            throw new BusinessException(ErrorCode.STORE_STATUS_NULL);
+        }
+        this.status = status;
+    }
+
     // 사용자 ID 설정 메서드
     public void assignOwner(Integer userId) {
         if (userId == null) {
             throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
         }
         this.userId = userId;
+    }
+
+    public void updateSelectedSimpleLocation(StoreSimpleLocation simpleLocation) {
+        if (simpleLocation == null) {
+            throw new BusinessException(ErrorCode.SIMPLE_LOCATION_NOT_FOUND);
+        }
+
+        this.selectedSimpleLocation = simpleLocation;
     }
 
     public Store updateWith(UpdateStoreDTO request, IndustryCategory industryCategory) {
@@ -136,22 +176,9 @@ public class Store {
                 .build();
     }
 
-    public void changeClosedDays(String closedDays) {
-        this.closedDays = closedDays;
-    }
+
 
     public Integer getStoreId() {
         return this.id;
-    }
-
-    public void updateLocationAndStatus(String address, Double latitude, Double longitude, String open) {
-
-    }
-
-    public void changeStatus(StoreStatus status) {
-        if (status == null) {
-            throw new BusinessException(ErrorCode.STORE_STATUS_NULL);
-        }
-        this.status = status;
     }
 }
