@@ -25,10 +25,18 @@ spring:
           uri: http://localhost:8223
           predicates:
             - Path=/api/payments/**
+        - id: announcement
+          uri: http://localhost:8885
+          predicates:
+            - Path=/api/announcements/**
         - id: push-alert
           uri: http://localhost:8848
           predicates:
             - Path=/api/push-alert/**
+  data:
+    redis:
+      host: localhost
+      port: 6379
 server:
   port: 8787
 
@@ -45,3 +53,5 @@ springdoc:
         url: http://localhost:8787/api/products/v3/api-docs
       - name: Product API
         url: http://localhost:8787/api/payments/v3/api-docs
+      - name: Announcement API
+        url: http://localhost:8787/api/announcements/v3/api-docs

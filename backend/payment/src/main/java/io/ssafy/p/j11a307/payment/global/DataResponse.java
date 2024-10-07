@@ -1,9 +1,10 @@
-package io.ssafy.p.j11a307.store.global;
+package io.ssafy.p.j11a307.payment.global;
 
 import lombok.Getter;
 
 @Getter
 public class DataResponse<T> {
+
     // 응답 메시지
     private final String message;
 
@@ -11,7 +12,7 @@ public class DataResponse<T> {
     private final T data;
 
     // 생성자: 메시지와 데이터만 관리
-    public DataResponse(String message, T data) {
+    private DataResponse(String message, T data) {
         this.message = message;
         this.data = data;
     }
