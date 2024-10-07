@@ -217,6 +217,7 @@ public class OrderService {
         if (orders.isPresent()) {
             ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
             ReadStoreBasicInfoDTO readStoreBasicInfoDTO = storeClient.getStoreBasicInfo(orders.get().getStoreId()).getData();
+
             if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
 
             //2. 해당 주문 상세를 볼 자격이 없다면?
@@ -229,7 +230,7 @@ public class OrderService {
             for (OrderProduct orderProduct : orderProducts) {
                 ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
 
-                if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+                //if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
 
                 List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
                 List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
@@ -245,7 +246,7 @@ public class OrderService {
                         .optionList(productOptions)
                         .productName(readProductDTO.getName())
                         .productPrice(readProductDTO.getPrice() + optionPriceSum)
-                        .productSrc(readProductDTO.getPhotos().get(0))
+                        .productSrc((readProductDTO.getPhotos().isEmpty()) ? null : readProductDTO.getPhotos().get(0))
                         .quantity(orderProduct.getCount())
                         .build();
 
@@ -353,7 +354,7 @@ public class OrderService {
             for (OrderProduct orderProduct : orderProducts) {
                 ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
 
-                if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+                //if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
 
                 List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
                 List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
@@ -369,7 +370,7 @@ public class OrderService {
                         .optionList(productOptions)
                         .productName(readProductDTO.getName())
                         .productPrice(readProductDTO.getPrice() + optionPriceSum)
-                        .productSrc(readProductDTO.getPhotos().get(0))
+                        .productSrc((readProductDTO.getPhotos().isEmpty()) ? null : readProductDTO.getPhotos().get(0))
                         .quantity(orderProduct.getCount())
                         .build();
 
