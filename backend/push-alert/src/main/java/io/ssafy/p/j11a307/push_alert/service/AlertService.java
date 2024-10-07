@@ -17,7 +17,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AlertService {
 
-    private final String TOPIC_STORE_PREFIX = "store:";
+    private final String TOPIC_STORE_PREFIX = "store-";
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
