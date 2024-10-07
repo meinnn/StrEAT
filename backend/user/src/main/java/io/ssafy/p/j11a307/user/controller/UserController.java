@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -165,6 +166,20 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "해당 id 유저 없음")
     })
     public ResponseEntity<UserInfoResponse> getUserInformation(@PathVariable Integer userId) {
+        UserInfoResponse userInfoResponse = userService.getUserInfoById(userId);
+        return ResponseEntity.ok(userInfoResponse);
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "유저 정보 조회", description = "유저 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "유저 조회 성공",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserInfoResponse.class))),
+            @ApiResponse(responseCode = "404", description = "해당 id 유저 없음")
+    })
+    public ResponseEntity<UserInfoResponse> getUserInformation(HttpServletRequest request) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         UserInfoResponse userInfoResponse = userService.getUserInfoById(userId);
         return ResponseEntity.ok(userInfoResponse);
     }
