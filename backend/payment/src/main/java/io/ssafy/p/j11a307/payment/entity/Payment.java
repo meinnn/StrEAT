@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,13 +23,16 @@ public class Payment {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "payment")
     private TossEasyPayment tossEasyPayment;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TossCancel> tossCancels;
+
     private String mid;
     private String version;
     private String paymentKey;
     private String status;
     private String lastTransactionKey;
-    private String tossOrderId;
-    private String tossOrderName;
+    private Integer orderId;
+    private String orderName;
     private String requestedAt;
     private String approvedAt;
     private Boolean useEscrow;
@@ -64,14 +69,18 @@ public class Payment {
         this.tossEasyPayment = tossEasyPayment;
     }
 
+    public void addTossCancels(List<TossCancel> tossCancels) {
+        this.tossCancels = tossCancels;
+    }
+
     public Payment(JsonNode jsonNode) {
         this.mid = jsonNode.get("mid").asText();
         this.version = jsonNode.get("version").asText();
         this.paymentKey = jsonNode.get("paymentKey").asText();
         this.status = jsonNode.get("status").asText();
         this.lastTransactionKey = jsonNode.get("lastTransactionKey").asText();
-        this.tossOrderId = jsonNode.get("tossOrderId").asText();
-        this.tossOrderName = jsonNode.get("tossOrderName").asText();
+        this.orderId = jsonNode.get("orderId").asInt();
+        this.orderName = jsonNode.get("orderName").asText();
         this.requestedAt = jsonNode.get("requestedAt").asText();
         this.approvedAt = jsonNode.get("approvedAt").asText();
         this.useEscrow = jsonNode.get("useEscrow").asBoolean();
