@@ -1,25 +1,62 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { IoCloseOutline } from 'react-icons/io5'
 import { GoChevronRight } from 'react-icons/go'
 
-const ONGOING_ORDER = [
-  {
-    store_name: '옐로우 치킨 키친',
-    status: '주문 확인',
-  },
-]
+interface Order {
+  ordersId: number
+  status:
+    | 'REJECTED'
+    | 'WAITING_FOR_PROCESSING'
+    | 'PROCESSING'
+    | 'WAITING_FOR_RECEIPT'
+    | 'RECEIVED'
+  storeName: string
+}
+
+const STATUS_MAP: { [key in Order['status']]: string } = {
+  REJECTED: '주문 거절',
+  WAITING_FOR_PROCESSING: '주문 요청',
+  PROCESSING: '주문 확인',
+  WAITING_FOR_RECEIPT: '픽업 대기',
+  RECEIVED: '픽업 완료',
+}
+
+async function fetchOngoingOrders(): Promise<Order[]> {
+  const response = await fetch('/services/order/ongoing')
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch ongoing orders')
+  }
+
+  const data = await response.json()
+  return data.orderList
+}
 
 export default function OngoingOrder() {
   const [isVisible, setIsVisible] = useState(true)
+  const [orders, setOrders] = useState<Order[]>([])
+
+  useEffect(() => {
+    async function getOrders() {
+      try {
+        const ongoingOrders = await fetchOngoingOrders()
+        setOrders(ongoingOrders)
+      } catch (error) {
+        console.error('Error fetching ongoing orders:', error)
+      }
+    }
+
+    getOrders().then()
+  }, [])
 
   const handleClose = () => {
     setIsVisible(false)
   }
 
-  if (!isVisible) {
+  if (!isVisible || orders.length === 0) {
     return null
   }
 
@@ -40,18 +77,21 @@ export default function OngoingOrder() {
       </p>
 
       {/* 가게 이름과 주문 상태 */}
-      <Link
-        href="/customer/orders/1"
-        className="flex justify-between items-center"
-      >
-        <div>
-          <p className="text-xl font-bold">{ONGOING_ORDER[0].store_name}</p>
-          <p className="text-primary-500 font-semibold">
-            {ONGOING_ORDER[0].status}
-          </p>
-        </div>
-        <GoChevronRight size={32} />
-      </Link>
+      {orders.map((order) => (
+        <Link
+          key={order.ordersId}
+          href={`/customer/orders/${order.ordersId}`}
+          className="flex justify-between items-center"
+        >
+          <div>
+            <p className="text-xl font-bold">{order.storeName}</p>
+            <p className="text-primary-500 font-semibold">
+              {STATUS_MAP[order.status]}
+            </p>
+          </div>
+          <GoChevronRight size={32} />
+        </Link>
+      ))}
     </div>
   )
 }
