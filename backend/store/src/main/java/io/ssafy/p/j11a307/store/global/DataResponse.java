@@ -1,8 +1,6 @@
 package io.ssafy.p.j11a307.store.global;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
-import lombok.Getter;
 
 @Getter
 public class DataResponse<T> {
@@ -13,7 +11,7 @@ public class DataResponse<T> {
     private final T data;
 
     // 생성자: 메시지와 데이터만 관리
-    private DataResponse(String message, T data) {
+    public DataResponse(String message, T data) {
         this.message = message;
         this.data = data;
     }
