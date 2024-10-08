@@ -201,7 +201,7 @@ export default function MapView({
           {storeList.map((store) => (
             <div
               key={store.id}
-              className="relative bg-[#371B1B] text-white rounded-xl max-w-72 h-28 px-1"
+              className="relative bg-[#371B1B] text-white rounded-xl w-72 h-28 px-1"
             >
               <StoreListItem store={store} />
             </div>

@@ -1,15 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { RiHeart3Fill, RiHeart3Line } from 'react-icons/ri'
 import { FaStar } from 'react-icons/fa'
 import { GoChevronRight } from 'react-icons/go'
 import { GrLocation } from 'react-icons/gr'
 import { useRouter } from 'next/navigation'
 import BackButtonWithImage from '@/components/BackButtonWithImage'
+import StoreLikeButton from '@/components/StoreLikeButton'
 
 interface Store {
-  id: string
+  id: number
   name: string
   address: string
   ownerWord: string
@@ -19,12 +18,7 @@ interface Store {
 }
 
 export default function StoreDetails({ store }: { store: Store }) {
-  const [isLiked, setIsLiked] = useState(false)
   const router = useRouter()
-
-  const toggleLike = () => {
-    setIsLiked(!isLiked) // 좋아요 상태 토글
-  }
 
   return (
     <div>
@@ -34,17 +28,9 @@ export default function StoreDetails({ store }: { store: Store }) {
         title={store.name}
       />
       <div className="relative">
-        <button
-          type="button"
-          onClick={toggleLike}
-          className="absolute top-8 right-4 bg-white p-2 rounded-full"
-        >
-          {isLiked ? (
-            <RiHeart3Fill className="text-primary-500" size={24} />
-          ) : (
-            <RiHeart3Line className="text-primary-500" size={24} />
-          )}
-        </button>
+        <div className="absolute top-8 right-4 bg-white p-2">
+          <StoreLikeButton storeId={store.id} />
+        </div>
       </div>
       <div className="m-5">
         <div>

@@ -1,17 +1,10 @@
-import { useState } from 'react'
 import { FaLocationArrow, FaStar } from 'react-icons/fa'
-import { RiHeart3Fill, RiHeart3Line } from 'react-icons/ri'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Store } from '@/types/store'
+import StoreLikeButton from '@/components/StoreLikeButton'
 
 export default function StoreListItem({ store }: { store: Store }) {
-  const [isLiked, setIsLiked] = useState(false)
-
-  const toggleLike = () => {
-    setIsLiked(!isLiked)
-  }
-
   return (
     <div className="flex items-center justify-between p-4 h-full w-full">
       <Link
@@ -45,13 +38,9 @@ export default function StoreListItem({ store }: { store: Store }) {
         </div>
       </Link>
 
-      <button type="button" onClick={toggleLike} className="ml-4 mb-auto">
-        {isLiked ? (
-          <RiHeart3Fill className="text-primary-500" size={24} />
-        ) : (
-          <RiHeart3Line className="text-gray-dark" size={24} />
-        )}
-      </button>
+      <div className="ml-4 mb-auto">
+        <StoreLikeButton storeId={store.id} />
+      </div>
     </div>
   )
 }
