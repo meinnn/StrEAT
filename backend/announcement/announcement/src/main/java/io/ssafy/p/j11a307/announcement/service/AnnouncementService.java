@@ -115,6 +115,7 @@ public class AnnouncementService {
 
             pb.redirectErrorStream(true);
             Process process = pb.start();
+            process.waitFor();
 
             System.out.println("파이썬 호출 끝남!!");
 
@@ -126,8 +127,6 @@ public class AnnouncementService {
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
             }
-
-            process.waitFor();
 
             //출력 내용 출력
             System.out.println("Python 출력: " + output.toString());
