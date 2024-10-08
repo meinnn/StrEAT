@@ -3,6 +3,8 @@ package io.ssafy.p.j11a307.push_alert.service;
 import com.google.firebase.messaging.Notification;
 import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
 import io.ssafy.p.j11a307.push_alert.entity.PushAlert;
+import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
+import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
 import io.ssafy.p.j11a307.push_alert.global.DataResponse;
 import io.ssafy.p.j11a307.push_alert.repository.PushAlertRepository;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
@@ -15,6 +17,7 @@ import io.ssafy.p.j11a307.push_alert.util.FirebaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -101,6 +104,12 @@ public class AlertService {
         ApiResponse<FcmTokenResponse> fcmTokenResponse = userService.getFcmTokenByUserId(userId, internalRequestKey);
         String userFcmToken = fcmTokenResponse.getData().fcmToken();
         firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
+    }
+
+    @Transactional
+    public void checkAlert(Long alertId) {
+        PushAlert pushAlert = pushAlertRepository.findById(alertId).orElseThrow(() -> new BusinessException(ErrorCode.ALERT_TYPE_NOT_FOUND));
+        pushAlert.checkAlert();
     }
 
     private String convertDateFormat(Date date) {

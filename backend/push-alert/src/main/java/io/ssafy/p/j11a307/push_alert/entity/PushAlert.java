@@ -36,4 +36,8 @@ public class PushAlert {
         this.orderId = orderId;
         this.checked = checked;
     }
+
+    public void checkAlert() {
+        this.checked = true;
+    }
 }

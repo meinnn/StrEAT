@@ -4,6 +4,7 @@ import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
+import io.ssafy.p.j11a307.push_alert.global.MessageResponse;
 import io.ssafy.p.j11a307.push_alert.service.AlertService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -107,5 +110,16 @@ public class AlertController {
             throw new BusinessException(ErrorCode.BAD_REQUEST);
         }
         alertService.unsubscribeFromStore(userId, storeId);
+    }
+
+    @PostMapping("/check/{alertId}")
+    @Operation(summary = "푸시 알림 확인", description = "푸시 알림 확인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "푸시 알림 확인 성공"),
+            @ApiResponse(responseCode = "404", description = "푸시 알림을 찾지 못했습니다")
+    })
+    public ResponseEntity<MessageResponse> checkAlert(@PathVariable Long alertId) {
+        alertService.checkAlert(alertId);
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of("푸시 알림 확인 성공"));
     }
 }
