@@ -13,24 +13,22 @@ export default function StoreListItem({ store }: { store: Store }) {
   }
 
   return (
-    <div className="flex items-center justify-between p-4 h-full">
+    <div className="flex items-center justify-between p-4 h-full w-full">
       <Link
         href={`/customer/stores/${store.id}`}
-        className="flex items-center w-full"
+        className="flex items-center overflow-hidden"
       >
         {/* 음식점 이미지 */}
-        <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-dark mr-4">
-          <Image
-            src={store.src || '/images/default_img.jpg'}
-            alt={store.storeName}
-            width={64}
-            height={64}
-            className="object-cover aspect-square"
-          />
-        </div>
+        <Image
+          src={store.src || '/images/default_img.jpg'}
+          alt={store.storeName}
+          width={64}
+          height={64}
+          className="object-cover w-16 h-16 rounded-full mr-4"
+        />
 
         {/* 음식점 정보 */}
-        <div>
+        <div className="truncate">
           {store.categories.map((category) => (
             <span key={category} className="text-xs text-gray-dark me-1">
               #{category}
