@@ -285,7 +285,7 @@ public class OrderService {
 
     @Transactional
     public OrderSearchResponse getSearchOrders(Integer storeId, OrderSearchRequest orderSearchRequest, String token) {
-        Integer ownerId = ownerClient.getUserId(token, internalRequestKey);
+        Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
         Pageable pageable = PageRequest.of(orderSearchRequest.pgno(), orderSearchRequest.spp());
 
         List<OrderCode> status = orderSearchRequest.statusTag();
@@ -306,15 +306,15 @@ public class OrderService {
         Page<Orders> orders;
 
         //검색 알고리즘
-        if(status != null && paymentMethod != null) {
+        if(!status.isEmpty() && !paymentMethod.isEmpty()) {
             if(startTime != null) {
-                orders = ordersRepository.findByStoreIdAndStatusInAndPaymentMethodInAndCreatedAtBetween(
+                orders = ordersRepository.findByStoreIdAndStatusInOrPaymentMethodInAndCreatedAtBetween(
                         storeId, status, paymentMethod, startTime, endTime, pageable);
             } else {
-                orders = ordersRepository.findByStoreIdAndStatusInAndPaymentMethodIn(storeId,status, paymentMethod, pageable);
+                orders = ordersRepository.findByStoreIdAndStatusInOrPaymentMethodIn(storeId,status, paymentMethod, pageable);
             }
         }
-        else if(status != null) {
+        else if(!status.isEmpty()) {
             if(startTime != null) {
                 orders = ordersRepository.findByStoreIdAndStatusInAndCreatedAtBetween(
                         storeId,status, startTime, endTime, pageable);
@@ -322,7 +322,7 @@ public class OrderService {
                 orders = ordersRepository.findByStoreIdAndStatusIn(storeId,status, pageable);
             }
         }
-        else if(paymentMethod != null) {
+        else if(!paymentMethod.isEmpty()) {
             if(startTime != null) {
                 orders = ordersRepository.findByStoreIdAndPaymentMethodInAndCreatedAtBetween(
                         storeId,paymentMethod, startTime, endTime, pageable);

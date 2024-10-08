@@ -37,12 +37,27 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     @Query(value="SELECT * FROM orders WHERE user_id = :userId AND (status= 'PROCESSING' OR STATUS= 'WAITING_FOR_RECEIPT')", nativeQuery = true)
     List<Orders> findByUserIdAndOngoing(Integer userId);
 
-    Page<Orders> findByStoreIdAndStatusInAndPaymentMethodIn(Integer storeId, List<OrderCode> status, List<PayTypeCode> paymentMethod, Pageable pageable);
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status IN :status OR o.payment_method IN :paymentMethod)", nativeQuery = true)
+    Page<Orders> findByStoreIdAndStatusInOrPaymentMethodIn(Integer storeId, List<OrderCode> status, List<PayTypeCode> paymentMethod, Pageable pageable);
+
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status IN :status)", nativeQuery = true)
     Page<Orders> findByStoreIdAndStatusIn(Integer storeId,List<OrderCode> status, Pageable pageable);
+
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.payment_method IN :paymentMethod)", nativeQuery = true)
     Page<Orders> findByStoreIdAndPaymentMethodIn(Integer storeId,List<PayTypeCode> paymentMethod, Pageable pageable);
-    Page<Orders> findByStoreIdAndStatusInAndPaymentMethodInAndCreatedAtBetween(Integer storeId,List<OrderCode> status, List<PayTypeCode> paymentMethod, LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
-    Page<Orders> findByStoreIdAndStatusInAndCreatedAtBetween(Integer storeId,List<OrderCode> status, LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
-    Page<Orders> findByStoreIdAndPaymentMethodInAndCreatedAtBetween(Integer storeId,List<PayTypeCode> paymentMethod, LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
-    Page<Orders> findByStoreIdAndCreatedAtBetween(Integer storeId,LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status IN :status OR o.payment_method IN :paymentMethod) AND (o.created_at BETWEEN :startDate AND :endDate)", nativeQuery = true)
+    Page<Orders> findByStoreIdAndStatusInOrPaymentMethodInAndCreatedAtBetween(Integer storeId,List<OrderCode> status, List<PayTypeCode> paymentMethod, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status IN :status ) AND (o.created_at BETWEEN :startDate AND :endDate) ", nativeQuery = true)
+    Page<Orders> findByStoreIdAndStatusInAndCreatedAtBetween(Integer storeId,List<OrderCode> status, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.payment_method IN :paymentMethod ) AND (o.created_at BETWEEN :startDate AND :endDate)", nativeQuery = true)
+    Page<Orders> findByStoreIdAndPaymentMethodInAndCreatedAtBetween(Integer storeId,List<PayTypeCode> paymentMethod, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.created_at BETWEEN :startDate AND :endDate) ", nativeQuery = true)
+    Page<Orders> findByStoreIdAndCreatedAtBetween(Integer storeId,LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId", nativeQuery = true)
     Page<Orders> findAllByStoreId(Integer storeId, Pageable pageable);
 }

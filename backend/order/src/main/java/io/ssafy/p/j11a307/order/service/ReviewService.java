@@ -285,7 +285,7 @@ public class ReviewService {
             else {
                 Integer total = orders.stream().mapToInt(i -> reviewRepository.searchReview(i.getId()).getScore()).sum();
                 Double average = Double.valueOf(String.format("%.1f", (double)total/orders.size()));
-                averageReviewList.put(storeId, average);   
+                averageReviewList.put(storeId, average);
             }
         }
 
