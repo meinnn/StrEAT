@@ -99,7 +99,7 @@ public class AnnouncementService {
             process2.waitFor();
 
             //ProcessBuilder pb = new ProcessBuilder("python3", "submitWordFile.py");
-            ProcessBuilder pb = new ProcessBuilder("python", "submitWordFile.py",
+            ProcessBuilder pb = new ProcessBuilder("python3", "submitWordFile.py",
                     ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
 
             pb.redirectErrorStream(true);
