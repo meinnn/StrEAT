@@ -111,8 +111,13 @@ public class AnnouncementService {
 
 //            ProcessBuilder pb = new ProcessBuilder("python", "var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
 //                    ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
-            ProcessBuilder pb = new ProcessBuilder("python", "submitWordFile.py");
+            ProcessBuilder pb2 = new ProcessBuilder("pip3", "install", "-r", "requirements.txt");
+            pb2.redirectErrorStream(true);
+            Process process2 = pb2.start();
+            process2.waitFor();
 
+
+            ProcessBuilder pb = new ProcessBuilder("python3", "submitWordFile.py");
             pb.redirectErrorStream(true);
             Process process = pb.start();
             process.waitFor();
