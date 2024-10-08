@@ -83,34 +83,34 @@ public class AnnouncementService {
         try {
             //System.out.println("현재 작업 디렉토리: " + System.getProperty("user.dir"));
 
-            String currentDir = System.getProperty("user.dir");
-            System.out.println("현재 작업 디렉토리: " + currentDir);
+            //String currentDir = System.getProperty("user.dir");
+            //System.out.println("현재 작업 디렉토리: " + currentDir);
 
             // 현재 작업 디렉토리의 파일 목록 가져오기
-            File dir = new File(currentDir);
-            File[] filesList = dir.listFiles();
-
-            if (filesList != null) {
-                System.out.println("디렉토리 내 파일 목록:");
-                for (File file : filesList) {
-                    System.out.println(file.getName());
-                }
-            } else {
-                System.out.println("디렉토리가 비어있거나 접근할 수 없습니다.");
-            }
+//            File dir = new File(currentDir);
+//            File[] filesList = dir.listFiles();
+//
+//            if (filesList != null) {
+//                System.out.println("디렉토리 내 파일 목록:");
+//                for (File file : filesList) {
+//                    System.out.println(file.getName());
+//                }
+//            } else {
+//                System.out.println("디렉토리가 비어있거나 접근할 수 없습니다.");
+//            }
 
             // Python에서 생성한 파일 경로
-            Path filePath2 = Paths.get("announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/truck.docx"); // Python에서 생성한 파일 경로를 지정
+            Path filePath2 = Paths.get("var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/truck.docx"); // Python에서 생성한 파일 경로를 지정
             File file2 = filePath2.toFile();
 
-            // 파일이 존재하지 않으면 오류 메시지 반환
+             //파일이 존재하지 않으면 오류 메시지 반환
             if (!file2.exists()) throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
 
-            System.out.println("파일 존재함!!");
+            //System.out.println("파일 존재함!!");
 
-//            ProcessBuilder pb = new ProcessBuilder("python", "announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
+//            ProcessBuilder pb = new ProcessBuilder("python", "var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
 //                    ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
-            ProcessBuilder pb = new ProcessBuilder("python", "announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py");
+            ProcessBuilder pb = new ProcessBuilder("python", "var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py");
 
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -130,14 +130,14 @@ public class AnnouncementService {
             System.out.println("Python 출력: " + output.toString());
 
             // Python에서 생성한 파일 경로
-            Path filePath = Paths.get("announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/newfile.docx"); // Python에서 생성한 파일 경로를 지정
+            Path filePath = Paths.get("var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/newfile.docx"); // Python에서 생성한 파일 경로를 지정
             File file = filePath.toFile();
 
             // 파일이 존재하지 않으면 오류 메시지 반환
             if (!file.exists()) throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/newfile.docx");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/newfile.docx");
 
             FileSystemResource fileSystemResource = new FileSystemResource(file);
 
