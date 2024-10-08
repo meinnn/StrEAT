@@ -16,7 +16,7 @@ public interface UserService {
     @GetMapping("/api/users/{user-id}/fcm-token")
     ApiResponse<FcmTokenResponse> getFcmTokenByUserId(@PathVariable("user-id") Integer userId, @RequestHeader("X-Internal-Request") String internalRequestHeader);
 
-    @GetMapping("/api/users/{storeId}/dibs-customers")
+    @GetMapping("/api/users/dibs/{storeId}/dibs-customers")
     DataResponse<List<Integer>> getCalledDibsUserByStoreId(@PathVariable("storeId") Integer storeId, @RequestHeader("X-Internal-Request") String internalRequestHeader);
 
 }

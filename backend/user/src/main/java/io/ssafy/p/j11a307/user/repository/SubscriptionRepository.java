@@ -8,4 +8,5 @@ import java.util.List;
 public interface SubscriptionRepository extends JpaRepository<Subscription, Subscription.SubscriptionId> {
 
     List<Subscription> findBySubscriptionIdUserId(Integer userId);
+    List<Subscription> findBySubscriptionIdStoreId(Integer storeId);
 }
