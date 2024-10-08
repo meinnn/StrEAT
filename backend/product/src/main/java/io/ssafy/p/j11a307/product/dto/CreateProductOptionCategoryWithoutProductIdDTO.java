@@ -2,8 +2,6 @@ package io.ssafy.p.j11a307.product.dto;
 
 import io.ssafy.p.j11a307.product.entity.Product;
 import io.ssafy.p.j11a307.product.entity.ProductOptionCategory;
-import io.ssafy.p.j11a307.product.exception.BusinessException;
-import io.ssafy.p.j11a307.product.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
@@ -24,29 +22,9 @@ public record CreateProductOptionCategoryWithoutProductIdDTO(
         @Schema(description = "상품 옵션 목록")
         List<CreateProductOptionDTO> productOptions
 ) {
-    public CreateProductOptionCategoryWithoutProductIdDTO {
-        // 필수 필드 검증
-        if (name == null || name.isEmpty()) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NAME_NULL);
-        }
-        if (maxSelect == null || maxSelect < 0) {
-            throw new BusinessException(ErrorCode.INVALID_MAX_SELECT);
-        }
-        if (minSelect == null || minSelect < 0) {
-            throw new BusinessException(ErrorCode.INVALID_MIN_SELECT);
-        }
-
-        if (productOptions == null || productOptions.isEmpty()) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPTION_EMPTY);
-        }
-        for (CreateProductOptionDTO option : productOptions) {
-            if (option.productOptionName() == null || option.productOptionName().isEmpty()) {
-                throw new BusinessException(ErrorCode.PRODUCT_OPTION_NAME_NULL);
-            }
-            if (option.productOptionPrice() == null || option.productOptionPrice() < 0) {
-                throw new BusinessException(ErrorCode.INVALID_PRICE);
-            }
-        }
+    // null 값을 빈 리스트로 초기화하는 메서드 추가
+    public List<CreateProductOptionDTO> getProductOptions() {
+        return productOptions == null ? List.of() : productOptions;
     }
 
     public ProductOptionCategory toEntity(Product product) {
@@ -66,7 +44,7 @@ public record CreateProductOptionCategoryWithoutProductIdDTO(
                 this.isEssential,
                 this.maxSelect,
                 this.minSelect,
-                this.productOptions
+                this.getProductOptions()
         );
     }
 }
