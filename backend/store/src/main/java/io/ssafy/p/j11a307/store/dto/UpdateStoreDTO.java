@@ -3,6 +3,7 @@ package io.ssafy.p.j11a307.store.dto;
 import io.ssafy.p.j11a307.store.entity.Store;
 import io.ssafy.p.j11a307.store.entity.StoreStatus;
 import io.ssafy.p.j11a307.store.entity.StoreType;
+import io.ssafy.p.j11a307.store.entity.SubCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "가게 정보를 수정하기 위한 DTO")
@@ -43,12 +44,11 @@ public record UpdateStoreDTO(
         @Schema(description = "영업 상태", example = "영업중")
         StoreStatus status,
 
-        @Schema(description = "업종 카테고리 ID", example = "1")
-        Integer industryCategoryId,
-
         @Schema(description = "사업자 등록번호", example = "123-45-67890")
-        String businessRegistrationNumber
+        String businessRegistrationNumber,
 
+        @Schema(description = "하위 가게 카테고리ID", example = "30")
+        Integer subCategoryId
 ) {
     // 기존 Store 엔티티를 받아서 업데이트할 엔티티로 변환하는 메서드
     public Store toEntity(Store existingStore) {
@@ -67,7 +67,7 @@ public record UpdateStoreDTO(
                 .closedDays(this.closedDays != null ? this.closedDays : existingStore.getClosedDays())
                 .status(this.status != null ? this.status : existingStore.getStatus())
                 .businessRegistrationNumber(this.businessRegistrationNumber != null ? this.businessRegistrationNumber : existingStore.getBusinessRegistrationNumber())  // 사업자 등록번호 처리
-                .industryCategory(null)  // industryCategory는 별도 처리
+                .subCategory(null)
                 .build();
     }
 }
