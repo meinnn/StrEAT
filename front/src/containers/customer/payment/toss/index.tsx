@@ -1,7 +1,7 @@
 'use client'
 
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useCart } from '@/contexts/CartContext'
 
 const clientKey =
@@ -11,10 +11,6 @@ const customerKey = 'SfRLtISYsjv6yX7CV2Wuz'
 
 export default function PaymentCheckoutPage() {
   const [payment, setPayment] = useState<any>(null)
-  const [amount, setAmount] = useState({
-    currency: 'KRW',
-    value: 50000,
-  })
 
   const { cartItems } = useCart()
 
@@ -39,29 +35,27 @@ export default function PaymentCheckoutPage() {
       }
     }
 
-    fetchPayment()
+    fetchPayment().then()
   }, [])
 
-  useEffect(() => {
-    setAmount({
-      currency: 'KRW',
-      value:
-        cartItems
-          .filter((item) => item.checked)
-          .reduce((acc, item) => acc + item.price, 0) ?? 0,
-    })
-  }, [cartItems])
-
-  const requestPayment = async () => {
+  const requestPayment = useCallback(async () => {
     if (!payment) {
       console.error('Payment is not initialized')
       return
     }
 
+    const amount = {
+      currency: 'KRW',
+      value:
+        cartItems
+          .filter((item) => item.checked)
+          .reduce((acc, item) => acc + item.price, 0) ?? 0,
+    }
+
     try {
       await payment.requestPayment({
         method: selectedPaymentMethod || 'CARD',
-        amount, // amount는 숫자형 값으로 전달
+        amount,
         orderId: 'YVyBWblH0boLvfy5NgZJU',
         orderName: `${cartItems[0].name} 외 ${cartItems.length - 1}건`,
         successUrl: `${window.location.origin}/customer/payment/result?status=success`,
@@ -79,18 +73,18 @@ export default function PaymentCheckoutPage() {
     } catch (error) {
       console.error('Payment error:', error)
     }
-  }
+  }, [cartItems, payment, selectedPaymentMethod])
+
+  // 컴포넌트가 렌더링될 때 바로 결제 요청
+  useEffect(() => {
+    if (payment) {
+      requestPayment().then()
+    }
+  }, [payment, requestPayment])
 
   return (
     <div>
-      <h2>아래 결제하기 버튼 누르쇼</h2>
-      <button
-        type="button"
-        className="button bg-primary-400 text-white"
-        onClick={requestPayment}
-      >
-        결제하기
-      </button>
+      <h2>결제 이동 중...</h2>
     </div>
   )
 }
