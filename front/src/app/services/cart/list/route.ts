@@ -27,6 +27,11 @@ export async function GET(request: Request) {
       }
     )
 
+    if (response.status === 404) {
+      // 장바구니 빔
+      return NextResponse.json({}, { status: 200 })
+    }
+
     if (!response.ok) {
       return NextResponse.json(
         { message: 'Failed to fetch basket list' },
