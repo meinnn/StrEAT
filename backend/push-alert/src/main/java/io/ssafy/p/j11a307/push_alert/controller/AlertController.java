@@ -1,9 +1,11 @@
 package io.ssafy.p.j11a307.push_alert.controller;
 
 import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
+import io.ssafy.p.j11a307.push_alert.dto.PushAlertHistoryResponse;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
+import io.ssafy.p.j11a307.push_alert.global.DataResponse;
 import io.ssafy.p.j11a307.push_alert.global.MessageResponse;
 import io.ssafy.p.j11a307.push_alert.service.AlertService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +26,8 @@ public class AlertController {
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
+
+    private final String HEADER_AUTH = "Authorization";
 
     private final AlertService alertService;
 
@@ -121,5 +125,20 @@ public class AlertController {
     public ResponseEntity<MessageResponse> checkAlert(@PathVariable Long alertId) {
         alertService.checkAlert(alertId);
         return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of("푸시 알림 확인 성공"));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "전체 푸시 알림 목록 조회", description = "전체 푸시 알림 목록 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "푸시 알림 목록 조회 성공")
+    })
+    public ResponseEntity<DataResponse<PushAlertHistoryResponse>> getAllPushAlerts(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") Integer pgno,
+            @RequestParam(defaultValue = "10") Integer spp) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        PushAlertHistoryResponse pushAlertHistoryResponse = alertService.getAllAlertsByUserId(accessToken, pgno, spp);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("전체 푸시 알림 목록 조회 성공", pushAlertHistoryResponse));
     }
 }
