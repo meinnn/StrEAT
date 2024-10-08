@@ -116,6 +116,7 @@ public class AnnouncementService {
             Process process2 = pb2.start();
             process2.waitFor();
 
+            System.out.println("핍 완료!!!!!!!!!!!!!!");
 
             ProcessBuilder pb = new ProcessBuilder("python3", "submitWordFile.py");
             pb.redirectErrorStream(true);
