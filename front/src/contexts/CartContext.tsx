@@ -127,15 +127,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     refetch().then()
   }, [refetch])
 
-  const handleItemCheck = (id: number) => {
+  const handleItemCheck = useCallback((id: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.cartId === id ? { ...item, checked: !item.checked } : item
       )
     )
-  }
+  }, [])
 
-  const handleRemoveItem = async (id: number) => {
+  const handleRemoveItem = useCallback(async (id: number) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.cartId !== id))
 
     const response = await fetch(`/services/cart/item/${id}`, {
@@ -145,7 +145,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!response.ok) {
       throw new Error('Failed to delete cart item')
     }
-  }
+  }, [])
 
   // useMemo를 사용하여 value 객체 메모이제이션
   const value = useMemo(
