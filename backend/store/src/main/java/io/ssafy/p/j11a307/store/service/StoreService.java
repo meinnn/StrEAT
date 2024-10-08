@@ -178,6 +178,49 @@ public class StoreService{
 
 
     /**
+     * 위도와 경도로 근처 1km 이내의 가게 조회
+     */
+    public Page<ReadNearByStoreDTO> getStoresWithin1KM(double latitude, double longitude, int page, int size) {
+        // 페이지네이션을 위한 PageRequest 생성
+        Pageable pageable = PageRequest.of(page, size);
+
+        // JPQL로 1km 내의 가까운 가게들을 페이지네이션 처리하여 가져옴
+        Page<Store> storePage = storeRepository.find1KMByLocationRange(latitude, longitude, 1.0, pageable);
+
+        // Store 엔티티를 ReadNearByStoreDTO로 변환하여 Page로 반환
+        return storePage.map(store -> {
+            // Store의 사진 가져오기
+            String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
+                    .stream().findFirst()
+                    .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())
+                    .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(store.getId())
+                            .stream().findFirst()
+                            .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())
+                            .orElse(""));
+
+            // Store의 카테고리 가져오기
+            DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
+            List<String> categories = categoryResponse.getData();
+
+            // 거리 계산 (Java에서 Haversine 공식을 적용)
+            Integer distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
+
+            // ReadNearByStoreDTO 생성
+            return new ReadNearByStoreDTO(
+                    store.getId(),
+                    store.getName(),
+                    storePhotoSrc,
+                    store.getStatus(),
+                    categories,
+                    distance,
+                    store.getLatitude(),
+                    store.getLongitude()
+            );
+        });
+    }
+
+
+    /**
      * 가게 생성
      */
     @Transactional
@@ -360,6 +403,30 @@ public class StoreService{
 
     }
 
+
+    /**
+     * 주어진 가게 ID 리스트에 해당하는 가게 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public List<DibsStoreStatusDTO> getStoresByIds(List<Integer> storeIds) {
+        // 가게 ID 리스트로 가게 정보 조회
+        List<Store> stores = storeRepository.findAllById(storeIds);
+
+//        // Store 엔티티를 ReadStoreStatusDTO로 변환
+//        return stores.stream()
+//                .map(store -> new DibsStoreStatusDTO(store.getId(), store.getName(), store.getStatus()))
+//                .collect(Collectors.toList());
+
+        return stores.stream()
+                .map(store -> new DibsStoreStatusDTO(
+                        store.getId(),
+                        store.getName(),
+                        store.getStatus().name()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
     private Integer calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         // Haversine 공식을 사용하여 두 지점 간의 거리를 계산하는 메서드
         final int R = 6371; // 지구 반경 (단위: km)
@@ -382,4 +449,7 @@ public class StoreService{
         store.changeStatus(status);  // 상태 변경 메서드 호출
         storeRepository.save(store); // 변경된 상태를 저장
     }
+
+
+
 }
