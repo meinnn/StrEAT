@@ -53,6 +53,18 @@ public class StoreController {
         return ResponseEntity.ok(storeId);
     }
 
+    /**
+     * 가게 ID 리스트로 가게 정보 조회
+     */
+    @GetMapping("/dibs")
+    @Operation(summary = "찜한 가게 조회용 - 가게 ID 리스트로 가게 정보 조회(가게 ID, 가게 이름, 영업 상태)")
+    public ResponseEntity<List<DibsStoreStatusDTO>> getStoreStatusByIds(
+            @RequestParam List<Integer> storeIds) {
+        // 주어진 가게 ID 리스트에 해당하는 가게 정보 조회
+        List<DibsStoreStatusDTO> storeStatusList = storeService.getStoresByIds(storeIds);
+        return ResponseEntity.ok(storeStatusList);
+    }
+
 
     // 2. 점포 타입 조회
     @GetMapping("/{id}/type")
@@ -116,6 +128,7 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("점포 리스트 조회 성공", storeResponses));
     }
+
 
     // 5. 가게 사장님 ID 조회
     @GetMapping("/{id}/ownerId")
