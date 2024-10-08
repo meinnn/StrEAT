@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,6 +23,7 @@ public class PushAlert {
     private String title;
     private String message;
     private Integer orderId;
+    @ColumnDefault("false")
     private Boolean checked = false;
 
     @Builder
