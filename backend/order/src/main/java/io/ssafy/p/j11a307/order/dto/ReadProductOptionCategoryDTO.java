@@ -11,8 +11,9 @@ public record ReadProductOptionCategoryDTO(
         Integer productId,
         String name,
         Boolean isEssential,
+        Integer minSelect,
         Integer maxSelect,
-        Integer parentOptionCategoryId,
-        List<ReadProductOptionCategoryDTO> subCategories,
+        //Integer parentOptionCategoryId,
+        //List<ReadProductOptionCategoryDTO> subCategories,
         List<ReadProductOptionDTO> options
 ) {}

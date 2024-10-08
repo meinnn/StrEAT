@@ -28,11 +28,11 @@ public class GetBasketOptionDetailDTO {
     @Schema(description = "옵션이 속한 카테고리명", example = "매운맛 정도")
     private String optionCategoryName;
 
-    @Schema(description = "옵션이 속한 카테고리의 부모 카테고리 id", example = "2")
-    private Integer optionParentCategoryId;
-
     @Schema(description = "옵션이 속한 카테고리의 필수선택 여부", example = "true")
     private Boolean isEssentialCategory;
+
+    @Schema(description = "옵션이 속한 카테고리의 최소 선택 개수", example = "1")
+    private Integer minSelectCategory;
 
     @Schema(description = "옵션이 속한 카테고리의 최대 선택 개수", example = "3")
     private Integer maxSelectCategory;

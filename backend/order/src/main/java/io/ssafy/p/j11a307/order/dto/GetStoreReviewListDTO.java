@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Schema(description = "점포별 리뷰 조회 정보를 담기 위한 DTO")
-public class GetStoreReviewsDTO {
+public class GetStoreReviewListDTO {
     @Schema(description = "유저 이름", example = "이주호")
     String userName;
 
@@ -34,7 +34,7 @@ public class GetStoreReviewsDTO {
     List<String> srcList;
 
     @Builder
-    public GetStoreReviewsDTO(String userName, String userPhoto, List<String> orderProducts, Integer score, String content, LocalDateTime createdAt, List<String> srcList) {
+    public GetStoreReviewListDTO(String userName, String userPhoto, List<String> orderProducts, Integer score, String content, LocalDateTime createdAt, List<String> srcList) {
         this.userName = userName;
         this.userPhoto = userPhoto;
         this.orderProducts = orderProducts;

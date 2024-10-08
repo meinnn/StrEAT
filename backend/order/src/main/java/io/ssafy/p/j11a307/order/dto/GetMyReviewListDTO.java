@@ -1,7 +1,5 @@
 package io.ssafy.p.j11a307.order.dto;
 
-import io.ssafy.p.j11a307.order.entity.OrderProduct;
-import io.ssafy.p.j11a307.order.entity.Review;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Schema(description = "내 리뷰 조회 정보를 담기 위한 DTO")
-public class GetMyReviewsDTO {
+public class GetMyReviewListDTO {
     @Schema(description = "가게 아이디", example = "1")
     Integer storeId;
 
@@ -42,7 +40,7 @@ public class GetMyReviewsDTO {
     List<String> srcList;
 
     @Builder
-    public GetMyReviewsDTO(Integer storeId, Integer reviewId, String storeName, String storePhoto, List<String> orderProducts, Integer score, String content, LocalDateTime createdAt, List<String> srcList) {
+    public GetMyReviewListDTO(Integer storeId, Integer reviewId, String storeName, String storePhoto, List<String> orderProducts, Integer score, String content, LocalDateTime createdAt, List<String> srcList) {
         this.storeId = storeId;
         this.storeName = storeName;
         this.storePhoto = storePhoto;

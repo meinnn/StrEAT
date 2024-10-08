@@ -48,7 +48,6 @@ public class StoreController {
     // 2. userId에 해당하는 storeId 반환
     @GetMapping("/user/{userId}")
     public ResponseEntity<Integer> getStoreIdByUserId(@PathVariable Integer userId) {
-
         Integer storeId = storeService.getStoreIdByUserId(userId);
         return ResponseEntity.ok(storeId);
     }

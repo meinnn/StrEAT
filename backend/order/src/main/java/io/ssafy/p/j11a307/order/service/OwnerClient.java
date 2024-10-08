@@ -2,6 +2,8 @@ package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.UserInfoResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,6 +23,8 @@ public interface OwnerClient {
     @GetMapping("/api/users/customer-id")
     Integer getCustomerId(@RequestParam("accessToken") String accessToken, @RequestHeader("X-Internal-Request") String internalRequestHeader);
 
+    @GetMapping("/api/users/owner-id")
+    Integer getOwnerId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest);
 
     @GetMapping("/api/users/profile/{userId}")
     public UserInfoResponse getUserInformation(@PathVariable Integer userId);
