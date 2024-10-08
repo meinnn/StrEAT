@@ -8,9 +8,6 @@ import java.util.List;
 @Schema(description = "상품 전체 정보를 생성하기 위한 DTO")
 public record CreateProductAllDTO(
 
-@Schema(description = "상품 ID", example = "1")
-Integer productId,
-
 @Schema(description = "상품명", example = "타코야끼")
 @NotNull(message = "상품명은 필수 입력 항목입니다.")
 String name,
@@ -28,8 +25,7 @@ Integer price,
 List<CreateProductCategoryDTO> categories,
 
 @Schema(description = "상품 옵션 카테고리 목록 (예: 사이즈, 맛 선택)")
-@NotNull(message = "상품 옵션 카테고리는 필수 입력 항목입니다.")
-List<CreateProductOptionCategoryDTO> optionCategories
+List<CreateProductOptionCategoryWithoutProductIdDTO> optionCategories
 )
 {
     public CreateProductDTO toCreateProductDTO() {

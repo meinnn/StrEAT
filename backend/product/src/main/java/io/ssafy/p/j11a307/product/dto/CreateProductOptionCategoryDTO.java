@@ -65,8 +65,4 @@ public record CreateProductOptionCategoryDTO(
                         .minSelect(this.minSelect)  // 최소 선택 개수 설정
                         .build();
         }
-
-        public CreateProductOptionCategoryDTO withProductId(Integer newProductId) {
-                return new CreateProductOptionCategoryDTO(newProductId, this.name, this.isEssential, this.maxSelect, this.minSelect, this.productOptions);
-        }
 }
