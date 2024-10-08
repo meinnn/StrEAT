@@ -1,6 +1,8 @@
 package io.ssafy.p.j11a307.push_alert.service;
 
 import com.google.firebase.messaging.Notification;
+import io.ssafy.p.j11a307.push_alert.entity.PushAlert;
+import io.ssafy.p.j11a307.push_alert.repository.PushAlertRepository;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmOrderStatusChangeAlert;
@@ -26,15 +28,18 @@ public class AlertService {
 
     private final UserService userService;
 
+    private final PushAlertRepository pushAlertRepository;
+
     private final FirebaseUtil firebaseUtil;
 
     public void sendOrderStatusChangeAlert(Integer customerId, Integer orderId, String storeName, AlertType alertType) {
         ApiResponse<FcmTokenResponse> fcmTokenResponse = userService.getFcmTokenByUserId(customerId, internalRequestKey);
         String customerFcmToken = fcmTokenResponse.getData().fcmToken();
+        String creationTime = convertDateFormat(new Date());
         FcmAlertData data = FcmOrderStatusChangeAlert.builder()
                 .orderId(String.valueOf(orderId))
                 .storeName(storeName)
-                .createdAt(convertDateFormat(new Date()))
+                .createdAt(creationTime)
                 .alertType(alertType)
                 .build();
         Notification notification = Notification.builder()
@@ -42,7 +47,16 @@ public class AlertService {
                 .setBody(data.getMessage())
                 .build();
 
+        PushAlert pushAlert = PushAlert.builder()
+                .userId(customerId)
+                .createdAt(creationTime)
+                .title(data.getTitle())
+                .message(data.getMessage())
+                .orderId(orderId)
+                .build();
+
         firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
+        pushAlertRepository.save(pushAlert);
     }
 
     public void sendOpenStoreAlert(Integer storeId, String storeName, AlertType alertType) {
