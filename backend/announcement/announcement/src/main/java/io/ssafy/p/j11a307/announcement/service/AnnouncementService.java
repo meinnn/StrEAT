@@ -99,8 +99,8 @@ public class AnnouncementService {
 
             process.waitFor();
 
-            // 출력 내용 출력
-            //System.out.println("Python 출력: " + output.toString());
+            //출력 내용 출력
+            System.out.println("Python 출력: " + output.toString());
 
             // Python에서 생성한 파일 경로
             Path filePath = Paths.get("announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/newfile.docx"); // Python에서 생성한 파일 경로를 지정
