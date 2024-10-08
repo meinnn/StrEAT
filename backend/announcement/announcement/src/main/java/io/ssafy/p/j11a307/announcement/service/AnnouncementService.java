@@ -81,7 +81,23 @@ public class AnnouncementService {
           String eventName = getSubmitFileRequest.eventName();
 
         try {
-            System.out.println("현재 작업 디렉토리: " + System.getProperty("user.dir"));
+            //System.out.println("현재 작업 디렉토리: " + System.getProperty("user.dir"));
+
+            String currentDir = System.getProperty("user.dir");
+            System.out.println("현재 작업 디렉토리: " + currentDir);
+
+            // 현재 작업 디렉토리의 파일 목록 가져오기
+            File dir = new File(currentDir);
+            File[] filesList = dir.listFiles();
+
+            if (filesList != null) {
+                System.out.println("디렉토리 내 파일 목록:");
+                for (File file : filesList) {
+                    System.out.println(file.getName());
+                }
+            } else {
+                System.out.println("디렉토리가 비어있거나 접근할 수 없습니다.");
+            }
 
             // Python에서 생성한 파일 경로
             Path filePath2 = Paths.get("announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/truck.docx"); // Python에서 생성한 파일 경로를 지정
