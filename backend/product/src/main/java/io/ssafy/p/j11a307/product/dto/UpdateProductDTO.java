@@ -19,8 +19,8 @@ public record UpdateProductDTO(
         @Schema(description = "재고 상태", example = "true")
         Boolean stockStatus,
 
-        @Schema(description = "수정할 상품 카테고리 리스트")
-        List<UpdateProductCategoryDTO> categories,
+        @Schema(description = "수정할 상품 카테고리 ID", example = "1")
+        Integer categoryId,
 
         @Schema(description = "수정할 옵션 카테고리 리스트")
         List<UpdateProductOptionCategoryDTO> optionCategories
@@ -32,9 +32,7 @@ public record UpdateProductDTO(
                         product.getPrice(),
                         product.getDescription(),
                         product.getStockStatus(),
-                        product.getCategories() != null ? product.getCategories().stream()
-                                .map(UpdateProductCategoryDTO::new)
-                                .toList() : List.of(),
+                        product.getCategory() != null ? product.getCategory().getId() : null,
                         product.getOptionCategories() != null ? product.getOptionCategories().stream()
                                 .map(UpdateProductOptionCategoryDTO::new)
                                 .toList() : List.of()

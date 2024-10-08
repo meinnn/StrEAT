@@ -10,7 +10,7 @@ public class ReadProductDTO {
     Integer storeId;
     String name;
     Integer price;
-    String src;
+    List<String> photos;
     List<String> categories;
     List<String> optionCategories;
     Boolean stockStatus;
