@@ -77,9 +77,9 @@ public class StoreSimpleLocationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         // Store의 위치 정보 업데이트
-        store.changeAddress(store.getAddress());
-        store.changeLatitude(store.getLatitude());
-        store.changeLongitude(store.getLongitude());
+        store.changeAddress(simpleLocation.getAddress());
+        store.changeLatitude(simpleLocation.getLatitude());
+        store.changeLongitude(simpleLocation.getLongitude());
         store.updateSelectedSimpleLocation(simpleLocation);
 
         // 변경된 Store 저장

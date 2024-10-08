@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 public class StoreService{
 
     private final StoreRepository storeRepository;
-    private final IndustryCategoryRepository industryCategoryRepository;
     private final BusinessDayRepository businessDayRepository;
     private final OwnerClient ownerClient;
     private final StoreLocationPhotoRepository storeLocationPhotoRepository;
     private final StorePhotoRepository storePhotoRepository;
     private final ProductClient productClient;
+    private final SubCategoryRepository subCategoryRepository;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -178,6 +178,49 @@ public class StoreService{
 
 
     /**
+     * 위도와 경도로 근처 1km 이내의 가게 조회
+     */
+    public Page<ReadNearByStoreDTO> getStoresWithin1KM(double latitude, double longitude, int page, int size) {
+        // 페이지네이션을 위한 PageRequest 생성
+        Pageable pageable = PageRequest.of(page, size);
+
+        // JPQL로 1km 내의 가까운 가게들을 페이지네이션 처리하여 가져옴
+        Page<Store> storePage = storeRepository.find1KMByLocationRange(latitude, longitude, 1.0, pageable);
+
+        // Store 엔티티를 ReadNearByStoreDTO로 변환하여 Page로 반환
+        return storePage.map(store -> {
+            // Store의 사진 가져오기
+            String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
+                    .stream().findFirst()
+                    .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())
+                    .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(store.getId())
+                            .stream().findFirst()
+                            .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())
+                            .orElse(""));
+
+            // Store의 상품 카테고리 가져오기
+            DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
+            List<String> categories = categoryResponse.getData();
+
+            // 거리 계산 (Java에서 Haversine 공식을 적용)
+            Integer distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
+
+            // ReadNearByStoreDTO 생성
+            return new ReadNearByStoreDTO(
+                    store.getId(),
+                    store.getName(),
+                    storePhotoSrc,
+                    store.getStatus(),
+                    categories,
+                    distance,
+                    store.getLatitude(),
+                    store.getLongitude()
+            );
+        });
+    }
+
+
+    /**
      * 가게 생성
      */
     @Transactional
@@ -193,13 +236,8 @@ public class StoreService{
             throw new BusinessException(ErrorCode.STORE_ALREADY_EXISTS);  // 이미 존재하는 경우 예외 처리
         }
 
-        // IndustryCategory 조회
-        IndustryCategory industryCategory = industryCategoryRepository
-                .findById(createStoreDTO.industryCategoryId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
-
         // Store 생성 및 저장
-        Store store = createStoreDTO.toEntity(industryCategory);
+        Store store = createStoreDTO.toEntity();
         store.assignOwner(userId);
         storeRepository.save(store);
 
@@ -242,15 +280,28 @@ public class StoreService{
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // IndustryCategory 조회
-        IndustryCategory industryCategory = industryCategoryRepository
-                .findById(request.industryCategoryId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
+        SubCategory subCategory = subCategoryRepository
+                .findById(request.subCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SUB_CATEGORY_NOT_FOUND));
 
         // Store 업데이트
-        Store updatedStore = store.updateWith(request, industryCategory);
+        Store updatedStore = store.updateWith(request, subCategory);
         storeRepository.save(updatedStore);
     }
+
+
+    @Transactional
+    public void updateSubCategory(String token, Integer subCategoryId) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token으로 userId 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        SubCategory subCategory = subCategoryRepository.findById(subCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SUB_CATEGORY_NOT_FOUND));
+        store.updateSubCategory(subCategory);
+        storeRepository.save(store);
+    }
+
+
 
     /**
      * 가게 삭제
@@ -266,9 +317,6 @@ public class StoreService{
         // userId로 store 조회
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-
-        // IndustryCategory와의 연관관계 제거
-        store.removeFromCategory();
 
         // store 삭제
         storeRepository.delete(store);
@@ -360,6 +408,30 @@ public class StoreService{
 
     }
 
+
+    /**
+     * 주어진 가게 ID 리스트에 해당하는 가게 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public List<DibsStoreStatusDTO> getStoresByIds(List<Integer> storeIds) {
+        // 가게 ID 리스트로 가게 정보 조회
+        List<Store> stores = storeRepository.findAllById(storeIds);
+
+//        // Store 엔티티를 ReadStoreStatusDTO로 변환
+//        return stores.stream()
+//                .map(store -> new DibsStoreStatusDTO(store.getId(), store.getName(), store.getStatus()))
+//                .collect(Collectors.toList());
+
+        return stores.stream()
+                .map(store -> new DibsStoreStatusDTO(
+                        store.getId(),
+                        store.getName(),
+                        store.getStatus().name()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
     private Integer calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         // Haversine 공식을 사용하여 두 지점 간의 거리를 계산하는 메서드
         final int R = 6371; // 지구 반경 (단위: km)
@@ -382,4 +454,7 @@ public class StoreService{
         store.changeStatus(status);  // 상태 변경 메서드 호출
         storeRepository.save(store); // 변경된 상태를 저장
     }
+
+
+
 }

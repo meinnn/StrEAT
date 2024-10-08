@@ -48,9 +48,20 @@ public class StoreController {
     // 2. userId에 해당하는 storeId 반환
     @GetMapping("/user/{userId}")
     public ResponseEntity<Integer> getStoreIdByUserId(@PathVariable Integer userId) {
-
         Integer storeId = storeService.getStoreIdByUserId(userId);
         return ResponseEntity.ok(storeId);
+    }
+
+    /**
+     * 가게 ID 리스트로 가게 정보 조회
+     */
+    @GetMapping("/dibs")
+    @Operation(summary = "찜한 가게 조회용 - 가게 ID 리스트로 가게 정보 조회(가게 ID, 가게 이름, 영업 상태)")
+    public ResponseEntity<List<DibsStoreStatusDTO>> getStoreStatusByIds(
+            @RequestParam List<Integer> storeIds) {
+        // 주어진 가게 ID 리스트에 해당하는 가게 정보 조회
+        List<DibsStoreStatusDTO> storeStatusList = storeService.getStoresByIds(storeIds);
+        return ResponseEntity.ok(storeStatusList);
     }
 
 
@@ -117,6 +128,7 @@ public class StoreController {
                 .body(DataResponse.of("점포 리스트 조회 성공", storeResponses));
     }
 
+
     // 5. 가게 사장님 ID 조회
     @GetMapping("/{id}/ownerId")
     @Operation(summary = "점포 ID를 통해 해당 점포의 사장님 ID 조회")
@@ -156,6 +168,39 @@ public class StoreController {
 
         return ResponseEntity.ok(response);
     }
+
+
+    /**
+     * 위도와 경도로 1km 반경 내 근처 가게 20개씩 페이지네이션 조회
+     */
+    @GetMapping("/nearby/1km")
+    @Operation(summary = "위도와 경도로 1km 반경 내 근처 가게 조회")
+    public ResponseEntity<PagedDataResponse<List<ReadNearByStoreDTO>>> getNearbyStoresWithin1KM(
+            @RequestParam
+            @Parameter(description = "위도", example = "37.123456") double latitude,
+            @RequestParam
+            @Parameter(description = "경도", example = "127.123456") double longitude,
+            @RequestParam(defaultValue = "0")
+            @Parameter(description = "페이지 번호", example = "0") int page,
+            @RequestParam(defaultValue = "20")
+            @Parameter(description = "페이지 크기", example = "20") int size) {
+
+        // 1km 반경 내의 가게들 조회
+        Page<ReadNearByStoreDTO> storePage = storeService.getStoresWithin1KM(latitude, longitude, page, size);
+        List<ReadNearByStoreDTO> storesList = storePage.getContent();
+        // lastPage는 총 페이지 수에서 1을 뺀 값으로 설정
+        int lastPage = Math.max(storePage.getTotalPages() - 1, 0);
+        PagedDataResponse<List<ReadNearByStoreDTO>> response = PagedDataResponse.of(
+                "20개씩 가게 리스트 가져오기 성공",
+                storesList,
+                storePage.getTotalElements(),
+                lastPage,
+                storePage.getNumber()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     // 6. 점포 정보 수정
     @PutMapping("/update")
     @Operation(summary = "점포 정보 수정")
@@ -198,5 +243,16 @@ public class StoreController {
         storeService.updateOwnerWord(token, ownerWord);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("사장님 한마디 수정 성공"));
+    }
+
+
+    @PatchMapping("/subcategory/{subCategoryId}")
+    @Operation(summary = "스토어의 업종 카테고리를 수정 및 저장하는 API")
+    public ResponseEntity<MessageResponse> updateStoreSubCategory(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer subCategoryId) {
+        storeService.updateSubCategory(token, subCategoryId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("스토어의 서브카테고리가 업데이트되었습니다."));
     }
 }
