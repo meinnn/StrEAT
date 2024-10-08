@@ -276,4 +276,21 @@ public class ReviewService {
         }
     }
 
+    public GetReviewAverageListDTO getReviewAverageList(List<Integer> storeIdList) {
+        Map<Integer, Double> averageReviewList = new HashMap<>();
+
+        for (Integer storeId : storeIdList) {
+            List<Orders> orders = ordersRepository.findByStoreIdAndHasReview(storeId);
+
+            Integer total = orders.stream().mapToInt(i -> reviewRepository.searchReview(i.getId()).getScore()).sum();
+            Double average = Double.valueOf(String.format("%.1f", (double)total/orders.size()));
+            averageReviewList.put(storeId, average);
+        }
+
+        GetReviewAverageListDTO getReviewAverageListDTO = GetReviewAverageListDTO.builder()
+                .averageReviewList(averageReviewList)
+                .build();
+
+        return getReviewAverageListDTO;
+    }
 }
