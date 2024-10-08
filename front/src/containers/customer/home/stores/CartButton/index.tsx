@@ -14,9 +14,11 @@ export default function CartButton() {
         className="bg-primary-500 text-white p-5 rounded-full shadow-lg relative"
       >
         <TiShoppingCart size={38} />
-        <span className="absolute top-0 right-0 bg-text text-white text-sm font-bold  rounded-full px-2 py-1">
-          {cartItems.length}
-        </span>
+        {cartItems.length > 0 && (
+          <div className="absolute top-0 right-0 bg-text text-white text-sm font-bold rounded-full px-2 py-1 aspect-square">
+            {cartItems.length}
+          </div>
+        )}
       </button>
     </Link>
   )
