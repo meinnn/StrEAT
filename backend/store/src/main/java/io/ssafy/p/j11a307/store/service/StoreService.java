@@ -236,8 +236,13 @@ public class StoreService{
             throw new BusinessException(ErrorCode.STORE_ALREADY_EXISTS);  // 이미 존재하는 경우 예외 처리
         }
 
+        // subcategoryId 존재 여부 확인 및 SubCategory 조회
+        SubCategory subCategory = subCategoryRepository.findById(createStoreDTO.subcategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SUB_CATEGORY_NOT_FOUND));
+
+
         // Store 생성 및 저장
-        Store store = createStoreDTO.toEntity();
+        Store store = createStoreDTO.toEntity(subCategory);
         store.assignOwner(userId);
         storeRepository.save(store);
 

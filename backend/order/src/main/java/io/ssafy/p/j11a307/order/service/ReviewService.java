@@ -18,6 +18,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,17 +108,21 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetMyReviewsDTO> getMyReviews(String token) {
+    public GetMyReviewDTO getMyReviews(String token, Integer pgno, Integer spp) {
         Integer userId = ownerClient.getUserId(token, internalRequestKey);
 
+        Pageable pageable = PageRequest.of(pgno, spp);
+
         //현재 로그인한 유저 아이디와 맞는 리뷰들을 모두 가져오기
-        List<Orders> orders = ordersRepository.findByUserId(userId);
-        List<GetMyReviewsDTO> getMyReviewsDTOs = new ArrayList<>();
+        Page<Orders> orders = ordersRepository.findByUserIdAndHasReview(userId, pageable);
+
+        List<GetMyReviewListDTO> getMyReviewListDTOS = new ArrayList<>();
 
         for (Orders order : orders) {
             Review review = reviewRepository.searchReview(order.getId());
 
             if(review == null) continue;
+
             List<ReviewPhoto> photoList = reviewPhotoRepository.findByReviewId(review);
             List<String> srcList = photoList.stream().map(ReviewPhoto::getSrc).toList();
             DataResponse<ReadStoreDTO> dataResponse = storeClient.getStoreInfo(order.getStoreId());
@@ -125,28 +132,38 @@ public class ReviewService {
             List<Integer> orderProducts =  orderProductRepository.findByOrdersId(order).stream().map(OrderProduct::getProductId).toList();
             DataResponse<List<String>> productNameResponse = productClient.getProductNamesByProductIds(orderProducts);
 
-            GetMyReviewsDTO getMyReviewsDTO= GetMyReviewsDTO.builder()
+            GetMyReviewListDTO getMyReviewListDTO = GetMyReviewListDTO.builder()
                     .reviewId(review.getId().getId().getId())
-                    .storeId(dataResponse.getData().getId())
+                    .storeId(dataResponse.getData().id())
                     .score(review.getScore())
                     .content(review.getContent())
                     .createdAt(review.getCreatedAt())
                     .srcList(srcList)
-                    .storeName(dataResponse.getData().getName())
+                    .storeName(dataResponse.getData().name())
                     .orderProducts(productNameResponse.getData())
                     .storePhoto(photoDataResponse.getData().src())
                     .build();
 
-            getMyReviewsDTOs.add(getMyReviewsDTO);
+            getMyReviewListDTOS.add(getMyReviewListDTO);
         }
-        return getMyReviewsDTOs;
+
+
+        GetMyReviewDTO getMyReviewDTO = GetMyReviewDTO.builder()
+                .getMyReviewList(getMyReviewListDTOS)
+                .totalPageCount(orders.getTotalPages())
+                .totalDataCount(orders.getTotalElements())
+                .build();
+
+        return getMyReviewDTO;
     }
 
     @Transactional
-    public List<GetStoreReviewsDTO> getStoreReviews(Integer storeId) {
+    public GetStoreReviewDTO getStoreReviews(Integer storeId, Integer pgno, Integer spp) {
+        Pageable pageable = PageRequest.of(pgno, spp);
+
         //해당 점포에 맞는 리뷰들 모두 가져오기
-        List<Orders> orders = ordersRepository.findByStoreId(storeId);
-        List<GetStoreReviewsDTO> getStoreReviewsDTOs = new ArrayList<>();
+        Page<Orders> orders = ordersRepository.findByStoreIdAndHasReview(storeId, pageable);
+        List<GetStoreReviewListDTO> getStoreReviewListDTOS = new ArrayList<>();
 
         for (Orders order : orders) {
             Review review = reviewRepository.searchReview(order.getId());
@@ -163,7 +180,7 @@ public class ReviewService {
             //User 정보 조회 API 구현된 후 호출해서 삽입 필요
             UserInfoResponse userInfoResponse = ownerClient.getUserInformation(order.getUserId());
 
-            GetStoreReviewsDTO getStoreReviewsDTO = GetStoreReviewsDTO.builder()
+            GetStoreReviewListDTO getStoreReviewListDTO = GetStoreReviewListDTO.builder()
                     .content(review.getContent())
                     .score(review.getScore())
                     .createdAt(review.getCreatedAt())
@@ -173,11 +190,40 @@ public class ReviewService {
                     .userPhoto(userInfoResponse.profileImgSrc())
                     .build();
 
-            getStoreReviewsDTOs.add(getStoreReviewsDTO);
+            getStoreReviewListDTOS.add(getStoreReviewListDTO);
         }
 
-        return getStoreReviewsDTOs;
-    }  
+        GetStoreReviewDTO getStoreReviewDTO = GetStoreReviewDTO.builder()
+                .totalDataCount(orders.getTotalElements())
+                .totalPageCount(orders.getTotalPages())
+                .getStoreReviewLists(getStoreReviewListDTOS)
+                .build();
+
+        return getStoreReviewDTO;
+    }
+
+    @Transactional
+    public GetReviewSummaryDTO getReviewSummary(Integer storeId) {
+        //1. 해당 점포가 존재하지 않음
+        ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
+
+        if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+
+        //주문내역 중 storeid면서 review가 있는걸 골라야 함.
+        List<Orders> orders =  ordersRepository.findByStoreIdAndHasReview(storeId);
+
+        double totalavg = 0.0;
+        totalavg = orders.stream().mapToDouble(i -> reviewRepository.searchReview(i.getId()).getScore()).sum();
+
+        if(totalavg != 0.0) totalavg /= orders.size();
+
+        GetReviewSummaryDTO getReviewSummaryDTO = GetReviewSummaryDTO.builder()
+                .reviewTotalCount(orders.size())
+                .averageScore(totalavg)
+                .build();
+
+        return getReviewSummaryDTO;
+    }
 
     private String uploadImage(MultipartFile image) {
         //image 파일 확장자 검사
@@ -229,4 +275,5 @@ public class ReviewService {
             throw new BusinessException(ErrorCode.S3Exception);
         }
     }
+
 }

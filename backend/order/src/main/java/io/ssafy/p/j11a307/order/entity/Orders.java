@@ -1,12 +1,12 @@
 package io.ssafy.p.j11a307.order.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import io.ssafy.p.j11a307.order.global.OrderCode;
+import io.ssafy.p.j11a307.order.global.PayTypeCode;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,15 +24,23 @@ public class Orders {
     private Integer storeId; //외부 마이크로서비스
 
     private String orderNumber;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private OrderCode status;
     private String request;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     private Integer totalPrice;
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private PayTypeCode paymentMethod;
     private LocalDateTime paidAt;
     private LocalDateTime receivedAt;
     private String phone;
+
+    public void updateStatus(OrderCode status) {
+        this.status = status;
+    }
 }

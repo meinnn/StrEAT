@@ -118,8 +118,16 @@ public class BasketService {
         //2. 그 내역을 가진 본인이 아니라면?
         if(customerId != shoppingCart.getCustomerId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
+        //가격 계산
+        Integer priceP = productClient.getProductById(shoppingCart.getProductId()).getData().getPrice();
+        Integer quan = modifyOptionFromBasketDTO.getQuantity();
+
+        //상품 옵션 리스트의 가격 합
+        List<Integer> optionList = modifyOptionFromBasketDTO.getOptionList();
+        Integer priceO = productClient.sumProductOption(optionList, internalRequestKey);
+
         //가격, 개수 수정
-        shoppingCart.modifyOption(modifyOptionFromBasketDTO.getPrice(), modifyOptionFromBasketDTO.getQuantity());
+        shoppingCart.modifyOption((priceO+priceP)*quan, quan);
 
         //옵션 대체
         List<ShoppingCartOption> shoppingCartOptions = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart);
@@ -157,6 +165,8 @@ public class BasketService {
             for (ShoppingCart shoppingCart : shoppingCarts) {
                 productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
 
+                if(productData.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+
                 List<Integer> optionIdList = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart).stream()
                         .map(ShoppingCartOption::getProductOptionId).toList();
 
@@ -170,7 +180,7 @@ public class BasketService {
                         .price(shoppingCart.getPrice())
                         .productId(productData.getId())
                         .productName(productData.getName())
-                        .productSrc(productData.getSrc())
+                        .productSrc(productData.getPhotos().get(0)) //없으면 디폴트 사진 나와야 함
                         .OptionNameList(readProductOptions)
                         .stockStatus((productData.getStockStatus()))
                         .build();
@@ -182,8 +192,8 @@ public class BasketService {
             ReadStoreBasicInfoDTO photoData = storeClient.getStoreBasicInfo(productData.getStoreId()).getData();
 
             GetBasketListDTO getBasketListDTO = GetBasketListDTO.builder()
-                    .storeId(storeData.getId())
-                    .storeName(storeData.getName())
+                    .storeId(storeData.id())
+                    .storeName(storeData.name())
                     .storeSrc(photoData.src())
                     .basketList(basketList)
                     .totalPageCount(shoppingCarts.getTotalPages())
@@ -209,7 +219,8 @@ public class BasketService {
 
         ReadProductDTO productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
 
-        List<GetBasketOptionDetailDTO> basketOptionDetailList = new ArrayList<>();
+        //List<GetBasketOptionDetailDTO> basketOptionDetailList = new ArrayList<>();
+        Map<Integer, List<GetBasketOptionDetailDTO>> optionDetailMap = new HashMap<>();
 
         //이 Product가 가지고 있는 옵션 리스트들을 돌면서 getBasketOptionDetailDTO를 만들고 list에 채운다.
         List<ReadProductOptionDTO> productOptionData = productClient.getProductOptionListByProductId(productData.getId(), internalRequestKey);
@@ -229,20 +240,28 @@ public class BasketService {
                     .isSelected(is_Selected)
                     .optionCategoryId(option.getProductOptionCategoryId())
                     .optionCategoryName(categoryData.name())
-                    .optionParentCategoryId(categoryData.parentOptionCategoryId())
                     .isEssentialCategory(categoryData.isEssential())
                     .maxSelectCategory(categoryData.maxSelect())
+                    .minSelectCategory(categoryData.minSelect())
                     .build();
 
-            basketOptionDetailList.add(getBasketOptionDetailDTO);
+            if(optionDetailMap.containsKey(option.getProductOptionCategoryId())) {
+                optionDetailMap.get(option.getProductOptionCategoryId()).add(getBasketOptionDetailDTO);
+            } else {
+                List<GetBasketOptionDetailDTO> li = new ArrayList<>();
+                li.add(getBasketOptionDetailDTO);
+                optionDetailMap.put(option.getProductOptionCategoryId(), li);
+            }
+
+            //basketOptionDetailList.add(getBasketOptionDetailDTO);
         }
 
         GetBasketOptionDTO getBasketOptionDTO = GetBasketOptionDTO.builder()
                 .basketId(shoppingCart.getId())
-                .price(shoppingCart.getPrice())
+                .productPrice(productData.getPrice())
                 .quantity(shoppingCart.getQuantity())
                 .productName(productData.getName())
-                .getBasketOptionDetailDTOs(basketOptionDetailList)
+                .getBasketOptionDetailMap(optionDetailMap)
                 .stockStatus(productData.getStockStatus())
                 .build();
 

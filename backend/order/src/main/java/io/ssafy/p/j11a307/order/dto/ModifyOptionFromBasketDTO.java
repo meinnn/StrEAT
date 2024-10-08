@@ -15,6 +15,6 @@ public class ModifyOptionFromBasketDTO {
     @Schema(description = "수량", example = "5")
     Integer quantity;
 
-    @Schema(description = "가격", example= "100000")
-    Integer price;
+//    @Schema(description = "가격", example= "100000")
+//    Integer price;
 }

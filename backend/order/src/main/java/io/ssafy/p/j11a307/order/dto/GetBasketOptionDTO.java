@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -18,17 +19,17 @@ public class GetBasketOptionDTO {
     @Schema(description = "상품 이름", example = "새우버거")
     private String productName;
 
+    @Schema(description = "상품 가격", example = "200000")
+    private Integer productPrice;
+
     @Schema(description = "수량", example = "3")
     private Integer quantity;
-
-    @Schema(description = "가격", example = "200000")
-    private Integer price;
 
     @Schema(description = "재고 상태", example = "true")
     Boolean stockStatus;
 
-
     @Schema(description = "옵션 상세 리스트")
-    List<GetBasketOptionDetailDTO> getBasketOptionDetailDTOs;
+    Map<Integer, List<GetBasketOptionDetailDTO>> getBasketOptionDetailMap;
+    //List<GetBasketOptionDetailDTO> getBasketOptionDetailDTOs;
 
 }
