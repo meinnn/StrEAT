@@ -1,6 +1,9 @@
 package io.ssafy.p.j11a307.announcement.service;
 
+import io.ssafy.p.j11a307.announcement.dto.OwnerProfile;
+import io.ssafy.p.j11a307.announcement.global.DataResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,4 +21,6 @@ public interface OwnerClient {
     @GetMapping("/api/users/owner-id")
     Integer getOwnerId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest);
 
+    @GetMapping("/api/users/announcement/information/{ownerId}")
+    DataResponse<OwnerProfile> getAnnouncementOwnerInformation(@RequestHeader("X-Internal-Request") String internalRequest, @PathVariable Integer ownerId);
 }
