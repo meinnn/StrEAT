@@ -25,7 +25,6 @@ Integer price,
 List<CreateProductCategoryDTO> categories,
 
 @Schema(description = "상품 옵션 카테고리 목록 (예: 사이즈, 맛 선택)")
-@NotNull(message = "상품 옵션 카테고리는 필수 입력 항목입니다.")
 List<CreateProductOptionCategoryWithoutProductIdDTO> optionCategories
 )
 {

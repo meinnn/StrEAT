@@ -412,9 +412,17 @@ public class StoreService{
         // 가게 ID 리스트로 가게 정보 조회
         List<Store> stores = storeRepository.findAllById(storeIds);
 
-        // Store 엔티티를 ReadStoreStatusDTO로 변환
+//        // Store 엔티티를 ReadStoreStatusDTO로 변환
+//        return stores.stream()
+//                .map(store -> new DibsStoreStatusDTO(store.getId(), store.getName(), store.getStatus()))
+//                .collect(Collectors.toList());
+
         return stores.stream()
-                .map(store -> new DibsStoreStatusDTO(store.getId(), store.getName(), store.getStatus()))
+                .map(store -> new DibsStoreStatusDTO(
+                        store.getId(),
+                        store.getName(),
+                        store.getStatus().name()
+                ))
                 .collect(Collectors.toList());
     }
 
