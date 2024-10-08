@@ -281,10 +281,12 @@ public class ReviewService {
 
         for (Integer storeId : storeIdList) {
             List<Orders> orders = ordersRepository.findByStoreIdAndHasReview(storeId);
-
-            Integer total = orders.stream().mapToInt(i -> reviewRepository.searchReview(i.getId()).getScore()).sum();
-            Double average = Double.valueOf(String.format("%.1f", (double)total/orders.size()));
-            averageReviewList.put(storeId, average);
+            if(orders.isEmpty()) averageReviewList.put(storeId, 0.0);
+            else {
+                Integer total = orders.stream().mapToInt(i -> reviewRepository.searchReview(i.getId()).getScore()).sum();
+                Double average = Double.valueOf(String.format("%.1f", (double)total/orders.size()));
+                averageReviewList.put(storeId, average);   
+            }
         }
 
         GetReviewAverageListDTO getReviewAverageListDTO = GetReviewAverageListDTO.builder()
