@@ -80,7 +80,7 @@ public class Store {
     private StoreSimpleLocation selectedSimpleLocation;
 
     @ManyToOne
-    @JoinColumn(name = "subcategory_id", nullable = false)
+    @JoinColumn(name = "subcategory_id")
     @JsonIgnore
     private SubCategory subCategory;
 
@@ -130,6 +130,13 @@ public class Store {
             throw new BusinessException(ErrorCode.STORE_STATUS_NULL);
         }
         this.status = status;
+    }
+
+    public void updateSubCategory(SubCategory subCategory) {
+        if (subCategory == null) {
+            throw new BusinessException(ErrorCode.SUB_CATEGORY_NOT_FOUND);
+        }
+        this.subCategory = subCategory;
     }
 
     // 사용자 ID 설정 메서드
