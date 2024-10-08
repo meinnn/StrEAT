@@ -1,8 +1,10 @@
 package io.ssafy.p.j11a307.user.service;
 
+import io.ssafy.p.j11a307.user.dto.OwnerProfile;
 import io.ssafy.p.j11a307.user.dto.UserFcmTokenResponse;
 import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
 import io.ssafy.p.j11a307.user.entity.LeftUser;
+import io.ssafy.p.j11a307.user.entity.Owner;
 import io.ssafy.p.j11a307.user.entity.User;
 import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
@@ -107,5 +109,10 @@ public class UserService {
         return UserFcmTokenResponse.builder()
                 .fcmToken(user.getFcmToken())
                 .build();
+    }
+
+    public OwnerProfile getAnnouncementOwnerInformation(Integer ownerId) {
+        Owner owner = ownerRepository.findById(ownerId).orElseThrow(() -> new BusinessException(ErrorCode.OWNER_NOT_FOUND));
+        return new OwnerProfile(owner);
     }
 }

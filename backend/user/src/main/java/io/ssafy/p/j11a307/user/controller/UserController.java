@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.controller;
 
+import io.ssafy.p.j11a307.user.dto.OwnerProfile;
 import io.ssafy.p.j11a307.user.dto.UserFcmTokenResponse;
 import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
 import io.ssafy.p.j11a307.user.entity.UserType;
@@ -214,5 +215,22 @@ public class UserController {
         UserFcmTokenResponse userFcmTokenResponse = userService.getFcmTokenByUserId(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("fcm token 조회에 성공했습니다.", userFcmTokenResponse));
+    }
+
+    @GetMapping("/announcement/information/{ownerId}")
+    @Operation(summary = "사장님 공고 신청 데이터 요청", description = "사장님 공고 신청 데이터 요청")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사장님 공고 신청 데이터 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "사장님 id가 아닙니다.")
+    })
+    public ResponseEntity<DataResponse<OwnerProfile>> getAnnouncementOwnerInformation(
+            @RequestHeader("X-Internal-Request") String internalRequest,
+            @PathVariable Integer ownerId) {
+        if (!internalRequestKey.equals(internalRequest)) {
+            throw new BusinessException(ErrorCode.BAD_INNER_SERVICE_REQUEST);
+        }
+        OwnerProfile ownerProfile = userService.getAnnouncementOwnerInformation(ownerId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("사장님 공고 신청 데이터 조회에 성공했습니다.", ownerProfile));
     }
 }
