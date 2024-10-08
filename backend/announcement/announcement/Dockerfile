@@ -5,7 +5,7 @@ FROM openjdk:21-jdk
 COPY build/libs/*.jar /app.jar
 
 COPY /backend/announcement/announcement/src/main/resources/submitWordFile.py /submitWordFile.py
-COPY /backend/announcement/announcement/src/main/resources/trunk.docx /truck.docx
+COPY /backend/announcement/announcement/src/main/resources/truck.docx /truck.docx
 
 # 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "/app.jar"]
