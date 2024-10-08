@@ -116,6 +116,8 @@ public class AnnouncementService {
             pb.redirectErrorStream(true);
             Process process = pb.start();
 
+            System.out.println("파이썬 호출 끝남!!");
+
             // Python의 표준 출력을 읽기
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
