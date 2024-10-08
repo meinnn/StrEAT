@@ -79,6 +79,9 @@ public class AnnouncementService {
         String sns = ownerProfile.snsAccount();
 
         Integer storeId = storeClient.getStoreIdByUserId(ownerId);
+
+        System.out.println("완료!!!!!!!!!!!!!!!!!!!!!!!");
+
         ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
 
         String truckName = readStoreDTO.name();
@@ -87,21 +90,26 @@ public class AnnouncementService {
 
         try {
             // Python에서 생성한 파일 경로
-//            Path filePath2 = Paths.get("truck.docx"); // Python에서 생성한 파일 경로를 지정
-//            File file2 = filePath2.toFile();
+            Path filePath2 = Paths.get("truck.docx"); // Python에서 생성한 파일 경로를 지정
+            File file2 = filePath2.toFile();
 //
 //             //파일이 존재하지 않으면 오류 메시지 반환
-//            if (!file2.exists()) throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
+            if (!file2.exists()) throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
 
-            ProcessBuilder pb = new ProcessBuilder("python", "var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
-                    ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
+            System.out.println("트럭은 존재함!!!!!!!!!!!!!!");
+
+//            ProcessBuilder pb = new ProcessBuilder("python", "var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
+//                    ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
 
             ProcessBuilder pb2 = new ProcessBuilder("pip3", "install", "python-docx");
             pb2.redirectErrorStream(true);
             Process process2 = pb2.start();
             process2.waitFor();
 
-            //ProcessBuilder pb = new ProcessBuilder("python3", "submitWordFile.py");
+            ProcessBuilder pb = new ProcessBuilder("python3", "submitWordFile.py");
+//            ProcessBuilder pb = new ProcessBuilder("python", "var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
+//                    ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
+
             pb.redirectErrorStream(true);
             Process process = pb.start();
             process.waitFor();
