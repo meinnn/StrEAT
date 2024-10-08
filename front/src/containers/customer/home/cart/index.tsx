@@ -13,6 +13,7 @@ export default function CartPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    status,
     handleItemCheck,
     handleRemoveItem,
   } = useCart()
@@ -22,9 +23,12 @@ export default function CartPage() {
       .filter((item) => item.checked)
       .reduce((acc, item) => acc + item.price, 0) ?? 0
 
-  const totalQuantity = cartItems.filter((item) => item.checked).length ?? 0
+  const totalQuantity =
+    cartItems
+      .filter((item) => item.checked)
+      .reduce((acc, item) => acc + item.quantity, 0) ?? 0
 
-  if (!cartItems.length) return <CartSkeletonPage />
+  if (status === 'pending') return <CartSkeletonPage />
 
   return (
     <div
