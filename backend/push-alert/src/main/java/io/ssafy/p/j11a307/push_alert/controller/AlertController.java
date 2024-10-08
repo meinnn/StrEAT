@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.push_alert.controller;
 
+import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
@@ -33,12 +34,11 @@ public class AlertController {
     @Parameters({
             @Parameter(name = "customerId", description = "알림을 받을 고객 아이디"),
             @Parameter(name = "orderId", description = "상태가 변경된 주문 아이디"),
-            @Parameter(name = "storeName", description = "주문 점포명")
+            @Parameter(name = "storeName", description = "주문 점포명"),
+            @Parameter(name = "storeId", description = "점포 아이디")
     })
     public void sendOrderStatusChangeAlert(
-            @RequestParam Integer customerId,
-            @RequestParam Integer orderId,
-            @RequestParam String storeName,
+            @RequestParam OrderStatusChangeRequest orderStatusChangeRequest,
             @RequestHeader(value = "X-Internal-Request") String internalRequest,
             HttpServletRequest request) {
         if (!internalRequestKey.equals(internalRequest)) {
@@ -47,7 +47,7 @@ public class AlertController {
         }
         String[] requestUri = request.getRequestURI().split("/");
         AlertType alertType = AlertType.getByRequestUri(requestUri[requestUri.length - 1]);
-        alertService.sendOrderStatusChangeAlert(customerId, orderId, storeName, alertType);
+        alertService.sendOrderStatusChangeAlert(orderStatusChangeRequest, alertType);
     }
 
     @GetMapping("/open-store")

@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 public class StoreService{
 
     private final StoreRepository storeRepository;
-    private final IndustryCategoryRepository industryCategoryRepository;
     private final BusinessDayRepository businessDayRepository;
     private final OwnerClient ownerClient;
     private final StoreLocationPhotoRepository storeLocationPhotoRepository;
     private final StorePhotoRepository storePhotoRepository;
     private final ProductClient productClient;
+    private final SubCategoryRepository subCategoryRepository;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -236,13 +236,8 @@ public class StoreService{
             throw new BusinessException(ErrorCode.STORE_ALREADY_EXISTS);  // 이미 존재하는 경우 예외 처리
         }
 
-        // IndustryCategory 조회
-        IndustryCategory industryCategory = industryCategoryRepository
-                .findById(createStoreDTO.industryCategoryId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
-
         // Store 생성 및 저장
-        Store store = createStoreDTO.toEntity(industryCategory);
+        Store store = createStoreDTO.toEntity();
         store.assignOwner(userId);
         storeRepository.save(store);
 
@@ -285,15 +280,28 @@ public class StoreService{
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // IndustryCategory 조회
-        IndustryCategory industryCategory = industryCategoryRepository
-                .findById(request.industryCategoryId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INDUSTRY_CATEGORY_NOT_FOUND));
+        SubCategory subCategory = subCategoryRepository
+                .findById(request.subCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SUB_CATEGORY_NOT_FOUND));
 
         // Store 업데이트
-        Store updatedStore = store.updateWith(request, industryCategory);
+        Store updatedStore = store.updateWith(request, subCategory);
         storeRepository.save(updatedStore);
     }
+
+
+    @Transactional
+    public void updateSubCategory(String token, Integer subCategoryId) {
+        Integer userId = ownerClient.getUserId(token, internalRequestKey);  // token으로 userId 조회
+        Store store = storeRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        SubCategory subCategory = subCategoryRepository.findById(subCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SUB_CATEGORY_NOT_FOUND));
+        store.updateSubCategory(subCategory);
+        storeRepository.save(store);
+    }
+
+
 
     /**
      * 가게 삭제
@@ -309,9 +317,6 @@ public class StoreService{
         // userId로 store 조회
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-
-        // IndustryCategory와의 연관관계 제거
-        store.removeFromCategory();
 
         // store 삭제
         storeRepository.delete(store);
