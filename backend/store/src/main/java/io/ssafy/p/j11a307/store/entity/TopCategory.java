@@ -17,10 +17,10 @@ public class TopCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String name;  // 주요 카테고리명 (예: 한식, 구내식당, 기타 등)
 
-    @Column(nullable = false, length = 10, unique = true)
+    @Column(nullable = false, unique = true)
     private String code;  // 주요 카테고리 코드 (예: I201, I207 등)
 
     @OneToMany(mappedBy = "topCategory", cascade = CascadeType.ALL)

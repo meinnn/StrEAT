@@ -52,8 +52,8 @@ public enum ErrorCode {
     PRODUCT_OPTION_CATEGORY_NAME_NULL(HttpStatus.BAD_REQUEST, "상품 옵션 카테고리명은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     // Product Option
     PRODUCT_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 제품 옵션이 없습니다."),
-    // Industry Category
-    INDUSTRY_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 산업 카테고리가 없습니다."),
+    // Sub Category
+    SUB_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 가게 카테고리가 없습니다."),
     INDUSTRY_CATEGORY_NAME_NULL(HttpStatus.BAD_REQUEST, "산업 카테고리명은 필수 입력 항목입니다. null 값을 허용하지 않습니다."),
     // Store Industry Category
     STORE_INDUSTRY_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "가게에 해당하는 ID의 산업 카테고리가 없습니다."),
