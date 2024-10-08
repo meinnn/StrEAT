@@ -8,8 +8,13 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'k.kakaocdn.net',
+        port: '',
+        pathname: '/**',
+      },
     ],
-    domains: ['streat-bucket.s3.ap-northeast-2.amazonaws.com'],
   },
 }
 
