@@ -99,4 +99,4 @@ for table in doc.tables:
 # 결과 문서 저장
 #submit_name = '20241008_입점 신청서_'+'민지네 푸드트럭'
 #doc.save(submit_name+'.docx')
-doc.save('announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/newfile.docx')
+doc.save('/newfile.docx')
