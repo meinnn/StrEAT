@@ -9,10 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "상품 카테고리를 생성하기 위한 DTO")
 public record CreateProductCategoryDTO(
         @Schema(description = "카테고리명", example = "분식")
-        String name,
+        String name
 
-        @Schema(description = "상위 카테고리 ID", example = "0")
-        Integer parentCategoryId
 ) {
     public CreateProductCategoryDTO {
         if (name == null || name.isEmpty()) {
@@ -21,11 +19,10 @@ public record CreateProductCategoryDTO(
     }
 
     // DTO에서 ProductCategory 엔티티로 변환하는 메서드
-    public ProductCategory toEntity(Product product, ProductCategory parentCategory) {
+    public ProductCategory toEntity(Product product) {
         return ProductCategory.builder()
-                .product(product)  // 연관된 Product 설정
                 .name(this.name)  // 카테고리명 설정
-                .parentCategory(parentCategory) // 부모 카테고리 설정 (null 가능)
+//                .parentCategory(parentCategory) // 부모 카테고리 설정 (null 가능)
                 .build();
     }
 }

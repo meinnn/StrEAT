@@ -4,8 +4,10 @@ import io.ssafy.p.j11a307.product.dto.CreateProductDTO;
 import io.ssafy.p.j11a307.product.dto.ReadProductDTO;
 import io.ssafy.p.j11a307.product.dto.UpdateProductDTO;
 import io.ssafy.p.j11a307.product.entity.Product;
+import io.ssafy.p.j11a307.product.entity.ProductCategory;
 import io.ssafy.p.j11a307.product.exception.BusinessException;
 import io.ssafy.p.j11a307.product.exception.ErrorCode;
+import io.ssafy.p.j11a307.product.repository.ProductCategoryRepository;
 import io.ssafy.p.j11a307.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +25,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final OwnerClient ownerClient;
     private final StoreClient storeClient;
-
+    private final ProductCategoryRepository productCategoryRepository;
     @Value("${streat.internal-request}")
     private String internalRequestKey;
 
@@ -72,18 +74,36 @@ public Integer createProduct(String token, CreateProductDTO createProduct) {
                 .collect(Collectors.toList());
     }
 
+//    public void updateProduct(String token, Integer productId, UpdateProductDTO updateProductDTO) {
+//        Integer storeId = getStoreIdByToken(token);
+//
+//        Optional<Product> product = productRepository.findByStoreIdAndId(storeId, productId);
+//        // storeId와 productId로 product 조회
+//
+//        if(product.isPresent()){
+//            Product updatedProduct = product.get().updateWith(updateProductDTO);
+//            productRepository.save(updatedProduct);
+//        }
+//        else throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+//
+//    }
+
     public void updateProduct(String token, Integer productId, UpdateProductDTO updateProductDTO) {
         Integer storeId = getStoreIdByToken(token);
 
-        Optional<Product> product = productRepository.findByStoreIdAndId(storeId, productId);
         // storeId와 productId로 product 조회
+        Optional<Product> product = productRepository.findByStoreIdAndId(storeId, productId);
+        if (product.isPresent()) {
+            // 카테고리 ID로 ProductCategory 조회
+            ProductCategory productCategory = productCategoryRepository.findById(updateProductDTO.categoryId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND));
 
-        if(product.isPresent()){
-            Product updatedProduct = product.get().updateWith(updateProductDTO);
+            // product와 category 정보를 이용하여 updateWith 메서드 호출
+            Product updatedProduct = product.get().updateWith(updateProductDTO, productCategory);
             productRepository.save(updatedProduct);
+        } else {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
         }
-        else throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
-
     }
 
     @Transactional
@@ -145,9 +165,4 @@ public Integer createProduct(String token, CreateProductDTO createProduct) {
         productRepository.save(product);
     }
 
-
-    @Transactional(readOnly = true)
-    public Integer getLastProductId() {
-        return productRepository.findLastProductId();
-    }
 }
