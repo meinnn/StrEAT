@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.ssafy.p.j11a307.announcement.service.AnnouncementService;
+import io.ssafy.p.j11a307.announcement.dto.GetSubmitFileRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,4 +31,16 @@ public class AnnouncementController {
                 .body(DataResponse.of("공고 내역 조회에 성공했습니다.", getAnnouncementDTO));
     }
 
+
+    @PostMapping("/create-doc")
+    @Operation(summary = "제출 파일 자동화", description = "제출할 파일 내용 입력을 자동화한 후 파일을 돌려준다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "자동화 성공")
+    })
+    public FileSystemResource GetSubmitFile(@RequestHeader("Authorization") String token,
+                                                                          @RequestBody GetSubmitFileRequest getSubmitFileRequest) {
+        FileSystemResource fileSystemResource = announcementService.getSubmitFile(token, getSubmitFileRequest);
+
+        return fileSystemResource;
+    }
 }
