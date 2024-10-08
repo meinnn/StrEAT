@@ -3,6 +3,7 @@ package io.ssafy.p.j11a307.push_alert.service;
 import com.google.firebase.messaging.Notification;
 import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
 import io.ssafy.p.j11a307.push_alert.entity.PushAlert;
+import io.ssafy.p.j11a307.push_alert.global.DataResponse;
 import io.ssafy.p.j11a307.push_alert.repository.PushAlertRepository;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,17 +66,29 @@ public class AlertService {
 
     public void sendOpenStoreAlert(Integer storeId, String storeName, AlertType alertType) {
         String topic = TOPIC_STORE_PREFIX + storeId;
+        String creationTime = convertDateFormat(new Date());
         FcmAlertData fcmAlertData = FcmStoreOpenAlert.builder()
                 .storeId(String.valueOf(storeId))
                 .storeName(storeName)
-                .createdAt(convertDateFormat(new Date()))
+                .createdAt(creationTime)
                 .alertType(alertType)
                 .build();
         Notification notification = Notification.builder()
                 .setTitle(fcmAlertData.getTitle())
                 .setBody(fcmAlertData.getMessage())
                 .build();
+        List<Integer> dibsUserIds = userService.getCalledDibsUserByStoreId(storeId, internalRequestKey).getData();
+        // push alert 데이터 생성
+        List<PushAlert> pushAlerts = dibsUserIds.stream().map(id ->
+                PushAlert.builder()
+                        .userId(id)
+                        .storeId(storeId)
+                        .createdAt(creationTime)
+                        .title(fcmAlertData.getTitle())
+                        .message(fcmAlertData.getMessage())
+                        .build()).toList();
         firebaseUtil.pushAlertTopic(fcmAlertData, topic, notification);
+        pushAlertRepository.saveAll(pushAlerts);
     }
 
     public void subscribeToStore(Integer userId, Integer storeId) {
