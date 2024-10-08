@@ -403,6 +403,22 @@ public class StoreService{
 
     }
 
+
+    /**
+     * 주어진 가게 ID 리스트에 해당하는 가게 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public List<DibsStoreStatusDTO> getStoresByIds(List<Integer> storeIds) {
+        // 가게 ID 리스트로 가게 정보 조회
+        List<Store> stores = storeRepository.findAllById(storeIds);
+
+        // Store 엔티티를 ReadStoreStatusDTO로 변환
+        return stores.stream()
+                .map(store -> new DibsStoreStatusDTO(store.getId(), store.getName(), store.getStatus()))
+                .collect(Collectors.toList());
+    }
+
+
     private Integer calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         // Haversine 공식을 사용하여 두 지점 간의 거리를 계산하는 메서드
         final int R = 6371; // 지구 반경 (단위: km)
@@ -425,4 +441,7 @@ public class StoreService{
         store.changeStatus(status);  // 상태 변경 메서드 호출
         storeRepository.save(store); // 변경된 상태를 저장
     }
+
+
+
 }
