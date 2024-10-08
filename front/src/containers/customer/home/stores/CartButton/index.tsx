@@ -1,7 +1,12 @@
+'use client'
+
 import { TiShoppingCart } from 'react-icons/ti'
 import Link from 'next/link'
+import { useCart } from '@/contexts/CartContext'
 
 export default function CartButton() {
+  const { cartItems } = useCart()
+
   return (
     <Link href="/customer/cart" className="fixed bottom-6 right-6">
       <button
@@ -10,7 +15,7 @@ export default function CartButton() {
       >
         <TiShoppingCart size={38} />
         <span className="absolute top-0 right-0 bg-text text-white text-sm font-bold  rounded-full px-2 py-1">
-          1
+          {cartItems.length}
         </span>
       </button>
     </Link>

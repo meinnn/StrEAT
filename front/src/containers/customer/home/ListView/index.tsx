@@ -3,13 +3,16 @@ import StoreSearchHeader from '@/components/StoreSearchHeader'
 import StoreListItem from '@/containers/customer/home/StoreListItem'
 import Checkbox from '@/components/Checkbox'
 import { useState } from 'react'
+import { Store } from '@/types/store'
 
 export default function ListView({
   setView,
   currentAddress,
+  storeList,
 }: {
   setView: (view: 'map' | 'list') => void
   currentAddress: string
+  storeList: Store[]
 }) {
   const [isFavoriteOnly, setIsFavoriteOnly] = useState(false)
 
@@ -43,11 +46,11 @@ export default function ListView({
           </div>
         </div>
 
-        <StoreListItem />
-        <StoreListItem />
-        <StoreListItem />
-        <StoreListItem />
-        <StoreListItem />
+        {storeList.map((store) => (
+          <div key={store.id} className="divide-y divide-gray-medium">
+            <StoreListItem store={store} />
+          </div>
+        ))}
       </div>
     </>
   )
