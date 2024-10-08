@@ -49,8 +49,8 @@ public record ReadStoreDTO(
         @Schema(description = "영업 상태", example = "영업중")
         StoreStatus status,
 
-        @Schema(description = "업종 카테고리 ID", example = "1")
-        Integer industryCategoryId  // 추가된 필드
+        @Schema(description = "하위 가게 카테고리ID", example = "30")
+        Integer subCategoryId
 ) {
     // Store 엔티티를 받아서 DTO로 변환하는 생성자
     public ReadStoreDTO(Store store) {
@@ -69,7 +69,7 @@ public record ReadStoreDTO(
                 store.getStorePhoneNumber(),
                 store.getClosedDays(),
                 store.getStatus(),
-                store.getIndustryCategory().getId()
+                store.getSubCategory().getId()
         );
     }
 }

@@ -245,4 +245,15 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("사장님 한마디 수정 성공"));
     }
+
+
+    @PatchMapping("/subcategory/{subCategoryId}")
+    @Operation(summary = "스토어의 업종 카테고리를 수정 및 저장하는 API")
+    public ResponseEntity<MessageResponse> updateStoreSubCategory(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer subCategoryId) {
+        storeService.updateSubCategory(token, subCategoryId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("스토어의 서브카테고리가 업데이트되었습니다."));
+    }
 }
