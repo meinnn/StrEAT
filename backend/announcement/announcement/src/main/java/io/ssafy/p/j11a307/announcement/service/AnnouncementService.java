@@ -81,6 +81,17 @@ public class AnnouncementService {
           String eventName = getSubmitFileRequest.eventName();
 
         try {
+            System.out.println("현재 작업 디렉토리: " + System.getProperty("user.dir"));
+
+            // Python에서 생성한 파일 경로
+            Path filePath2 = Paths.get("announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/truck.docx"); // Python에서 생성한 파일 경로를 지정
+            File file2 = filePath2.toFile();
+
+            // 파일이 존재하지 않으면 오류 메시지 반환
+            if (!file2.exists()) throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
+
+            System.out.println("파일 존재함!!");
+
 //            ProcessBuilder pb = new ProcessBuilder("python", "announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
 //                    ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
             ProcessBuilder pb = new ProcessBuilder("python", "announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py");

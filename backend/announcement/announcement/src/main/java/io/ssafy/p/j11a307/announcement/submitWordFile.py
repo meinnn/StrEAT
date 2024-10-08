@@ -1,6 +1,11 @@
 from docx import Document
 from docx.enum.text import WD_COLOR_INDEX
 
+import os
+
+# 현재 작업 디렉토리 출력
+print("현재 작업 디렉토리:", os.getcwd())
+
 # Word 문서 템플릿 로드
 doc = Document('announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/truck.docx')
 
