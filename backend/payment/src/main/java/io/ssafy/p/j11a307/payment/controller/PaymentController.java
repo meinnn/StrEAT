@@ -22,7 +22,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/toss/request-payment")
-    public ResponseEntity<DataResponse<PaymentResponse>> tossRequestPayment(TossPaymentBaseRequest tossPaymentBaseRequest) throws JsonProcessingException {
+    public ResponseEntity<DataResponse<PaymentResponse>> tossRequestPayment(@RequestBody TossPaymentBaseRequest tossPaymentBaseRequest) throws JsonProcessingException {
         PaymentResponse paymentResponse = paymentService.tossRequestPayment(tossPaymentBaseRequest);
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("결제 성공", paymentResponse));
     }
