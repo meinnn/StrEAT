@@ -111,12 +111,14 @@ public class AnnouncementService {
 
 //            ProcessBuilder pb = new ProcessBuilder("python", "var/jenkins_home/workspace/streat-docker-pipeline-announcement/backend/announcement/announcement/src/main/java/io/ssafy/p/j11a307/announcement/submitWordFile.py",
 //                    ownerName,gender,Integer.toString(age), birth, address, home_num, phone_num, email, sns, truckName, businessNum, eventName);
-            ProcessBuilder pb2 = new ProcessBuilder("pip3", "install", "-r", "requirements.txt");
+            //ProcessBuilder pb2 = new ProcessBuilder("pip3", "install", "-r", "requirements.txt");
+
+            ProcessBuilder pb2 = new ProcessBuilder("pip3", "install", "python-docx");
             pb2.redirectErrorStream(true);
             Process process2 = pb2.start();
             process2.waitFor();
 
-            System.out.println("핍 완료!!!!!!!!!!!!!!");
+            System.out.println("docx 설치 완료!!!!!!!!!!!!!!");
 
             ProcessBuilder pb = new ProcessBuilder("python3", "submitWordFile.py");
             pb.redirectErrorStream(true);

@@ -2,6 +2,7 @@
 FROM openjdk:21-jdk
 
 RUN microdnf install -y python3 python3-pip
+RUN pip3 install -r /requirements.txt
 
 # 애플리케이션 JAR 파일을 Docker 이미지로 복사
 COPY build/libs/*.jar /app.jar
