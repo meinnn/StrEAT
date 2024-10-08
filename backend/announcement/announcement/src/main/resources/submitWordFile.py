@@ -7,7 +7,7 @@ import os
 print("현재 작업 디렉토리:", os.getcwd())
 
 # Word 문서 템플릿 로드
-doc = Document('truck.docx')
+doc = Document('/truck.docx')
 
 # 회원 정보를 사전(Dictionary) 형태로 준비
 # user_info = {
