@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AlertController {
 
-    @Value("{streat.internal-request}")
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
 
     private final AlertService alertService;
