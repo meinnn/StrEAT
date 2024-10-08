@@ -94,7 +94,12 @@ public class UserService {
 
     public UserInfoResponse getUserInfoById(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        return UserInfoResponse.builder().name(user.getUsername()).profileImgSrc(user.getProfileImgSrc()).build();
+        return UserInfoResponse.builder()
+                .name(user.getUsername())
+                .profileImgSrc(user.getProfileImgSrc())
+                .orderStatusAlert(user.isOrderStatusAlert())
+                .dibsStoreAlert(user.isDibsStoreAlert())
+                .build();
     }
 
     public UserFcmTokenResponse getFcmTokenByUserId(Integer userId) {
