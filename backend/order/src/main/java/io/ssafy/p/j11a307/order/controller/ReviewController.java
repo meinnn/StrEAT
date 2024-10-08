@@ -1,8 +1,6 @@
 package io.ssafy.p.j11a307.order.controller;
 
-import io.ssafy.p.j11a307.order.dto.CreateReviewDTO;
-import io.ssafy.p.j11a307.order.dto.GetMyReviewsDTO;
-import io.ssafy.p.j11a307.order.dto.GetStoreReviewsDTO;
+import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.global.DataResponse;
 import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.service.ReviewService;
@@ -11,11 +9,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,11 +69,17 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "내 리뷰 조회 성공"),
     })
-    public ResponseEntity<DataResponse<List<GetMyReviewsDTO>>> getMyReviews(@RequestHeader("Authorization") String token) {
-        List<GetMyReviewsDTO> getMyReviewsDTOs = reviewService.getMyReviews(token);
+    @Parameters({
+            @Parameter(name = "pgno", description = "페이지 번호(0번부터 시작)"),
+            @Parameter(name = "spp", description = "한 페이지에 들어갈 개수")
+    })
+    public ResponseEntity<DataResponse<GetMyReviewDTO>> getMyReviews(@RequestHeader("Authorization") String token,
+                                                                     @RequestParam("pgno") Integer pgno,
+                                                                     @RequestParam("spp") Integer spp) {
+        GetMyReviewDTO getMyReviewDTOs = reviewService.getMyReviews(token, pgno, spp);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(DataResponse.of("내 리뷰 조회에 성공했습니다.", getMyReviewsDTOs));
+                .body(DataResponse.of("내 리뷰 조회에 성공했습니다.", getMyReviewDTOs));
     }
 
     @GetMapping("/stores/{id}/reviews")
@@ -85,10 +87,40 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "점포별 리뷰 조회 성공"),
     })
-    public ResponseEntity<DataResponse<List<GetStoreReviewsDTO>>> getStoreReviews(@PathVariable Integer id) {
-        List<GetStoreReviewsDTO> getStoreReviewsDTO = reviewService.getStoreReviews(id);
+    @Parameters({
+            @Parameter(name = "pgno", description = "페이지 번호(0번부터 시작)"),
+            @Parameter(name = "spp", description = "한 페이지에 들어갈 개수")
+    })
+    public ResponseEntity<DataResponse<GetStoreReviewDTO>> getStoreReviews(@PathVariable Integer id,
+                                                                           @RequestParam("pgno") Integer pgno,
+                                                                           @RequestParam("spp") Integer spp) {
+        GetStoreReviewDTO getStoreReviewDTO = reviewService.getStoreReviews(id, pgno, spp);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(DataResponse.of("점포별 리뷰 조회에 성공했습니다.", getStoreReviewsDTO));
+                .body(DataResponse.of("점포별 리뷰 조회에 성공했습니다.", getStoreReviewDTO));
     }
+
+
+    //가게의 총 리뷰 개수, 리뷰 평균 평점
+    @GetMapping("/stores/{storeId}/reviews/summary")
+    @Operation(summary = "리뷰 개수 및 평점", description = "점포별 리뷰 개수 및 평점 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "점포별 리뷰 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "점포 존재하지 않음"),
+    })
+    public ResponseEntity<DataResponse<GetReviewSummaryDTO>> getReviewSummary(@PathVariable Integer storeId) {
+
+        GetReviewSummaryDTO getStoreReviewDTO = reviewService.getReviewSummary(storeId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("점포별 리뷰 개수 및 평점 조회에 성공했습니다.", getStoreReviewDTO));
+    }
+
+
+
+
+
+
+
+
 }

@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 public class OrderProductOption {
     @EmbeddedId
     private OrdersUserId orderProductId;
+
+//    public Integer getProductOptionId() {
+//        return this.orderProductId.getProductOptionId();
+//    }
 }
