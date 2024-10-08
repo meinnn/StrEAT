@@ -51,12 +51,16 @@ public class ProductController {
             @RequestPart("productInfo") CreateProductAllDTO productDTO,
             @RequestPart("images") List<MultipartFile> images) {
         // 1. 유효성 검증
+        System.out.println("======1");
         validateInput(productDTO, images);
-        // 2. 상품 등록 및 상품 ID 반환
+        System.out.println("======2");
+        // 2. 상품 등록 및 상품 ID 반환 (단일 카테고리로 처리)
         Integer productId = productService.createProduct(token, productDTO.toCreateProductDTO());
-
+        System.out.println("======3");
         // 3. 상품 이미지 저장
         productPhotoService.createProductPhoto(token, productId, images);
+        System.out.println("======4");
+
         // 4. 옵션 카테고리 및 옵션 저장 (null 체크 추가)
         if (productDTO.optionCategories() != null && !productDTO.optionCategories().isEmpty()) {
             productDTO.optionCategories().stream()
@@ -140,13 +144,8 @@ public class ProductController {
         }
 
         // 4. 카테고리 유효성 검사
-        if (productDTO.categories() == null || productDTO.categories().isEmpty()) {
+        if (productDTO.categoryId() == null) {
             throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_EMPTY);
-        }
-        for (CreateProductCategoryDTO category : productDTO.categories()) {
-            if (category.name() == null || category.name().isEmpty()) {
-                throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_NAME_NULL);
-            }
         }
     }
 

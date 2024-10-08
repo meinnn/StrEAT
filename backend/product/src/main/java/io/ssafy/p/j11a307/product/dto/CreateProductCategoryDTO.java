@@ -5,9 +5,15 @@ import io.ssafy.p.j11a307.product.entity.ProductCategory;
 import io.ssafy.p.j11a307.product.exception.BusinessException;
 import io.ssafy.p.j11a307.product.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "상품 카테고리를 생성하기 위한 DTO")
 public record CreateProductCategoryDTO(
+
+        @Schema(description = "카테고리 ID", example = "1")
+        @NotNull(message = "카테고리 ID는 필수 입력 항목입니다.")
+        Integer id,
+
         @Schema(description = "카테고리명", example = "분식")
         String name
 

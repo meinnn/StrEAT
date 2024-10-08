@@ -29,29 +29,37 @@ public class ProductService {
     @Value("${streat.internal-request}")
     private String internalRequestKey;
 
-@Transactional
-public Integer createProduct(String token, CreateProductDTO createProduct) {
-    Integer storeId = getStoreIdByToken(token);
+    @Transactional
+    public Integer createProduct(String token, CreateProductDTO createProductDTO) {
+        Integer storeId = getStoreIdByToken(token);
 
-    // 상품 생성 (CreateProductDTO에서 정보 가져오기)
-    Product product = Product.builder()
-            .storeId(storeId) // storeId 설정
-            .name(createProduct.name()) // 상품 이름 설정
-            .price(createProduct.price()) // 상품 가격 설정
-            .description(createProduct.description()) // 상품 설명 설정 (필요한 경우 추가)
-            .build();
+        // 카테고리 조회
+        ProductCategory category = productCategoryRepository.findById(createProductDTO.categoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND));
 
-    // 상품 저장
-    productRepository.save(product);
+        // 상품 생성
+        Product product = Product.builder()
+                .storeId(storeId)
+                .name(createProductDTO.name())
+                .price(createProductDTO.price())
+                .description(createProductDTO.description())
+                .category(category)  // 카테고리 설정
+                .build();
 
-    // 저장된 상품의 productId 반환
-    return product.getId();
-}
+        // 상품 저장
+        productRepository.save(product);
+
+        // 저장된 상품의 productId 반환
+        return product.getId();
+    }
 
     @Transactional(readOnly = true)
     public List<String> getProductCategoriesByStoreId(Integer storeId) {
-        // storeId에 해당하는 카테고리 이름만 리스트로 반환
-        return productRepository.findCategoriesByStoreId(storeId);
+        // storeId에 해당하는 카테고리 ID 목록을 중복 제거하여 가져옴
+        List<Integer> categoryIds = productRepository.findDistinctCategoryIdsByStoreId(storeId);
+
+        // 해당 ID 목록으로 카테고리 이름을 조회하여 반환
+        return productRepository.findCategoryNamesByIds(categoryIds);
     }
 
     public ReadProductDTO getProductById(Integer productId) {

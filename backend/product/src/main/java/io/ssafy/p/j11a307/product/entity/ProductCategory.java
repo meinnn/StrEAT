@@ -24,11 +24,6 @@ public class ProductCategory {
 
     private String name;
 
-//    // 상위 카테고리를 참조하는 필드
-//    @ManyToOne
-//    @JoinColumn(name = "parent_category_id", nullable = true)
-//    private ProductCategory parentCategory;
-
     // 카테고리명 변경 메서드
     public void changeName(String name) {
         if (name == null || name.isEmpty()) {
@@ -36,23 +31,5 @@ public class ProductCategory {
         }
         this.name = name;
     }
-
-    // 상위 카테고리를 계속해서 찾는 메서드 (재귀 호출)
-//    public ProductCategory getRootCategory() {
-//        if (this.parentCategory == null) {
-//            return this;
-//        }
-//        return this.parentCategory.getRootCategory();
-//    }
-
-//    public void changeParentCategory(ProductCategory parentCategory) {
-//        this.parentCategory = parentCategory;
-//    }
-
-//    public ProductCategory(Product product, UpdateProductCategoryDTO dto) {
-//        this.product = product;
-//        this.name = dto.name();
-////        this.parentCategory = dto.parentCategoryId() != null ? new ProductCategory() : null; // 상위 카테고리 설정
-//    }
 
 }
