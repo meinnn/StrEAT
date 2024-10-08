@@ -63,6 +63,7 @@ public class UserController {
     public Integer getOwnerId(@RequestParam("accessToken") String accessToken, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
             Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+
             boolean isOwner = userService.isOwner(userId);
             if (isOwner) {
                 return userId;
