@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.push_alert.service;
 
 import com.google.firebase.messaging.Notification;
+import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
 import io.ssafy.p.j11a307.push_alert.entity.PushAlert;
 import io.ssafy.p.j11a307.push_alert.repository.PushAlertRepository;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
@@ -32,13 +33,14 @@ public class AlertService {
 
     private final FirebaseUtil firebaseUtil;
 
-    public void sendOrderStatusChangeAlert(Integer customerId, Integer orderId, String storeName, AlertType alertType) {
-        ApiResponse<FcmTokenResponse> fcmTokenResponse = userService.getFcmTokenByUserId(customerId, internalRequestKey);
+    public void sendOrderStatusChangeAlert(OrderStatusChangeRequest orderStatusChangeRequest, AlertType alertType) {
+        ApiResponse<FcmTokenResponse> fcmTokenResponse =
+                userService.getFcmTokenByUserId(orderStatusChangeRequest.customerId(), internalRequestKey);
         String customerFcmToken = fcmTokenResponse.getData().fcmToken();
         String creationTime = convertDateFormat(new Date());
         FcmAlertData data = FcmOrderStatusChangeAlert.builder()
-                .orderId(String.valueOf(orderId))
-                .storeName(storeName)
+                .orderId(String.valueOf(orderStatusChangeRequest.orderId()))
+                .storeName(orderStatusChangeRequest.storeName())
                 .createdAt(creationTime)
                 .alertType(alertType)
                 .build();
@@ -48,11 +50,12 @@ public class AlertService {
                 .build();
 
         PushAlert pushAlert = PushAlert.builder()
-                .userId(customerId)
+                .userId(orderStatusChangeRequest.customerId())
                 .createdAt(creationTime)
                 .title(data.getTitle())
                 .message(data.getMessage())
-                .orderId(orderId)
+                .orderId(orderStatusChangeRequest.orderId())
+                .storeId(orderStatusChangeRequest.storeId())
                 .build();
 
         firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
