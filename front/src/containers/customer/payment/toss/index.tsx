@@ -56,7 +56,7 @@ export default function PaymentCheckoutPage() {
       await payment.requestPayment({
         method: selectedPaymentMethod || 'CARD',
         amount,
-        orderId: 'YVyBWblH0boLvfy5NgZJU',
+        orderId: '141414',
         orderName: `${cartItems[0].name} 외 ${cartItems.length - 1}건`,
         successUrl: `${window.location.origin}/customer/payment/result?status=success`,
         failUrl: `${window.location.origin}/customer/payment/result?status=failure`,

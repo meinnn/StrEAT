@@ -1,19 +1,59 @@
 import { FaCheck } from 'react-icons/fa6'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function OrderSuccess() {
   const router = useRouter()
+  const searchParams = useSearchParams() // URL의 쿼리 파라미터를 가져오는 훅
 
   useEffect(() => {
-    // 1초 후에 /customer로 리다이렉트
-    const timer = setTimeout(() => {
-      router.push('/customer')
-    }, 1000)
+    // URL에서 쿼리 파라미터 값 가져오기
+    const paymentKey = searchParams.get('paymentKey')
+    const orderId = searchParams.get('orderId')
+    const amount = searchParams.get('amount')
+    console.log(paymentKey, orderId, amount)
 
-    // 컴포넌트가 언마운트될 때 타이머 정리
-    return () => clearTimeout(timer)
-  }, [router])
+    // 필수 값이 없으면 실패 페이지로 리다이렉트
+    if (!paymentKey || !orderId || !amount) {
+      console.error('필수 결제 정보가 없습니다.')
+      router.push('/customer/payment/OrderFailure')
+      return
+    }
+
+    // 결제 API 호출
+    const handlePayment = async () => {
+      try {
+        const response = await fetch('/services/payments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ paymentKey, orderId, amount }),
+        })
+
+        if (response.ok) {
+          console.log('결제 성공!')
+          // 성공 시 주문 완료 UI를 보여준 후 1초 뒤에 리다이렉트
+          const timer = setTimeout(() => {
+            router.push(`/customer/orders/${orderId}`)
+          }, 1000)
+
+          return () => clearTimeout(timer)
+        }
+
+        const errorData = await response.json()
+        console.error('결제 실패:', errorData.message)
+        // 결제 실패 시 실패 페이지로 리다이렉트
+        router.push('/customer/payment/OrderFailure')
+      } catch (error) {
+        console.error('결제 요청 오류:', error)
+        router.push('/customer/payment/OrderFailure')
+      }
+    }
+
+    // 결제 처리 함수 호출
+    handlePayment()
+  }, [router, searchParams]) // searchParams 훅을 의존성으로 추가
 
   return (
     <div className="h-screen z-50 flex flex-col items-center justify-center">
