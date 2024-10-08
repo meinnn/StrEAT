@@ -198,7 +198,7 @@ public class StoreService{
                             .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())
                             .orElse(""));
 
-            // Store의 카테고리 가져오기
+            // Store의 상품 카테고리 가져오기
             DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
             List<String> categories = categoryResponse.getData();
 
