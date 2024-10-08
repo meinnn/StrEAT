@@ -1,6 +1,6 @@
 package io.ssafy.p.j11a307.user.dto;
 
-public record OwnerProfileRequest(
+public record OwnerProfile(
         String gender,
         Integer age,
         String birth,

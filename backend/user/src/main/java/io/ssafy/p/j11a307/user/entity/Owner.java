@@ -1,6 +1,6 @@
 package io.ssafy.p.j11a307.user.entity;
 
-import io.ssafy.p.j11a307.user.dto.OwnerProfileRequest;
+import io.ssafy.p.j11a307.user.dto.OwnerProfile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.AccessLevel;
@@ -28,14 +28,14 @@ public class Owner extends User {
         super(user);
     }
 
-    public void updateOwnerProfile(OwnerProfileRequest ownerProfileRequest) {
-        this.gender = ownerProfileRequest.gender();
-        this.age = ownerProfileRequest.age();
-        this.birth = ownerProfileRequest.birth();
-        this.address = ownerProfileRequest.address();
-        this.tel = ownerProfileRequest.tel();
-        this.phone = ownerProfileRequest.phone();
-        this.email = ownerProfileRequest.email();
-        this.snsAccount = ownerProfileRequest.snsAccount();
+    public void updateOwnerProfile(OwnerProfile ownerProfile) {
+        this.gender = ownerProfile.gender();
+        this.age = ownerProfile.age();
+        this.birth = ownerProfile.birth();
+        this.address = ownerProfile.address();
+        this.tel = ownerProfile.tel();
+        this.phone = ownerProfile.phone();
+        this.email = ownerProfile.email();
+        this.snsAccount = ownerProfile.snsAccount();
     }
 }
