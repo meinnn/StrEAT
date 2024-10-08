@@ -12,7 +12,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     // storeId로 상품 목록 조회
     List<Product> findByStoreId(Integer storeId);
 
-    @Query("SELECT pc.name FROM ProductCategory pc JOIN pc.product p WHERE p.storeId = :storeId")
+    @Query("SELECT pc.name FROM ProductCategory pc JOIN pc.products p WHERE p.storeId = :storeId")
     List<String> findCategoriesByStoreId(@Param("storeId") Integer storeId);
 
     // storeId와 productId로 Product 조회

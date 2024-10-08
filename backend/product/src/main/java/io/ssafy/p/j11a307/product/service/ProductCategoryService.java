@@ -44,10 +44,10 @@ public class ProductCategoryService {
         Product product = products.get(0);  // 첫 번째 product 사용
 
         // 상위 카테고리 조회 (없을 수도 있음)
-        ProductCategory parentCategory = getParentCategory(createCategoryDTO.parentCategoryId());
+//        ProductCategory parentCategory = getParentCategory(createCategoryDTO.parentCategoryId());
 
         // DTO를 엔티티로 변환하여 저장
-        ProductCategory productCategory = createCategoryDTO.toEntity(product, parentCategory);
+        ProductCategory productCategory = createCategoryDTO.toEntity(product);
         productCategoryRepository.save(productCategory);
     }
 
@@ -129,12 +129,13 @@ public class ProductCategoryService {
         return storeId;
     }
 
-    private ProductCategory getParentCategory(Integer parentCategoryId) {
-        if (parentCategoryId == null) {
-            return null;
-        }
 
-        return productCategoryRepository.findById(parentCategoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND));
-    }
+//    private ProductCategory getParentCategory(Integer parentCategoryId) {
+//        if (parentCategoryId == null) {
+//            return null;
+//        }
+//
+//        return productCategoryRepository.findById(parentCategoryId)
+//                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND));
+//    }
 }

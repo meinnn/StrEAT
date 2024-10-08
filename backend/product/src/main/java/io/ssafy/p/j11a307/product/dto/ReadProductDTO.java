@@ -28,8 +28,8 @@ public record ReadProductDTO(
         @Schema(description = "재고 상태", example = "true")
         Boolean stockStatus,
 
-        @Schema(description = "카테고리 목록")
-        List<Integer> categories,
+        @Schema(description = "카테고리 ID")
+        Integer category,
 
         @Schema(description = "옵션 카테고리 목록")
         List<Integer> optionCategories,
@@ -46,11 +46,7 @@ public record ReadProductDTO(
                 product.getPrice(),
                 product.getDescription(),
                 product.getStockStatus(),
-                product.getCategories() != null ?
-                        product.getCategories().stream()
-                                .map(ProductCategory::getId) // ID로 변경
-                                .collect(Collectors.toList()) :
-                        List.of(),  // null일 경우 빈 리스트 반환
+                product.getCategory() != null ? product.getCategory().getId() : null,   // null일 경우 빈 리스트 반환
                 product.getOptionCategories() != null ?
                         product.getOptionCategories().stream()
                                 .map(ProductOptionCategory::getId) // ID로 변경

@@ -25,8 +25,9 @@ public class Product {
     private String description;
     private Boolean stockStatus;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ProductCategory> categories;
+    @ManyToOne
+    @JoinColumn(name = "product_category_id", nullable = false)
+    private ProductCategory category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ProductOptionCategory> optionCategories;
@@ -66,26 +67,12 @@ public class Product {
         this.stockStatus = stockStatus;
     }
 
-    public Product updateWith(UpdateProductDTO request) {
+    public Product updateWith(UpdateProductDTO request, ProductCategory category) {
         this.name = request.name() != null ? request.name() : this.name;
         this.price = request.price() != null ? request.price() : this.price;
         this.description = request.description() != null ? request.description() : this.description;
         this.stockStatus = request.stockStatus() != null ? request.stockStatus() : this.stockStatus;
-
-        // 카테고리 및 옵션 카테고리 업데이트
-        if (request.categories() != null) {
-            this.categories.clear(); // 기존 카테고리 삭제
-            this.categories.addAll(request.categories().stream()
-                    .map(categoryDto -> new ProductCategory(this, categoryDto))
-                    .toList());
-        }
-
-        if (request.optionCategories() != null) {
-            this.optionCategories.clear(); // 기존 옵션 카테고리 삭제
-            this.optionCategories.addAll(request.optionCategories().stream()
-                    .map(optionCategoryDto -> new ProductOptionCategory(this, optionCategoryDto))
-                    .toList());
-        }
+        this.category = category != null ? category : this.category;
 
         return this; // 수정된 객체 반환
     }
