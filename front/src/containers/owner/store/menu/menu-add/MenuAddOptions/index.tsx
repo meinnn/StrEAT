@@ -1,11 +1,10 @@
-/* eslint-disable */
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { LuPencil } from 'react-icons/lu'
 import { FaRegTrashAlt, FaPlus } from 'react-icons/fa'
 
-export default function MenuAddOption() {
+export default function MenuAddOptions({ onOptionsChange }) {
   const [optionGroups, setOptionGroups] = useState([
     {
       name: '옵션 1',
@@ -15,6 +14,10 @@ export default function MenuAddOption() {
       maxOptions: 1,
     },
   ])
+
+  useEffect(() => {
+    onOptionsChange(optionGroups)
+  }, [optionGroups, onOptionsChange])
 
   // 옵션 그룹 추가
   const handleAddOptionGroup = () => {
@@ -76,7 +79,7 @@ export default function MenuAddOption() {
       {optionGroups.map((group, groupIndex) => (
         <div
           key={groupIndex}
-          className="mb-10 border-2 border-gray-300 rounded-md p-4"
+          className="mb-6 border-2 border-gray-300 rounded-md p-4"
         >
           <div className="mb-4 flex justify-between items-center">
             {/* 옵션 그룹 이름 수정 필드 */}
@@ -96,10 +99,14 @@ export default function MenuAddOption() {
               <span className="mr-2">선택 여부</span>
               <div
                 onClick={() => handleToggle(groupIndex)}
-                className={`relative w-14 h-7 flex items-center ${group.isRequired ? 'bg-secondary' : 'bg-gray-300'} rounded-full p-1 cursor-pointer transition-colors duration-300`}
+                className={`relative w-14 h-7 flex items-center ${
+                  group.isRequired ? 'bg-secondary' : 'bg-gray-300'
+                } rounded-full p-1 cursor-pointer transition-colors duration-300`}
               >
                 <div
-                  className={`w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-xs font-bold transform ${group.isRequired ? 'translate-x-6' : 'translate-x-0'} transition-transform duration-300`}
+                  className={`w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-xs font-bold transform ${
+                    group.isRequired ? 'translate-x-6' : 'translate-x-0'
+                  } transition-transform duration-300`}
                 >
                   {group.isRequired ? '필수' : '선택'}
                 </div>
@@ -220,22 +227,13 @@ export default function MenuAddOption() {
       ))}
 
       {/* 옵션 그룹 추가하기 버튼 */}
-      <div className="mb-6 flex justify-center">
+      <div className="mb-4 flex justify-center">
         <button
           onClick={handleAddOptionGroup}
-          className=" text-gray-400 py-2 px-6"
+          className=" text-gray-400 py-2 px-6 flex items-center"
         >
+          <FaPlus className="mr-2" />
           옵션 추가하기
-          <div className="flex justify-center text-black">
-            <FaPlus />
-          </div>
-        </button>
-      </div>
-
-      {/* 저장하기 버튼 */}
-      <div className="mt-4 flex justify-center">
-        <button className="bg-primary-500 text-white font-bold py-2 px-6 rounded-md w-full">
-          저장하기
         </button>
       </div>
     </div>
