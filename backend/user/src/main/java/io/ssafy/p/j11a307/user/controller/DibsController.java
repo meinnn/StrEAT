@@ -84,4 +84,17 @@ public class DibsController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("찜 목록 조회에 성공했습니다.", allDibs));
     }
+
+    @GetMapping("/{storeId}/called")
+    @Operation(summary = "스토어 찜 여부 조회", description = "스토어 찜 여부 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "찜 여부 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "잘못된 유저입니다.")
+    })
+    public ResponseEntity<DataResponse<Boolean>> calledDibs(HttpServletRequest request, @PathVariable Integer storeId) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        Boolean calledDibs = dibsService.calledDibs(accessToken, storeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("스토어 찜 여부 조회에 성공했습니다.", calledDibs));
+    }
 }

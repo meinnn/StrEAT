@@ -71,4 +71,13 @@ public class DibsService {
                         .alertOn(subscription.getAlertOn()).build()).toList();
         return storeDibsResponses;
     }
+
+    public Boolean calledDibs(String accessToken, Integer storeId) {
+        Integer userId = userService.getUserId(accessToken);
+        if (!userService.isCustomer(userId)) {
+            throw new BusinessException(ErrorCode.CUSTOMER_NOT_FOUND);
+        }
+        Subscription.SubscriptionId subscriptionId = new Subscription.SubscriptionId(userId, storeId);
+        return subscriptionRepository.existsById(subscriptionId);
+    }
 }
