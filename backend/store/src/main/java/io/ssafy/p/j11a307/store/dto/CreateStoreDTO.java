@@ -1,9 +1,6 @@
 package io.ssafy.p.j11a307.store.dto;
 
-import io.ssafy.p.j11a307.store.entity.IndustryCategory;
-import io.ssafy.p.j11a307.store.entity.Store;
-import io.ssafy.p.j11a307.store.entity.StoreStatus;
-import io.ssafy.p.j11a307.store.entity.StoreType;
+import io.ssafy.p.j11a307.store.entity.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "가게를 생성하기 위한 DTO")
@@ -44,13 +41,15 @@ public record CreateStoreDTO(
         @Schema(description = "영업 상태", example = "영업중")
         String status,
 
-        @Schema(description = "업종 카테고리 ID", example = "1")
-        Integer industryCategoryId
+        @Schema(description = "하위 가게 카테고리ID", example = "30")
+        Integer subCategoryId
+
+
 
 ) {
 
     // DTO에서 Store 엔티티로 변환하는 메서드
-    public Store toEntity(IndustryCategory industryCategory) {
+    public Store toEntity(SubCategory subCategory) {
         return Store.builder()
                 .businessRegistrationNumber(this.businessRegistrationNumber)
                 .name(this.name)
@@ -64,7 +63,7 @@ public record CreateStoreDTO(
                 .storePhoneNumber(this.storePhoneNumber)  // storePhoneNumber 추가
                 .closedDays(this.closedDays)
                 .status(StoreStatus.fromDescription(this.status))  // StoreStatus 변환
-                .industryCategory(industryCategory)  // IndustryCategory 설정
+                .subCategory(subCategory)
                 .build();
     }
 }

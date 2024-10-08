@@ -71,11 +71,6 @@ public class Store {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreSimpleLocation> simpleLocations;
 
-    @ManyToOne
-    @JoinColumn(name = "industry_category_id", nullable = false)
-    @JsonIgnore  // 순환 참조 방지
-    private IndustryCategory industryCategory;
-
     @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
     @JsonIgnore  // 순환 참조 방지
     private BusinessDay businessDay;
@@ -84,15 +79,12 @@ public class Store {
     @JoinColumn(name = "selected_simple_location_id")
     private StoreSimpleLocation selectedSimpleLocation;
 
+    @ManyToOne
+    @JoinColumn(name = "subcategory_id", nullable = false)
+    @JsonIgnore
+    private SubCategory subCategory;
 
 
-    // Store 삭제 전 IndustryCategory와의 연관관계를 끊는 메서드 추가
-    public void removeFromCategory() {
-        if (this.industryCategory != null) {
-            this.industryCategory.removeStore(this);
-            this.industryCategory = null;  // 연관관계 제거
-        }
-    }
 
     // 이름 변경 메서드
     public void changeName(String name) {
@@ -156,7 +148,7 @@ public class Store {
         this.selectedSimpleLocation = simpleLocation;
     }
 
-    public Store updateWith(UpdateStoreDTO request, IndustryCategory industryCategory) {
+    public Store updateWith(UpdateStoreDTO request, SubCategory subCategory) {
         return Store.builder()
                 .id(this.id)  // ID는 변경하지 않음
                 .userId(this.userId)  // Owner ID는 그대로 유지
@@ -172,7 +164,7 @@ public class Store {
                 .storePhoneNumber(request.storePhoneNumber() != null ? request.storePhoneNumber() : this.storePhoneNumber)  // storePhoneNumber 추가
                 .closedDays(request.closedDays() != null ? request.closedDays() : this.closedDays)
                 .status(request.status() != null ? request.status() : this.status)
-                .industryCategory(industryCategory)
+                .subCategory(subCategory)
                 .build();
     }
 
