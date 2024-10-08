@@ -6,6 +6,7 @@ import { GrLocation } from 'react-icons/gr'
 import { useRouter } from 'next/navigation'
 import BackButtonWithImage from '@/components/BackButtonWithImage'
 import StoreLikeButton from '@/components/StoreLikeButton'
+import Link from 'next/link'
 
 interface Store {
   id: number
@@ -15,6 +16,8 @@ interface Store {
   status: string
   storePhotos: string[]
   categories: string[]
+  reviewTotalCount: number
+  averageScore: number
 }
 
 export default function StoreDetails({ store }: { store: Store }) {
@@ -44,11 +47,14 @@ export default function StoreDetails({ store }: { store: Store }) {
           <div className="flex items-center mt-1 gap-2">
             <div className="flex items-center gap-0.5">
               <FaStar className="text-yellow-400" />
-              <span>4.9</span> {/* 별점 데이터도 API에서 받아와야 함 */}
+              <span>{store.averageScore?.toFixed(1)}</span>
             </div>
             <span className="text-gray-dark">·</span>
             <div className="flex items-center">
-              <span>리뷰 333개</span> {/* 리뷰 수 API에서 받아와야 함 */}
+              {/* 리뷰 목록 조회로 이동 */}
+              <Link href={`/customer/stores/${store.id}/reviews`}>
+                {`리뷰 ${store.reviewTotalCount}개`}
+              </Link>
               <GoChevronRight />
             </div>
           </div>

@@ -1,18 +1,56 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { MdEventNote } from 'react-icons/md'
 import { RiHeart3Line, RiNotification2Line } from 'react-icons/ri'
 import { useRouter } from 'next/navigation'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
+interface UserInfo {
+  name: string
+  profileImgSrc: string
+}
+
+async function fetchUserInfo(): Promise<UserInfo> {
+  const response = await fetch('/services/users/profile')
+  return response.json()
+}
+
+async function updateNotification(alertType: string, alertOn: boolean) {
+  const response = await fetch('/services/users/alert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      alertOn,
+      alertType,
+    }),
+  })
+
+  if (!response.ok) {
+    console.error('Failed to update notification')
+  }
+}
 
 export default function MyPage() {
-  // 알림 스위치 상태 관리
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [orderNotification, setOrderNotification] = useState(true)
   const [storeNotification, setStoreNotification] = useState(true)
 
   const router = useRouter()
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const data = await fetchUserInfo()
+      setUserInfo(data)
+    }
+
+    getUserInfo().then()
+  }, [])
 
   const handleLogout = async () => {
     const response = await fetch('/services/users/logout', {
@@ -42,24 +80,24 @@ export default function MyPage() {
     <div className="p-6">
       {/* 사용자 정보 */}
       <div className="flex flex-col items-center mb-6">
-        <Image
-          src="/images/보쌈사진.jpg" // 실제 이미지 경로로 교체
-          alt="프로필 이미지"
-          width={96}
-          height={96}
-          className="rounded-full bg-gray-medium"
-        />
-        <h2 className="text-xl font-semibold mt-4">익명의 아옹이</h2>
-        <div className="flex items-center justify-center gap-x-1 mt-1">
-          <Image
-            src="/images/kakao.png"
-            alt="kakao"
-            width={16}
-            height={16}
-            className="rounded-full"
-          />
-          <p className="text-sm text-gray-dark">anonymous@ya.ong</p>
-        </div>
+        {userInfo ? (
+          <>
+            <Image
+              src={userInfo.profileImgSrc || '/images/default-profile.png'} // 이미지 경로 확인
+              alt="프로필 이미지"
+              width={96}
+              height={96}
+              className="rounded-full bg-gray-medium"
+            />
+            <h2 className="text-xl font-semibold mt-4">{userInfo.name}</h2>
+          </>
+        ) : (
+          // 스켈레톤 UI
+          <div className="flex flex-col items-center">
+            <Skeleton circle height={96} width={96} />
+            <Skeleton width={120} height={24} style={{ marginTop: '1rem' }} />
+          </div>
+        )}
       </div>
 
       {/* 메뉴 */}
@@ -77,7 +115,7 @@ export default function MyPage() {
 
         {/* 알림 */}
         <Link
-          href="/customer/notifications"
+          href="/customer/mypage/notifications"
           className="flex flex-col items-center"
         >
           <RiNotification2Line className="text-primary-500" size={20} />
@@ -105,7 +143,11 @@ export default function MyPage() {
           {/* 주문 현황 알림 스위치 */}
           <div
             role="presentation"
-            onClick={() => setOrderNotification(!orderNotification)}
+            onClick={() => {
+              const newState = !orderNotification
+              setOrderNotification(newState)
+              updateNotification('order-status-alert', newState).then()
+            }}
             className={`${
               orderNotification ? 'bg-primary-500' : 'bg-gray-medium'
             } relative inline-flex h-8 w-14 items-center rounded-full cursor-pointer`}
@@ -128,7 +170,11 @@ export default function MyPage() {
           {/* 단골 가게 알림 스위치 */}
           <div
             role="presentation"
-            onClick={() => setStoreNotification(!storeNotification)}
+            onClick={() => {
+              const newState = !storeNotification
+              setStoreNotification(newState)
+              updateNotification('dibs-store-alert', newState).then()
+            }}
             className={`${
               storeNotification ? 'bg-primary-500' : 'bg-gray-medium'
             } relative inline-flex h-8 w-14 items-center rounded-full cursor-pointer`}

@@ -3,8 +3,38 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Store } from '@/types/store'
 import StoreLikeButton from '@/components/StoreLikeButton'
+import { useCallback, useEffect, useState } from 'react'
+
+export interface ReviewSummary {
+  reviewTotalCount: number
+  averageScore: number
+}
 
 export default function StoreListItem({ store }: { store: Store }) {
+  const [reviewSummary, setReviewSummary] = useState<ReviewSummary | null>(null)
+
+  // 리뷰 요약을 가져오는 함수
+  const fetchReviewSummary = useCallback(async () => {
+    try {
+      const response = await fetch(`/services/stores/${store.id}/reviews`, {
+        method: 'GET',
+      })
+      const result = await response.json()
+
+      if (response.ok) {
+        setReviewSummary(result.data.data)
+      } else {
+        console.error(result.message)
+      }
+    } catch (error) {
+      console.error('리뷰 요약을 가져오는 중 오류 발생:', error)
+    }
+  }, [store.id])
+
+  useEffect(() => {
+    fetchReviewSummary().then()
+  }, [fetchReviewSummary, store.id])
+
   return (
     <div className="flex items-center justify-between p-4 h-full w-full">
       <Link
@@ -30,7 +60,9 @@ export default function StoreListItem({ store }: { store: Store }) {
           <h3 className="text-lg font-semibold">{store.storeName}</h3>
           <div className="flex items-center text-xs mt-1">
             <FaStar className="text-yellow-400 mr-1" />
-            <span>4.8</span>
+            <span>
+              {reviewSummary && reviewSummary.averageScore?.toFixed(1)}
+            </span>
             <span className="mx-2">|</span>
             <FaLocationArrow className="mr-1" size={12} />
             <span>{store.distance}m</span>
