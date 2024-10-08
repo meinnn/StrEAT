@@ -70,7 +70,6 @@ public class AlertController {
     }
 
     @PostMapping("/dibs/{storeId}")
-    @GetMapping("/open-store")
     @Operation(summary = "점포 찜 등록", description = "점포 찜 등록")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "요청 성공, 푸시 알림 전송 성공"),
@@ -91,8 +90,6 @@ public class AlertController {
     }
 
     @DeleteMapping("/dibs/{storeId}")
-    @PostMapping("/dibs/{storeId}")
-    @GetMapping("/open-store")
     @Operation(summary = "점포 찜 취소", description = "점포 찜 취소")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "요청 성공, 푸시 알림 전송 성공"),
