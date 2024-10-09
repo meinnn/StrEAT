@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -84,6 +83,7 @@ public class DibsService {
                 StoreDibsResponse.builder()
                         .storeId(subscription.getSubscriptionId().getStoreId())
                         .storeName(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).name())
+                        .status(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).status())
                         .alertOn(subscription.getAlertOn()).build()).toList();
         return storeDibsResponses;
     }
