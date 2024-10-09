@@ -13,7 +13,6 @@ export default function CartSkeletonPage() {
           <Skeleton circle height={50} width={50} />
           <div>
             <Skeleton height={20} width={200} />
-            <Skeleton height={15} width={150} />
           </div>
         </div>
 

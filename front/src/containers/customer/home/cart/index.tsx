@@ -6,6 +6,7 @@ import CartItem from '@/containers/customer/home/cart/CartItem'
 import CartSkeletonPage from '@/components/skeleton/CartSkeleton'
 import { useCart } from '@/contexts/CartContext'
 import { useRouter } from 'next/navigation'
+import EmptyCart from '@/containers/customer/home/cart/EmptyCart'
 
 export default function CartPage() {
   const router = useRouter()
@@ -31,6 +32,7 @@ export default function CartPage() {
       .reduce((acc, item) => acc + item.quantity, 0) ?? 0
 
   if (status === 'pending') return <CartSkeletonPage />
+  if (cartItems.length === 0) return <EmptyCart />
 
   return (
     <div
