@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.order.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +21,10 @@ public class OrderProduct {
     @JoinColumn(name="orders_id")
     private Orders ordersId;
 
+    @Builder
+    public OrderProduct(Integer productId, Integer count, Orders ordersId) {
+        this.productId = productId;
+        this.count = count;
+        this.ordersId = ordersId;
+    }
 }

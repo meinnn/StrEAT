@@ -22,13 +22,13 @@ public class Review {
     private Integer score;
     private String content;
 
-    @CreatedDate
     private LocalDateTime createdAt;
 
     @Builder
-    public Review(OrdersId id, Integer score, String content) {
+    public Review(OrdersId id, Integer score, String content, LocalDateTime createdAt) {
         this.id = id;
         this.score = score;
         this.content = content;
+        this.createdAt = createdAt;
     }
 }

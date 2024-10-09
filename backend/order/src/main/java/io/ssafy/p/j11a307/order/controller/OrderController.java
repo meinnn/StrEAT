@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class OrderController {
     private final OrderService orderService;
+
+    @Value("${streat.internal-request}")
+    private String internalRequestKey;
 
     @GetMapping("/{storeId}/list")
     @Operation(summary = "점포별 주문내역 조회", description = "현황별 해당 id 점포의 주문내역 조회")
@@ -159,6 +164,39 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("대기 팀/메뉴 조회에 성공했습니다.", getStoreWaitingDTO));
 
+    }
+
+    @PostMapping("/{storeId}")
+    @Operation(summary = "주문번호 발급", description = "결제를 시작할 때 주문번호를 우선 발급받는다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "주문번호 발급 성공"),
+    })
+    public ResponseEntity<DataResponse<String>> createOrderNumber(@PathVariable Integer storeId,
+                                                                  @RequestBody CreateOrderNumberRequest createOrderNumberRequest,
+                                                                  @RequestHeader("Authorization") String token) {
+        String orderNum = orderService.createOrderNumber(storeId, createOrderNumberRequest, token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("주문번호 발급에 성공했습니다.", orderNum));
+    }
+
+
+    @PostMapping("/pay-complete")
+    @Operation(summary = "결제 성공/실패 처리", description = "결제 성공/실패에 따라 처리한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "결제 성공/실패 처리 완료."),
+            @ApiResponse(responseCode = "400", description = "지원하지 않는 결제 방식"),
+            @ApiResponse(responseCode = "404", description = "주문내역이 존재하지 않음")
+    })
+    @Tag(name = "내부 서비스 간 요청")
+    public ResponseEntity<MessageResponse> paymentProcessing(@RequestBody PayProcessRequest payProcessRequest,
+                                                             @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+        if (internalRequestKey.equals(internalRequest)) {
+             orderService.paymentProcessing(payProcessRequest);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(MessageResponse.of("결제 성공/실패 처리를 완료했습니다."));
+        }
+        return null;
     }
 
 

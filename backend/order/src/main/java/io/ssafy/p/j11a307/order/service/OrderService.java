@@ -1,13 +1,13 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.*;
-import io.ssafy.p.j11a307.order.entity.OrderProduct;
-import io.ssafy.p.j11a307.order.entity.Orders;
-import io.ssafy.p.j11a307.order.entity.Review;
+import io.ssafy.p.j11a307.order.entity.*;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
+import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.global.PayTypeCode;
+import io.ssafy.p.j11a307.order.global.TimeUtil;
 import io.ssafy.p.j11a307.order.repository.OrderProductOptionRepository;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
@@ -19,8 +19,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +41,14 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final OrderProductOptionRepository orderProductOptionRepository;
     private final ReviewRepository reviewRepository;
+    private final TimeUtil timeUtil;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
+
+    private final SecureRandom random = new SecureRandom();
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 
     @Transactional
     public GetStoreOrderDTO getStoreOrderList(Integer storeId, Integer pgno, Integer spp, String status, String token) {
@@ -136,21 +143,27 @@ public class OrderService {
 
     @Transactional
     public void handleCompleteOrders(Integer ordersId, String token) {
+        System.out.println("서비스로 들어옴!!");
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
 
+        System.out.println(ownerId + " 사장님 아이디!!");
         //1. 주문 내역이 존재하지 않는다면?
         Optional<Orders> orders = ordersRepository.findById(ordersId);
 
         if(orders.isPresent()) {
+            System.out.println(orders.get().getOrderNumber() + " order 주문번호!!");
             //2. 처리할 권한이 없다면?
             ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
             if(ownerId != readStoreDTO.userId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
             //3. 내역이 조리 중인 상태가 아니라면?
             if(orders.get().getStatus().equals(OrderCode.PROCESSING)) {
+                System.out.println("상태가 진행중임!!" + orders.get().getStatus());
                 orders.get().updateStatus(OrderCode.WAITING_FOR_RECEIPT);
+                System.out.println("업데이트 완료!!");
 
                 ordersRepository.save(orders.get());
+                System.out.println("저장 완료!!" + orders.get().getStatus());
             } else throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
         } else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
     }
@@ -217,6 +230,7 @@ public class OrderService {
         if (orders.isPresent()) {
             ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
             ReadStoreBasicInfoDTO readStoreBasicInfoDTO = storeClient.getStoreBasicInfo(orders.get().getStoreId()).getData();
+
             if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
 
             //2. 해당 주문 상세를 볼 자격이 없다면?
@@ -229,7 +243,7 @@ public class OrderService {
             for (OrderProduct orderProduct : orderProducts) {
                 ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
 
-                if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+                //if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
 
                 List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
                 List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
@@ -245,7 +259,7 @@ public class OrderService {
                         .optionList(productOptions)
                         .productName(readProductDTO.getName())
                         .productPrice(readProductDTO.getPrice() + optionPriceSum)
-                        .productSrc(readProductDTO.getPhotos().get(0))
+                        .productSrc((readProductDTO.getPhotos().isEmpty()) ? null : readProductDTO.getPhotos().get(0))
                         .quantity(orderProduct.getCount())
                         .build();
 
@@ -284,11 +298,11 @@ public class OrderService {
 
     @Transactional
     public OrderSearchResponse getSearchOrders(Integer storeId, OrderSearchRequest orderSearchRequest, String token) {
-        Integer ownerId = ownerClient.getUserId(token, internalRequestKey);
+        Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
         Pageable pageable = PageRequest.of(orderSearchRequest.pgno(), orderSearchRequest.spp());
 
-        List<OrderCode> status = orderSearchRequest.statusTag();
-        List<PayTypeCode> paymentMethod = orderSearchRequest.paymentMethodTag();
+        List<String> status = orderSearchRequest.statusTag();
+        List<String> paymentMethod = orderSearchRequest.paymentMethodTag();
         LocalDateTime startTime= orderSearchRequest.startDate();
         LocalDateTime endTime= orderSearchRequest.endDate();
 
@@ -305,15 +319,15 @@ public class OrderService {
         Page<Orders> orders;
 
         //검색 알고리즘
-        if(status != null && paymentMethod != null) {
+        if(!status.isEmpty() && !paymentMethod.isEmpty()) {
             if(startTime != null) {
-                orders = ordersRepository.findByStoreIdAndStatusInAndPaymentMethodInAndCreatedAtBetween(
+                orders = ordersRepository.findByStoreIdAndStatusInOrPaymentMethodInAndCreatedAtBetween(
                         storeId, status, paymentMethod, startTime, endTime, pageable);
             } else {
-                orders = ordersRepository.findByStoreIdAndStatusInAndPaymentMethodIn(storeId,status, paymentMethod, pageable);
+                orders = ordersRepository.findByStoreIdAndStatusInOrPaymentMethodIn(storeId,status, paymentMethod, pageable);
             }
         }
-        else if(status != null) {
+        else if(!status.isEmpty()) {
             if(startTime != null) {
                 orders = ordersRepository.findByStoreIdAndStatusInAndCreatedAtBetween(
                         storeId,status, startTime, endTime, pageable);
@@ -321,7 +335,7 @@ public class OrderService {
                 orders = ordersRepository.findByStoreIdAndStatusIn(storeId,status, pageable);
             }
         }
-        else if(paymentMethod != null) {
+        else if(!paymentMethod.isEmpty()) {
             if(startTime != null) {
                 orders = ordersRepository.findByStoreIdAndPaymentMethodInAndCreatedAtBetween(
                         storeId,paymentMethod, startTime, endTime, pageable);
@@ -353,7 +367,7 @@ public class OrderService {
             for (OrderProduct orderProduct : orderProducts) {
                 ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
 
-                if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+                //if(readProductDTO.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
 
                 List<Integer> optionIdList = orderProductOptionRepository.findByOrderProductId(orderProduct.getId());
                 List<ReadProductOptionDTO>  readProductOptionDTOS = productClient.getProductOptionList(optionIdList, internalRequestKey);
@@ -369,7 +383,7 @@ public class OrderService {
                         .optionList(productOptions)
                         .productName(readProductDTO.getName())
                         .productPrice(readProductDTO.getPrice() + optionPriceSum)
-                        .productSrc(readProductDTO.getPhotos().get(0))
+                        .productSrc((readProductDTO.getPhotos().isEmpty()) ? null : readProductDTO.getPhotos().get(0))
                         .quantity(orderProduct.getCount())
                         .build();
 
@@ -449,5 +463,89 @@ public class OrderService {
                 .build();
 
         return getStoreWaitingDTO;
+    }
+
+    @Transactional
+    public String createOrderNumber(Integer storeId, CreateOrderNumberRequest createOrderNumberRequest, String token) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        //1. 유효하지 않은 점포라면?
+        ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
+        if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+
+        Orders orders = Orders.builder()
+                .storeId(storeId)
+                .userId(customerId)
+                .createdAt(timeUtil.getCurrentSeoulTime())
+                .status(OrderCode.WAITING_FOR_PAYING)
+                .totalPrice(createOrderNumberRequest.totalPrice())
+                .request(createOrderNumberRequest.request())
+                .build();
+
+        ordersRepository.save(orders);
+
+        //주문번호 설정
+        //동시성 처리 필요..(id를 이용하여 처리)
+        StringBuilder orderNum = new StringBuilder("A"+ orders.getId());
+        for(int i=0; i<4; i++) {
+            orderNum.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+        }
+
+        orders.setOrderNumber(orderNum.toString());
+        ordersRepository.save(orders);
+
+        //상품 리스트 삽입
+        for(CreateOrderNumberProductListDTO product: createOrderNumberRequest.orderProducts()) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .productId(product.id())
+                    .count(product.quantity())
+                    .ordersId(orders)
+                    .build();
+
+            orderProductRepository.save(orderProduct);
+
+            //옵션 리스트 삽입
+            for(Integer option: product.orderProductOptions()) {
+                OrdersUserId ordersUserId = OrdersUserId.builder()
+                        .orderProductId(orderProduct)
+                        .productOptionId(option)
+                        .build();
+
+                OrderProductOption orderProductOption = OrderProductOption.builder()
+                        .orderProductId(ordersUserId)
+                        .build();
+
+                orderProductOptionRepository.save(orderProductOption);
+            }
+        }
+
+        return orderNum.toString();
+    }
+
+    @Transactional
+    public void paymentProcessing(PayProcessRequest payProcessRequest) {
+        //결제 완료(실패 or 성공), 주문번호 받아서 처리
+        //성공 시 paid_at 업데이트, payment_method 생성, status 상태 변경
+        //실패 시 payment_method만 생성
+
+        String orderNum = payProcessRequest.orderNumber();
+        Orders orders = ordersRepository.findByOrderNumber(orderNum);
+
+        if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+
+        PayTypeCode payTypeCode = switch (payProcessRequest.method()) {
+            case "카드" -> PayTypeCode.CREDIT_CARD;
+            case "간편결제" -> PayTypeCode.SIMPLE_PAYMENT;
+            default -> throw new BusinessException(ErrorCode.WRONG_PAYTYPECODE);
+        };
+
+        //주문 성공
+        if(payProcessRequest.isSuccess() == 1) {
+            orders.setPaidAt(timeUtil.convertToLocalDateTime(payProcessRequest.approvedAt()));
+            orders.setStatus(OrderCode.WAITING_FOR_PROCESSING);
+        }
+
+        orders.setPaymentMethod(payTypeCode);
+        ordersRepository.save(orders);
     }
 }

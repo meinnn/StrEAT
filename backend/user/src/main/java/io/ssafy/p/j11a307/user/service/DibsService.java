@@ -1,8 +1,11 @@
 package io.ssafy.p.j11a307.user.service;
 
 import io.ssafy.p.j11a307.user.dto.DibsStoreStatusResponse;
+import io.ssafy.p.j11a307.user.dto.GlobalDibsAlertRequest;
+import io.ssafy.p.j11a307.user.dto.ReviewAveragesResponse;
 import io.ssafy.p.j11a307.user.dto.StoreDibsResponse;
 import io.ssafy.p.j11a307.user.entity.Subscription;
+import io.ssafy.p.j11a307.user.entity.User;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.repository.SubscriptionRepository;
@@ -11,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ public class DibsService {
     private final UserService userService;
     private final FcmService fcmService;
     private final StoreService storeService;
+    private final ReviewService reviewService;
 
     private final SubscriptionRepository subscriptionRepository;
 
@@ -80,10 +83,15 @@ public class DibsService {
         Map<Integer, DibsStoreStatusResponse> storeIdToDibsStoreStatusResponse =
                 dibsStoreStatusResponse.stream().collect(Collectors.toMap(DibsStoreStatusResponse::storeId, store -> store));
 
+        ReviewAveragesResponse reviewAveragesResponse = reviewService.getReviewAverageList(storeIds, internalRequestKey);
+        Map<Integer, Double> reviewAverages = reviewAveragesResponse.averageReviewList();
+
         List<StoreDibsResponse> storeDibsResponses = subscriptions.stream().map(subscription ->
                 StoreDibsResponse.builder()
                         .storeId(subscription.getSubscriptionId().getStoreId())
                         .storeName(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).name())
+                        .status(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).status())
+                        .averageScore(reviewAverages.get(subscription.getSubscriptionId().getStoreId()))
                         .alertOn(subscription.getAlertOn()).build()).toList();
         return storeDibsResponses;
     }
@@ -102,5 +110,30 @@ public class DibsService {
         return subscriptions.stream().map(Subscription::getSubscriptionId)
                 .map(Subscription.SubscriptionId::getUserId)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void toggleOrderStatusAlert(String accessToken, boolean alertOn) {
+        Integer userId = userService.getUserId(accessToken);
+        userService.toggleOrderStatusAlert(userId, alertOn);
+
+    }
+
+    @Transactional
+    public void toggleDibsStoreAlert(String accessToken, boolean alertOn) {
+        Integer userId = userService.getUserId(accessToken);
+        userService.toggleDibsStoreAlert(userId, alertOn);
+        List<Subscription> subscriptions = subscriptionRepository.findBySubscriptionIdUserId(userId);
+        // 알림 설정이 켜져있는 것만 on off 처리 하면 된다. 꺼져 있는 것은 영향 x
+        List<Integer> storeIds = subscriptions.stream().filter(Subscription::getAlertOn)
+                .map(Subscription::getSubscriptionId)
+                .map(Subscription.SubscriptionId::getStoreId).toList();
+        String fcmToken = userService.getFcmTokenByUserId(userId).fcmToken();
+        GlobalDibsAlertRequest globalDibsAlertRequest = new GlobalDibsAlertRequest(storeIds, fcmToken);
+        if (alertOn) {
+            fcmService.turnOnAllDibsAlerts(globalDibsAlertRequest, internalRequestKey);
+        } else {
+            fcmService.turnOffAllDibsAlerts(globalDibsAlertRequest, internalRequestKey);
+        }
     }
 }

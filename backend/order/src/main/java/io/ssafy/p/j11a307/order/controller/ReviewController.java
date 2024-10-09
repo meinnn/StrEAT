@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,9 @@ import java.util.List;
 @Slf4j
 public class ReviewController {
     private final ReviewService reviewService;
+
+    @Value("${streat.internal-request}")
+    private String internalRequestKey;
 
     @PostMapping(value= "/{id}/review", consumes = {"multipart/form-data"})
     @Operation(summary = "리뷰 등록", description = "주문 id를 보내고 리뷰 등록")
@@ -117,10 +122,21 @@ public class ReviewController {
     }
 
 
-
-
-
-
+    @GetMapping("/review-list")
+    @Operation(summary = "점포 목록별 review 리스트 요청", description = "서비스에서 엑세스토큰으로 review 리스트 요청, 클라이언트 요청 불가")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "요청 성공, review list 반환")
+    })
+    @Parameters({
+            @Parameter(name = "storeIdList", description = "점포 아이디 목록")
+    })
+    @Tag(name = "내부 서비스 간 요청")
+    public GetReviewAverageListDTO getReviewAverageList(@RequestParam("storeIdList") List<Integer> storeIdList, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+        if (internalRequestKey.equals(internalRequest)) {
+            return reviewService.getReviewAverageList(storeIdList);
+        }
+        return null;
+    }
 
 
 }

@@ -102,34 +102,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/order-status-alert")
-    @Operation(summary = "주문 상황 알림 on/off", description = "주문 상황 알림 on/off")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "요청 성공, 알림 on/off")
-    })
-    @Parameters({
-            @Parameter(name = "alertOn", description = "알림 설정 여부", example = "true: 켜기, false: 끄기")
-    })
-    public ResponseEntity<Void> toggleOrderStatusAlert(@RequestHeader(HEADER_AUTH) String accessToken, boolean alertOn) {
-        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
-        userService.toggleOrderStatusAlert(userId, alertOn);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/dibs-store-alert")
-    @Operation(summary = "찜 가게 영업 시작 알림 on/off", description = "찜 가게 영업 시작 알림 on/off")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "요청 성공, 알림 on/off")
-    })
-    @Parameters({
-            @Parameter(name = "alertOn", description = "알림 설정 여부", example = "true: 켜기, false: 끄기")
-    })
-    public ResponseEntity<Void> toggleDibsStoreAlert(@RequestHeader(HEADER_AUTH) String accessToken, boolean alertOn) {
-        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
-        userService.toggleDibsStoreAlert(userId, alertOn);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/customers/register")
     @Operation(summary = "회원가입 시 손님 선택", description = "회원가입 시 손님 선택")
     @ApiResponses(value = {

@@ -6,6 +6,7 @@ import lombok.Builder;
 public record StoreDibsResponse(
         Integer storeId,
         String storeName,
+        String status,
         double averageScore,
         boolean alertOn
 ) {}

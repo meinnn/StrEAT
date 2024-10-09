@@ -165,7 +165,7 @@ public class BasketService {
             for (ShoppingCart shoppingCart : shoppingCarts) {
                 productData =  productClient.getProductById(shoppingCart.getProductId()).getData();
 
-                if(productData.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
+                //if(productData.getPhotos().isEmpty()) throw new BusinessException(ErrorCode.PHOTO_NOT_FOUND);
 
                 List<Integer> optionIdList = shoppingCartOptionRepository.findAllByShoppingCartId(shoppingCart).stream()
                         .map(ShoppingCartOption::getProductOptionId).toList();
@@ -180,7 +180,7 @@ public class BasketService {
                         .price(shoppingCart.getPrice())
                         .productId(productData.getId())
                         .productName(productData.getName())
-                        .productSrc(productData.getPhotos().get(0)) //없으면 디폴트 사진 나와야 함
+                        .productSrc((productData.getPhotos().isEmpty()) ? null : productData.getPhotos().get(0))
                         .OptionNameList(readProductOptions)
                         .stockStatus((productData.getStockStatus()))
                         .build();
@@ -266,5 +266,12 @@ public class BasketService {
                 .build();
 
         return getBasketOptionDTO;
+    }
+
+    @Transactional
+    public void deleteBasket(String token) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        shoppingCartRepository.deleteByCustomerId(customerId);
     }
 }

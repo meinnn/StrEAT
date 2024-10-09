@@ -3,10 +3,7 @@ package io.ssafy.p.j11a307.order.entity;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.global.PayTypeCode;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -29,7 +26,7 @@ public class Orders {
     private OrderCode status;
     private String request;
 
-    @CreatedDate
+    //@CreatedDate
     private LocalDateTime createdAt;
 
     private Integer totalPrice;
@@ -42,5 +39,21 @@ public class Orders {
 
     public void updateStatus(OrderCode status) {
         this.status = status;
+    }
+
+
+    @Builder
+    public Orders(Integer userId, Integer storeId, LocalDateTime createdAt, String orderNumber, OrderCode status, String request, Integer totalPrice, PayTypeCode paymentMethod, LocalDateTime paidAt, LocalDateTime receivedAt, String phone) {
+        this.userId = userId;
+        this.storeId = storeId;
+        this.orderNumber = orderNumber;
+        this.createdAt = createdAt;
+        this.status = status;
+        this.request = request;
+        this.totalPrice = totalPrice;
+        this.paymentMethod = paymentMethod;
+        this.paidAt = paidAt;
+        this.receivedAt = receivedAt;
+        this.phone = phone;
     }
 }
