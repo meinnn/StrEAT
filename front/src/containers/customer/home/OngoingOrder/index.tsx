@@ -72,7 +72,7 @@ export default function OngoingOrder() {
       </button>
 
       {/* 진행 중 메시지 */}
-      <p className="text-sm text-primary-950 mb-4">
+      <p className="text-sm text-primary-950">
         현재 진행 중인 주문 내역이 있어요
       </p>
 
@@ -81,7 +81,7 @@ export default function OngoingOrder() {
         <Link
           key={order.ordersId}
           href={`/customer/orders/${order.ordersId}`}
-          className="flex justify-between items-center"
+          className="flex justify-between items-center mt-4"
         >
           <div>
             <p className="text-xl font-bold">{order.storeName}</p>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import MapView from '@/containers/customer/home/MapView'
 import ListView from '@/containers/customer/home/ListView'
 import { Store } from '@/types/store'
+import OngoingOrder from '@/containers/customer/home/OngoingOrder'
 
 export default function CustomerHomeContainer() {
   const [view, setView] = useState<'map' | 'list'>('map')
@@ -14,13 +15,16 @@ export default function CustomerHomeContainer() {
   return (
     <div>
       {view === 'map' ? (
-        <MapView
-          setView={setView}
-          currentAddress={currentAddress}
-          setCurrentAddress={setCurrentAddress}
-          storeList={storeList} // storeList 전달
-          setStoreList={setStoreList} // 재검색 버튼 클릭 시 실행될 함수 전달
-        />
+        <>
+          <OngoingOrder />
+          <MapView
+            setView={setView}
+            currentAddress={currentAddress}
+            setCurrentAddress={setCurrentAddress}
+            storeList={storeList} // storeList 전달
+            setStoreList={setStoreList} // 재검색 버튼 클릭 시 실행될 함수 전달
+          />
+        </>
       ) : (
         <ListView
           setView={setView}

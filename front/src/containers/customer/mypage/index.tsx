@@ -12,6 +12,8 @@ import 'react-loading-skeleton/dist/skeleton.css'
 interface UserInfo {
   name: string
   profileImgSrc: string
+  orderStatusAlert: boolean
+  dibsStoreAlert: boolean
 }
 
 async function fetchUserInfo(): Promise<UserInfo> {
@@ -38,8 +40,12 @@ async function updateNotification(alertType: string, alertOn: boolean) {
 
 export default function MyPage() {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
-  const [orderNotification, setOrderNotification] = useState(true)
-  const [storeNotification, setStoreNotification] = useState(true)
+  const [orderNotification, setOrderNotification] = useState<boolean | null>(
+    null
+  )
+  const [storeNotification, setStoreNotification] = useState<boolean | null>(
+    null
+  )
 
   const router = useRouter()
 
@@ -47,6 +53,8 @@ export default function MyPage() {
     const getUserInfo = async () => {
       const data = await fetchUserInfo()
       setUserInfo(data)
+      setOrderNotification(data.orderStatusAlert)
+      setStoreNotification(data.dibsStoreAlert)
     }
 
     getUserInfo().then()
@@ -58,7 +66,7 @@ export default function MyPage() {
     })
 
     if (response.ok) {
-      router.push('/') // 로그인 페이지로 이동
+      router.push('/')
     } else {
       console.error('Logout failed')
     }
@@ -78,12 +86,11 @@ export default function MyPage() {
 
   return (
     <div className="p-6">
-      {/* 사용자 정보 */}
       <div className="flex flex-col items-center mb-6">
         {userInfo ? (
           <>
             <Image
-              src={userInfo.profileImgSrc || '/images/default-profile.png'} // 이미지 경로 확인
+              src={userInfo.profileImgSrc}
               alt="프로필 이미지"
               width={96}
               height={96}
@@ -100,9 +107,7 @@ export default function MyPage() {
         )}
       </div>
 
-      {/* 메뉴 */}
       <div className="flex items-center justify-evenly bg-white py-6 rounded-xl border border-gray-medium">
-        {/* 내 리뷰 */}
         <Link
           href="/customer/mypage/reviews"
           className="flex flex-col items-center"
@@ -113,7 +118,6 @@ export default function MyPage() {
 
         <div className="h-8 border-l border-gray-medium" />
 
-        {/* 알림 */}
         <Link
           href="/customer/mypage/notifications"
           className="flex flex-col items-center"
@@ -124,14 +128,12 @@ export default function MyPage() {
 
         <div className="h-8 border-l border-gray-medium" />
 
-        {/* 찜 목록 */}
         <Link href="/customer/favorites" className="flex flex-col items-center">
           <RiHeart3Line className="text-primary-500" size={20} />
           <p className="text-sm font-medium mt-2">찜 목록</p>
         </Link>
       </div>
 
-      {/* 알림 스위치 */}
       <div className="px-4">
         <div className="flex justify-between items-center my-6">
           <div>
@@ -140,7 +142,6 @@ export default function MyPage() {
               실시간 주문 상태를 알려드려요
             </p>
           </div>
-          {/* 주문 현황 알림 스위치 */}
           <div
             role="presentation"
             onClick={() => {
@@ -167,7 +168,6 @@ export default function MyPage() {
               찜한 가게가 주변에 있을 때 알려드려요
             </p>
           </div>
-          {/* 단골 가게 알림 스위치 */}
           <div
             role="presentation"
             onClick={() => {
@@ -190,7 +190,6 @@ export default function MyPage() {
 
       <div className="h-1 my-8 bg-gray-medium mx-[-24px]" />
 
-      {/* 기타 메뉴 */}
       <div className="px-4 space-y-4">
         <button
           type="button"
