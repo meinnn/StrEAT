@@ -77,8 +77,10 @@ public class ManagementService {
     }
 
     @Transactional
-    public GetSalesListByTimeTypeDTO getSalesListByTimeType(Integer storeId, String token) {
+    public GetSalesListByTimeTypeDTO getSalesListByTimeType(String token) {
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
+        Integer storeId = storeClient.getStoreIdByUserId(ownerId);
+
         LocalDateTime now = timeUtil.getCurrentSeoulTime();
         LocalDateTime sixDaysAgo = now.minusDays(6);
         LocalDateTime fiveWeeksAgo = now.minusWeeks(5);

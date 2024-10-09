@@ -479,7 +479,6 @@ public class OrderService {
                 .createdAt(timeUtil.getCurrentSeoulTime())
                 .status(OrderCode.WAITING_FOR_PAYING)
                 .totalPrice(createOrderNumberRequest.totalPrice())
-                .request(createOrderNumberRequest.request())
                 .build();
 
         ordersRepository.save(orders);
