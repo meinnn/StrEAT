@@ -7,6 +7,8 @@ import io.ssafy.p.j11a307.user.global.DataResponse;
 import io.ssafy.p.j11a307.user.global.MessageResponse;
 import io.ssafy.p.j11a307.user.service.DibsService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -118,5 +120,31 @@ public class DibsController {
         }
         List<Integer> calledDibsUserIds = dibsService.getCalledDibsUserIds(storeId);
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("유저 리스트 조회 성공", calledDibsUserIds));
+    }
+
+    @PostMapping("/order-status-alert")
+    @Operation(summary = "주문 상황 알림 on/off", description = "주문 상황 알림 on/off")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "요청 성공, 알림 on/off")
+    })
+    @Parameters({
+            @Parameter(name = "alertOn", description = "알림 설정 여부", example = "true: 켜기, false: 끄기")
+    })
+    public ResponseEntity<Void> toggleOrderStatusAlert(@RequestHeader(HEADER_AUTH) String accessToken, boolean alertOn) {
+        dibsService.toggleOrderStatusAlert(accessToken, alertOn);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/dibs-store-alert")
+    @Operation(summary = "찜 가게 영업 시작 알림 on/off", description = "찜 가게 영업 시작 알림 on/off")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "요청 성공, 알림 on/off")
+    })
+    @Parameters({
+            @Parameter(name = "alertOn", description = "알림 설정 여부", example = "true: 켜기, false: 끄기")
+    })
+    public ResponseEntity<Void> toggleDibsStoreAlert(@RequestHeader(HEADER_AUTH) String accessToken, boolean alertOn) {
+        dibsService.toggleDibsStoreAlert(accessToken, alertOn);
+        return ResponseEntity.ok().build();
     }
 }

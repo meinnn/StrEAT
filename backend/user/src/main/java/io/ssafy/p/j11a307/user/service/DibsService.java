@@ -3,6 +3,7 @@ package io.ssafy.p.j11a307.user.service;
 import io.ssafy.p.j11a307.user.dto.DibsStoreStatusResponse;
 import io.ssafy.p.j11a307.user.dto.StoreDibsResponse;
 import io.ssafy.p.j11a307.user.entity.Subscription;
+import io.ssafy.p.j11a307.user.entity.User;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.repository.SubscriptionRepository;
@@ -103,5 +104,18 @@ public class DibsService {
         return subscriptions.stream().map(Subscription::getSubscriptionId)
                 .map(Subscription.SubscriptionId::getUserId)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void toggleOrderStatusAlert(String accessToken, boolean alertOn) {
+        Integer userId = userService.getUserId(accessToken);
+        userService.toggleOrderStatusAlert(userId, alertOn);
+        
+    }
+
+    @Transactional
+    public void toggleDibsStoreAlert(String accessToken, boolean alertOn) {
+        Integer userId = userService.getUserId(accessToken);
+        userService.toggleDibsStoreAlert(userId, alertOn);
     }
 }
