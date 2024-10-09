@@ -10,6 +10,7 @@ import io.ssafy.p.j11a307.order.entity.*;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
 import io.ssafy.p.j11a307.order.global.DataResponse;
+import io.ssafy.p.j11a307.order.global.TimeUtil;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import io.ssafy.p.j11a307.order.repository.ReviewPhotoRepository;
@@ -41,6 +42,7 @@ public class ReviewService {
     private final ProductClient productClient;
 
     private final AmazonS3 amazonS3;
+    private final TimeUtil timeUtil;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
@@ -67,6 +69,7 @@ public class ReviewService {
         Review review = Review.builder()
                 .id(new OrdersId(orders))
                 .score(score)
+                .createdAt(timeUtil.getCurrentSeoulTime())
                 .content(content).build();
 
 

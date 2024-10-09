@@ -160,7 +160,7 @@ public class OrderController {
                 .body(DataResponse.of("대기 팀/메뉴 조회에 성공했습니다.", getStoreWaitingDTO));
 
     }
-    
+
     @PostMapping("/{storeId}")
     @Operation(summary = "주문번호 발급", description = "결제를 시작할 때 주문번호를 우선 발급받는다.")
     @ApiResponses(value = {
@@ -174,11 +174,10 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("주문번호 발급에 성공했습니다.", orderNum));
     }
 
+    //결제 완료(실패 or 성공)
+    //paid_at 업데이트, payment_method 생성, status 상태 변경
 
-
-
-        //주문 완료(실패 or 성공)
-
+    //실패면, payment_method만 생성.
 
 
 
