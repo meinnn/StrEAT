@@ -1,11 +1,6 @@
 from docx import Document
 from docx.enum.text import WD_COLOR_INDEX
-
-import os
 import sys
-
-# 현재 작업 디렉토리 출력
-print("현재 작업 디렉토리:", os.getcwd())
 
 # Word 문서 템플릿 로드
 doc = Document('/truck.docx')
@@ -22,15 +17,6 @@ sns = sys.argv[9]
 truckName = sys.argv[10]
 businessNum = sys.argv[11]
 eventName = sys.argv[12]
-
-print("가져온 이름: " + ownerName)
-
-# 회원 정보를 사전(Dictionary) 형태로 준비
-# user_info = {
-#     '이름': '홍길동',
-#     '회원번호': '123456'
-# }
-
 
 # 문서 내 모든 표를 순회하며 각 셀의 자리표시자를 대체
 for table in doc.tables:
@@ -107,9 +93,5 @@ for table in doc.tables:
                     cell_to_update = row.cells[i + 1].paragraphs[0].add_run(eventName)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
-            print("1: " + cell.text)
-
 # 결과 문서 저장
-submit_name = '입점신청서_'+truckName
-#doc.save(submit_name+'.docx')
 doc.save('/입점신청서.docx')
