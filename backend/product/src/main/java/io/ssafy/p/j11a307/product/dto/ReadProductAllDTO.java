@@ -29,5 +29,8 @@ public record ReadProductAllDTO(
         Integer categoryId,
 
         @Schema(description = "상품 옵션 카테고리 목록 (예: 사이즈, 맛 선택)")
-        List<ReadProductOptionCategoryDTO> optionCategories
+        List<ReadProductOptionCategoryDTO> optionCategories,
+
+        @Schema(description = "상품 사진 목록")
+        List<String> photos  // 상품 사진의 src 경로 리스트
 ) {}

@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import io.ssafy.p.j11a307.product.entity.ProductPhoto;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,6 +76,13 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReadProductDTO> getProductByStoreId(Integer storeId) {
+        List<Product> products = productRepository.findByStoreId(storeId);
+        return products.stream()
+                .map(ReadProductDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional(readOnly = true)
     public List<ReadProductAllDTO> getProductsByStoreId(Integer storeId) {
@@ -92,6 +99,10 @@ public class ProductService {
                     .map(ReadProductOptionCategoryDTO::new)
                     .toList();
 
+            List<String> photoUrls = product.getPhotos().stream()
+                    .map(ProductPhoto::getSrc) // 각 사진의 URL을 가져오는 로직
+                    .toList();
+
             // 최종적으로 ReadProductAllDTO 생성
             return new ReadProductAllDTO(
                     product.getId(),
@@ -99,7 +110,8 @@ public class ProductService {
                     product.getDescription(),
                     product.getPrice(),
                     product.getCategory().getId(),
-                    optionCategoryDTOs
+                    optionCategoryDTOs,
+                    photoUrls
             );
         }).collect(Collectors.toList());
     }

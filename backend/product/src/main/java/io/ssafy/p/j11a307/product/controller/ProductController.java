@@ -174,9 +174,19 @@ public class ProductController {
                 .body(DataResponse.of("상품 리스트 조회 성공", productResponses));
     }
 
-    // 5. 가게별 상품 목록 조회 (storeId 기준)
+
     @GetMapping("/store/{storeId}")
-    @Operation(summary = "가게별 상품 목록 조회")
+    @Operation(summary = "가게별 상품 목록 조회(카테고리 ID)")
+    @Transactional(readOnly = true)
+    public ResponseEntity<DataResponse<List<ReadProductDTO>>> getProductByStoreId(@PathVariable Integer storeId) {
+        List<ReadProductDTO> productResponses = productService.getProductByStoreId(storeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("가게별 상품 리스트 조회 성공", productResponses));
+    }
+
+    // 5. 가게별 상품 목록 조회 (storeId 기준)
+    @GetMapping("/store/{storeId}/detail")
+    @Operation(summary = "가게별 상품 목록 조회(카테고리 데이터 포함)")
     @Transactional(readOnly = true)
     public ResponseEntity<DataResponse<List<ReadProductAllDTO>>> getProductsByStoreId(@PathVariable Integer storeId) {
         List<ReadProductAllDTO> productResponses = productService.getProductsByStoreId(storeId);
