@@ -128,6 +128,18 @@ public class AlertService {
         return new PushAlertHistoryResponse(pushAlertResponses, totalDataCount, totalPageCount);
     }
 
+    public void turnOnAllDibsAlerts(String fcmToken, List<Integer> storeIds) {
+        for (Integer storeId : storeIds) {
+            firebaseUtil.subscribeTopic(TOPIC_STORE_PREFIX + storeId, fcmToken);
+        }
+    }
+
+    public void turnOffAllDibsAlerts(String fcmToken, List<Integer> storeIds) {
+        for (Integer storeId : storeIds) {
+            firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, fcmToken);
+        }
+    }
+
     private String convertDateFormat(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
         return simpleDateFormat.format(date);
