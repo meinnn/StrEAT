@@ -160,10 +160,12 @@ public class OrderController {
                 .body(DataResponse.of("대기 팀/메뉴 조회에 성공했습니다.", getStoreWaitingDTO));
 
     }
-
-    //주문번호 발급
+    
     @PostMapping("/{storeId}")
     @Operation(summary = "주문번호 발급", description = "결제를 시작할 때 주문번호를 우선 발급받는다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "주문번호 발급 성공"),
+    })
     public ResponseEntity<DataResponse<String>> createOrderNumber(@PathVariable Integer storeId,
                                                                   @RequestBody CreateOrderNumberRequest createOrderNumberRequest,
                                                                   @RequestHeader("Authorization") String token) {
