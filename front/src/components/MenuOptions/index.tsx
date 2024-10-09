@@ -13,12 +13,36 @@ interface MenuOptionsProps {
   closeDrawer?: () => void
 }
 
+interface CartOperationBody {
+  quantity: number
+  productOptionIds?: number[]
+  optionList?: number[]
+}
+
+async function handleCartOperation(
+  method: 'POST' | 'PATCH',
+  url: string,
+  body: CartOperationBody
+) {
+  const response = await fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to ${method === 'POST' ? 'add to' : 'update'} cart`)
+  }
+}
+
 export default function MenuOptions({
   type = 'default',
   menuInfo,
   closeDrawer,
 }: MenuOptionsProps) {
-  const { reloadCartItems } = useCart()
+  const { cartStore, reloadCartItems } = useCart()
 
   const initialQuantity = 'quantity' in menuInfo ? menuInfo.quantity : 1
   // 초기 선택된 옵션 설정
@@ -32,8 +56,12 @@ export default function MenuOptions({
         if (selectedOptionsInCategory.length > 0) {
           acc[category.id] = selectedOptionsInCategory
         }
-      } else if (category.maxSelect === 1 && category.options.length > 0) {
-        // 'default' 타입일 때, maxSelect가 1인 경우 첫 번째 옵션을 선택
+      } else if (
+        category.isEssential &&
+        category.maxSelect === 1 &&
+        category.options.length > 0
+      ) {
+        // 'default' 타입일 때, maxSelect가 1인 필수 옵션의 경우 첫 번째 옵션을 선택
         acc[category.id] = [category.options[0]]
       }
       return acc
@@ -101,44 +129,43 @@ export default function MenuOptions({
     const selectedOptionIds = Object.values(selectedOptions)
       .flat()
       .map((option) => option.id)
-    if (type === 'default') {
-      // 장바구니 담기
-      const response = await fetch(`/services/cart/item/${menuInfo.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          quantity,
-          productOptionIds: selectedOptionIds,
-        }),
-      })
 
-      if (!response.ok) {
-        throw new Error('Failed to add to cart')
-      }
-      reloadCartItems()
-      router.push(`/customer/stores/${menuInfo.storeId}`)
-    } else if ('cartId' in menuInfo) {
-      // 장바구니 변경하기
-      const response = await fetch(`/services/cart/item/${menuInfo.cartId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          optionList: selectedOptionIds, // selectedOptions의 id들
-          quantity, // 수량
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update cart item')
-      }
-      if (closeDrawer) {
+    try {
+      if (type === 'default') {
+        if (cartStore?.storeId && menuInfo.storeId !== cartStore?.storeId) {
+          router.push(
+            `/customer/stores/${menuInfo.storeId}/menu/${menuInfo.id}/alert`
+          )
+          return
+        }
+        // 장바구니 담기
+        await handleCartOperation(
+          'POST',
+          `/services/cart/item/${menuInfo.id}`,
+          {
+            productOptionIds: selectedOptionIds,
+            quantity,
+          }
+        )
         reloadCartItems()
-        closeDrawer()
+        router.push(`/customer/stores/${menuInfo.storeId}`)
+      } else if ('cartId' in menuInfo) {
+        // 장바구니 변경하기
+        await handleCartOperation(
+          'PATCH',
+          `/services/cart/item/${menuInfo.cartId}`,
+          {
+            optionList: selectedOptionIds,
+            quantity,
+          }
+        )
+        if (closeDrawer) {
+          reloadCartItems()
+          closeDrawer()
+        }
       }
+    } catch (error: any) {
+      console.error(error.message)
     }
   }
 

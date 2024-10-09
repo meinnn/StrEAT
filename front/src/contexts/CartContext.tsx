@@ -1,6 +1,6 @@
 'use client'
 
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
@@ -39,10 +39,12 @@ interface CartStore {
 
 interface CartContextProps {
   cartItems: CartMenu[]
+  setCartItems: React.Dispatch<React.SetStateAction<CartMenu[]>>
   cartStore: CartStore | null
   fetchNextPage: () => void
   hasNextPage: boolean | undefined
   isFetchingNextPage: boolean
+  status: 'error' | 'success' | 'pending'
   reloadCartItems: () => void
   handleItemCheck: (id: number) => void
   handleRemoveItem: (id: number) => void
@@ -65,13 +67,13 @@ async function fetchCartItems({ pageParam = 0 }): Promise<CartResponseData> {
   }
   const result = await response.json()
 
-  const updatedBasketList = result.data.basketList.map((item: BasketItem) => ({
+  const updatedBasketList = result.basketList.map((item: BasketItem) => ({
     ...item,
     checked: true,
   }))
 
   return {
-    ...result.data,
+    ...result,
     basketList: updatedBasketList,
   }
 }
@@ -126,15 +128,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     refetch().then()
   }, [refetch])
 
-  const handleItemCheck = (id: number) => {
+  const handleItemCheck = useCallback((id: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.cartId === id ? { ...item, checked: !item.checked } : item
       )
     )
-  }
+  }, [])
 
-  const handleRemoveItem = async (id: number) => {
+  const handleRemoveItem = useCallback(async (id: number) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.cartId !== id))
 
     const response = await fetch(`/services/cart/item/${id}`, {
@@ -144,16 +146,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!response.ok) {
       throw new Error('Failed to delete cart item')
     }
-  }
+  }, [])
 
   // useMemo를 사용하여 value 객체 메모이제이션
   const value = useMemo(
     () => ({
       cartItems,
+      setCartItems,
       cartStore,
       fetchNextPage,
       hasNextPage,
       isFetchingNextPage,
+      status,
       reloadCartItems,
       handleItemCheck,
       handleRemoveItem,
@@ -162,9 +166,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       cartItems,
       cartStore,
       fetchNextPage,
+      handleItemCheck,
+      handleRemoveItem,
       hasNextPage,
       isFetchingNextPage,
       reloadCartItems,
+      status,
     ]
   )
 

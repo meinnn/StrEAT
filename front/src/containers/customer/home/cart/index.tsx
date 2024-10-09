@@ -5,14 +5,18 @@ import StoreLink from '@/components/StoreLink'
 import CartItem from '@/containers/customer/home/cart/CartItem'
 import CartSkeletonPage from '@/components/skeleton/CartSkeleton'
 import { useCart } from '@/contexts/CartContext'
+import { useRouter } from 'next/navigation'
+import EmptyCart from '@/containers/customer/home/cart/EmptyCart'
 
 export default function CartPage() {
+  const router = useRouter()
   const {
     cartItems,
     cartStore,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    status,
     handleItemCheck,
     handleRemoveItem,
   } = useCart()
@@ -22,9 +26,13 @@ export default function CartPage() {
       .filter((item) => item.checked)
       .reduce((acc, item) => acc + item.price, 0) ?? 0
 
-  const totalQuantity = cartItems.filter((item) => item.checked).length ?? 0
+  const totalQuantity =
+    cartItems
+      .filter((item) => item.checked)
+      .reduce((acc, item) => acc + item.quantity, 0) ?? 0
 
-  if (!cartItems.length) return <CartSkeletonPage />
+  if (status === 'pending') return <CartSkeletonPage />
+  if (cartItems.length === 0) return <EmptyCart />
 
   return (
     <div
@@ -54,7 +62,9 @@ export default function CartPage() {
         ))}
 
         <div className="w-full py-2 border border-primary-300 text-primary-500 rounded-lg text-center">
-          <Link href="/customer/stores/1">+ 메뉴 추가</Link>
+          <Link href={`/customer/stores/${cartStore?.storeId}`}>
+            + 메뉴 추가
+          </Link>
         </div>
       </div>
 
@@ -75,6 +85,7 @@ export default function CartPage() {
       <div className="fixed bottom-0 inset-x-0 p-3 bg-white">
         <button
           type="button"
+          onClick={() => router.push('/customer/payment/toss')}
           className={`w-full py-4 font-bold rounded-lg ${
             totalQuantity > 0
               ? 'bg-primary-500 text-white'

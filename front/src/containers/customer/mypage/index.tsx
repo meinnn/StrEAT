@@ -90,7 +90,7 @@ export default function MyPage() {
         {userInfo ? (
           <>
             <Image
-              src={userInfo.profileImgSrc || '/images/default-profile.png'}
+              src={userInfo.profileImgSrc}
               alt="프로필 이미지"
               width={96}
               height={96}
@@ -99,6 +99,7 @@ export default function MyPage() {
             <h2 className="text-xl font-semibold mt-4">{userInfo.name}</h2>
           </>
         ) : (
+          // 스켈레톤 UI
           <div className="flex flex-col items-center">
             <Skeleton circle height={96} width={96} />
             <Skeleton width={120} height={24} style={{ marginTop: '1rem' }} />

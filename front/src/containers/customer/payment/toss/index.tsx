@@ -1,7 +1,8 @@
 'use client'
 
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { useCart } from '@/contexts/CartContext'
 
 const clientKey =
   process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY ||
@@ -10,10 +11,8 @@ const customerKey = 'SfRLtISYsjv6yX7CV2Wuz'
 
 export default function PaymentCheckoutPage() {
   const [payment, setPayment] = useState<any>(null)
-  const [amount] = useState({
-    currency: 'KRW',
-    value: 50000,
-  })
+
+  const { cartItems } = useCart()
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     string | null
@@ -36,23 +35,31 @@ export default function PaymentCheckoutPage() {
       }
     }
 
-    fetchPayment()
+    fetchPayment().then()
   }, [])
 
-  const requestPayment = async () => {
+  const requestPayment = useCallback(async () => {
     if (!payment) {
       console.error('Payment is not initialized')
       return
     }
 
+    const amount = {
+      currency: 'KRW',
+      value:
+        cartItems
+          .filter((item) => item.checked)
+          .reduce((acc, item) => acc + item.price, 0) ?? 0,
+    }
+
     try {
       await payment.requestPayment({
         method: selectedPaymentMethod || 'CARD',
-        amount, // amount는 숫자형 값으로 전달
+        amount,
         orderId: 'YVyBWblH0boLvfy5NgZJU',
-        orderName: '토스 티셔츠 외 2건',
-        successUrl: `${window.location.origin}/customer/payment/result`,
-        failUrl: `${window.location.origin}/orderfailure`,
+        orderName: `${cartItems[0].name} 외 ${cartItems.length - 1}건`,
+        successUrl: `${window.location.origin}/customer/payment/result?status=success`,
+        failUrl: `${window.location.origin}/customer/payment/result?status=failure`,
         customerEmail: 'customer123@gmail.com',
         customerName: '김싸피',
         customerMobilePhone: '01012341234',
@@ -66,18 +73,18 @@ export default function PaymentCheckoutPage() {
     } catch (error) {
       console.error('Payment error:', error)
     }
-  }
+  }, [cartItems, payment, selectedPaymentMethod])
+
+  // 컴포넌트가 렌더링될 때 바로 결제 요청
+  useEffect(() => {
+    if (payment) {
+      requestPayment().then()
+    }
+  }, [payment, requestPayment])
 
   return (
     <div>
-      <h2>아래 결제하기 버튼 누르쇼</h2>
-      <button
-        type="button"
-        className="button bg-primary-400 text-white"
-        onClick={requestPayment}
-      >
-        결제하기
-      </button>
+      <h2>결제 이동 중...</h2>
     </div>
   )
 }
