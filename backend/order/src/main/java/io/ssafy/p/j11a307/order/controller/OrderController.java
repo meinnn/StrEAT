@@ -162,15 +162,15 @@ public class OrderController {
     }
 
     //주문번호 발급
-//    @PostMapping("/{storeId}")
-//    @Operation(summary = "주문번호 발급", description = "결제를 시작할 때 주문번호를 우선 발급받는다.")
-//    public ResponseEntity<DataResponse<String>> createOrderNumber(@PathVariable Integer storeId,
-//                                                                  @RequestBody CreateOrderNumberRequest createOrderNumberRequest,
-//                                                                  @RequestHeader("Authorization") String token) {
-//        String orderNum = orderService.createOrderNumber(storeId, createOrderNumberRequest, token);
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("주문번호 발급에 성공했습니다.", orderNum));
-//    }
+    @PostMapping("/{storeId}")
+    @Operation(summary = "주문번호 발급", description = "결제를 시작할 때 주문번호를 우선 발급받는다.")
+    public ResponseEntity<DataResponse<String>> createOrderNumber(@PathVariable Integer storeId,
+                                                                  @RequestBody CreateOrderNumberRequest createOrderNumberRequest,
+                                                                  @RequestHeader("Authorization") String token) {
+        String orderNum = orderService.createOrderNumber(storeId, createOrderNumberRequest, token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.of("주문번호 발급에 성공했습니다.", orderNum));
+    }
 
 
 

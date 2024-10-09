@@ -10,11 +10,9 @@ import java.util.List;
 @Setter
 @Schema(description = "장바구니 상품 추가를 위한 DTO")
 public class AddProductToBasketDTO {
-    //상품 개수
     @Schema(description = "상품 개수", example = "3")
     private Integer quantity;
 
-    //옵션 번호 리스트
     @Schema(description = "옵션 id 리스트", example = "[1,5]")
     private List<Integer> productOptionIds;
 }

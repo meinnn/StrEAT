@@ -26,7 +26,7 @@ public class Orders {
     private OrderCode status;
     private String request;
 
-    @CreatedDate
+    //@CreatedDate
     private LocalDateTime createdAt;
 
     private Integer totalPrice;
@@ -41,11 +41,13 @@ public class Orders {
         this.status = status;
     }
 
+
     @Builder
-    public Orders(Integer userId, Integer storeId, String orderNumber, OrderCode status, String request, Integer totalPrice, PayTypeCode paymentMethod, LocalDateTime paidAt, LocalDateTime receivedAt, String phone) {
+    public Orders(Integer userId, Integer storeId, LocalDateTime createdAt, String orderNumber, OrderCode status, String request, Integer totalPrice, PayTypeCode paymentMethod, LocalDateTime paidAt, LocalDateTime receivedAt, String phone) {
         this.userId = userId;
         this.storeId = storeId;
         this.orderNumber = orderNumber;
+        this.createdAt = createdAt;
         this.status = status;
         this.request = request;
         this.totalPrice = totalPrice;

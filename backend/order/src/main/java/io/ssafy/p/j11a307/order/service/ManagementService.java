@@ -45,7 +45,7 @@ public class ManagementService {
 
             for (Orders orders : ordersList) {
                 //orders의 i일인 주문내역을 찾아서.
-                if(orders.getCreatedAt().getDayOfMonth() == i && orders.getStatus() != OrderCode.REJECTED) {
+                if(orders.getCreatedAt().getDayOfMonth() == i && orders.getStatus() != OrderCode.REJECTED && orders.getStatus() != OrderCode.WAITING_FOR_PAYING) {
                     UserInfoResponse userInfoResponse = ownerClient.getUserInformation(orders.getUserId());
 
                     GetDailySalesListDTO getDailySalesListDTO = GetDailySalesListDTO.builder()

@@ -1,13 +1,12 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.*;
-import io.ssafy.p.j11a307.order.entity.OrderProduct;
-import io.ssafy.p.j11a307.order.entity.Orders;
-import io.ssafy.p.j11a307.order.entity.Review;
+import io.ssafy.p.j11a307.order.entity.*;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.global.PayTypeCode;
+import io.ssafy.p.j11a307.order.global.TimeUtil;
 import io.ssafy.p.j11a307.order.repository.OrderProductOptionRepository;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +39,14 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final OrderProductOptionRepository orderProductOptionRepository;
     private final ReviewRepository reviewRepository;
+    private final TimeUtil timeUtil;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
+
+    private final SecureRandom random = new SecureRandom();
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 
     @Transactional
     public GetStoreOrderDTO getStoreOrderList(Integer storeId, Integer pgno, Integer spp, String status, String token) {
@@ -458,14 +463,60 @@ public class OrderService {
         return getStoreWaitingDTO;
     }
 
-//    @Transactional
-//    public String createOrderNumber(Integer storeId, CreateOrderNumberRequest createOrderNumberRequest, String token) {
-//        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
-//
-//        Orders orders = Orders.builder()
-//                .orderNumber()
-//                .
-//                .build();
-//
-//    }
+    @Transactional
+    public String createOrderNumber(Integer storeId, CreateOrderNumberRequest createOrderNumberRequest, String token) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+
+        //1. 유효하지 않은 점포라면?
+        ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
+        if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+
+        Orders orders = Orders.builder()
+                .storeId(storeId)
+                .userId(customerId)
+                .createdAt(timeUtil.getCurrentSeoulTime())
+                .status(OrderCode.WAITING_FOR_PAYING)
+                .totalPrice(createOrderNumberRequest.totalPrice())
+                .request(createOrderNumberRequest.request())
+                .build();
+
+        ordersRepository.save(orders);
+
+        //주문번호 설정
+        //동시성 처리 필요..(id를 이용하여 처리)
+        StringBuilder orderNum = new StringBuilder("A"+ orders.getId());
+        for(int i=0; i<4; i++) {
+            orderNum.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+        }
+
+        orders.setOrderNumber(orderNum.toString());
+        ordersRepository.save(orders);
+
+        //상품 리스트 삽입
+        for(CreateOrderNumberProductListDTO product: createOrderNumberRequest.orderProducts()) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .productId(product.id())
+                    .count(product.quantity())
+                    .ordersId(orders)
+                    .build();
+
+            orderProductRepository.save(orderProduct);
+
+            //옵션 리스트 삽입
+            for(Integer option: product.orderProductOptions()) {
+                OrdersUserId ordersUserId = OrdersUserId.builder()
+                        .orderProductId(orderProduct)
+                        .productOptionId(option)
+                        .build();
+
+                OrderProductOption orderProductOption = OrderProductOption.builder()
+                        .orderProductId(ordersUserId)
+                        .build();
+
+                orderProductOptionRepository.save(orderProductOption);
+            }
+        }
+
+        return orderNum.toString();
+    }
 }
