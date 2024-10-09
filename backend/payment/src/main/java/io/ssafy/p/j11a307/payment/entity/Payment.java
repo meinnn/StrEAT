@@ -74,7 +74,7 @@ public class Payment {
     }
 
     public Payment(JsonNode jsonNode) {
-        this.mid = jsonNode.get("mid").asText();
+        this.mid = jsonNode.get("mId").asText();
         this.version = jsonNode.get("version").asText();
         this.paymentKey = jsonNode.get("paymentKey").asText();
         this.status = jsonNode.get("status").asText();

@@ -1,9 +1,12 @@
 package io.ssafy.p.j11a307.push_alert.controller;
 
 import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
+import io.ssafy.p.j11a307.push_alert.dto.PushAlertHistoryResponse;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
+import io.ssafy.p.j11a307.push_alert.global.DataResponse;
+import io.ssafy.p.j11a307.push_alert.global.MessageResponse;
 import io.ssafy.p.j11a307.push_alert.service.AlertService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,14 +16,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
 public class AlertController {
 
-    @Value("{streat.internal-request}")
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
+
+    private final String HEADER_AUTH = "Authorization";
 
     private final AlertService alertService;
 
@@ -70,7 +77,6 @@ public class AlertController {
     }
 
     @PostMapping("/dibs/{storeId}")
-    @GetMapping("/open-store")
     @Operation(summary = "점포 찜 등록", description = "점포 찜 등록")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "요청 성공, 푸시 알림 전송 성공"),
@@ -91,8 +97,6 @@ public class AlertController {
     }
 
     @DeleteMapping("/dibs/{storeId}")
-    @PostMapping("/dibs/{storeId}")
-    @GetMapping("/open-store")
     @Operation(summary = "점포 찜 취소", description = "점포 찜 취소")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "요청 성공, 푸시 알림 전송 성공"),
@@ -110,5 +114,31 @@ public class AlertController {
             throw new BusinessException(ErrorCode.BAD_REQUEST);
         }
         alertService.unsubscribeFromStore(userId, storeId);
+    }
+
+    @PostMapping("/check/{alertId}")
+    @Operation(summary = "푸시 알림 확인", description = "푸시 알림 확인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "푸시 알림 확인 성공"),
+            @ApiResponse(responseCode = "404", description = "푸시 알림을 찾지 못했습니다")
+    })
+    public ResponseEntity<MessageResponse> checkAlert(@PathVariable Long alertId) {
+        alertService.checkAlert(alertId);
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of("푸시 알림 확인 성공"));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "전체 푸시 알림 목록 조회", description = "전체 푸시 알림 목록 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "푸시 알림 목록 조회 성공")
+    })
+    public ResponseEntity<DataResponse<PushAlertHistoryResponse>> getAllPushAlerts(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") Integer pgno,
+            @RequestParam(defaultValue = "10") Integer spp) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        PushAlertHistoryResponse pushAlertHistoryResponse = alertService.getAllAlertsByUserId(accessToken, pgno, spp);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("전체 푸시 알림 목록 조회 성공", pushAlertHistoryResponse));
     }
 }

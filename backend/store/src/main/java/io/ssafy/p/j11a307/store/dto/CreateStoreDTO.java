@@ -39,12 +39,15 @@ public record CreateStoreDTO(
         String closedDays,
 
         @Schema(description = "영업 상태", example = "영업중")
-        String status
+        String status,
+
+        @Schema(description = "업종카테고리ID", example = "1")
+        Integer subcategoryId
 
 ) {
 
     // DTO에서 Store 엔티티로 변환하는 메서드
-    public Store toEntity() {
+    public Store toEntity(SubCategory subCategory) {
         return Store.builder()
                 .businessRegistrationNumber(this.businessRegistrationNumber)
                 .name(this.name)
@@ -58,6 +61,7 @@ public record CreateStoreDTO(
                 .storePhoneNumber(this.storePhoneNumber)  // storePhoneNumber 추가
                 .closedDays(this.closedDays)
                 .status(StoreStatus.fromDescription(this.status))  // StoreStatus 변환
+                .subCategory(subCategory)
                 .build();
     }
 }
