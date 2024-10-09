@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DibsService {
 
-    @Value("{streat.internal-request}")
+    @Value("${streat.internal-request}")
     private String internalRequestKey;
 
     private final UserService userService;
@@ -95,5 +95,12 @@ public class DibsService {
         }
         Subscription.SubscriptionId subscriptionId = new Subscription.SubscriptionId(userId, storeId);
         return subscriptionRepository.existsById(subscriptionId);
+    }
+
+    public List<Integer> getCalledDibsUserIds(Integer storeId) {
+        List<Subscription> subscriptions = subscriptionRepository.findBySubscriptionIdStoreId(storeId);
+        return subscriptions.stream().map(Subscription::getSubscriptionId)
+                .map(Subscription.SubscriptionId::getUserId)
+                .collect(Collectors.toList());
     }
 }

@@ -12,10 +12,12 @@ import io.ssafy.p.j11a307.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -51,7 +53,8 @@ public class PaymentService {
 
         HttpEntity<String> httpEntity = new HttpEntity<>(message, httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
-        String response = restTemplate.postForObject(confirmUrl, httpEntity, String.class);
+        restTemplate.getMessageConverters().addFirst(new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        String response = restTemplate.exchange(confirmUrl, HttpMethod.POST, httpEntity, String.class).getBody();
         JsonNode jsonNode = objectMapper.readTree(response);
         Payment payment = new Payment(jsonNode);
         JsonNode cardNode = jsonNode.get("card");

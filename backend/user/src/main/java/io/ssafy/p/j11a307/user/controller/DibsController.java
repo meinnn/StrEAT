@@ -1,14 +1,18 @@
 package io.ssafy.p.j11a307.user.controller;
 
 import io.ssafy.p.j11a307.user.dto.StoreDibsResponse;
+import io.ssafy.p.j11a307.user.exception.BusinessException;
+import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.global.DataResponse;
 import io.ssafy.p.j11a307.user.global.MessageResponse;
 import io.ssafy.p.j11a307.user.service.DibsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DibsController {
 
+    @Value("${streat.internal-request}")
+    private String internalRequestKey;
     private final String HEADER_AUTH = "Authorization";
 
     private final DibsService dibsService;
@@ -96,5 +102,21 @@ public class DibsController {
         Boolean calledDibs = dibsService.calledDibs(accessToken, storeId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("스토어 찜 여부 조회에 성공했습니다.", calledDibs));
+    }
+
+    @GetMapping("/{storeId}/dibs-customers")
+    @Operation(summary = "store를 찜한 유저 아이디 리스트 조회", description = "store를 찜한 유저 아이디 리스트 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "유저 아이디 리스트 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "외부에서는 접근할 수 없습니다.")
+    })
+    @Tag(name = "내부 서비스 간 요청")
+    public ResponseEntity<DataResponse<List<Integer>>> getCalledDibsUserByStoreId(
+            @PathVariable("storeId") Integer storeId, @RequestHeader("X-Internal-Request") String internalRequest) {
+        if (!internalRequestKey.equals(internalRequest)) {
+            throw new BusinessException(ErrorCode.BAD_INNER_SERVICE_REQUEST);
+        }
+        List<Integer> calledDibsUserIds = dibsService.getCalledDibsUserIds(storeId);
+        return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("유저 리스트 조회 성공", calledDibsUserIds));
     }
 }

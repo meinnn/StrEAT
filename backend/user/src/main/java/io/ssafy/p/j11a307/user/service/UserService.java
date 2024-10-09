@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.user.service;
 
+import io.ssafy.p.j11a307.user.dto.OwnerInfoResponse;
 import io.ssafy.p.j11a307.user.dto.OwnerProfile;
 import io.ssafy.p.j11a307.user.dto.UserFcmTokenResponse;
 import io.ssafy.p.j11a307.user.dto.UserInfoResponse;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final StoreService storeService;
 
     private final UserRepository userRepository;
     private final LeftUserRepository leftUserRepository;
@@ -114,5 +117,26 @@ public class UserService {
     public OwnerProfile getAnnouncementOwnerInformation(Integer ownerId) {
         Owner owner = ownerRepository.findById(ownerId).orElseThrow(() -> new BusinessException(ErrorCode.OWNER_NOT_FOUND));
         return new OwnerProfile(owner);
+    }
+
+    public OwnerInfoResponse getOwnerInfo(String accessToken) {
+        Integer ownerId = getUserId(accessToken);
+        if (!isOwner(ownerId)) {
+            throw new BusinessException(ErrorCode.OWNER_NOT_FOUND);
+        }
+        User user = userRepository.findById(ownerId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        Integer storeId = null;
+        try {
+            storeId = storeService.getStoreIdByUserId(ownerId);
+        } catch (Exception e) {
+            // store service에서는 점포가 없는 사장은 예외 발생
+        }
+        return OwnerInfoResponse.builder()
+                .name(user.getUsername())
+                .profileImgSrc(user.getProfileImgSrc())
+                .orderStatusAlert(user.isOrderStatusAlert())
+                .dibsStoreAlert(user.isDibsStoreAlert())
+                .storeId(storeId)
+                .build();
     }
 }

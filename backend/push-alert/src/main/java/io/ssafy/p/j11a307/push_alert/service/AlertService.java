@@ -2,7 +2,11 @@ package io.ssafy.p.j11a307.push_alert.service;
 
 import com.google.firebase.messaging.Notification;
 import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
+import io.ssafy.p.j11a307.push_alert.dto.PushAlertDetailResponse;
+import io.ssafy.p.j11a307.push_alert.dto.PushAlertHistoryResponse;
 import io.ssafy.p.j11a307.push_alert.entity.PushAlert;
+import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
+import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
 import io.ssafy.p.j11a307.push_alert.global.DataResponse;
 import io.ssafy.p.j11a307.push_alert.repository.PushAlertRepository;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
@@ -14,7 +18,11 @@ import io.ssafy.p.j11a307.push_alert.dto.internalapi.FcmTokenResponse;
 import io.ssafy.p.j11a307.push_alert.util.FirebaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -101,6 +109,23 @@ public class AlertService {
         ApiResponse<FcmTokenResponse> fcmTokenResponse = userService.getFcmTokenByUserId(userId, internalRequestKey);
         String userFcmToken = fcmTokenResponse.getData().fcmToken();
         firebaseUtil.unsubscribeTopic(TOPIC_STORE_PREFIX + storeId, userFcmToken);
+    }
+
+    @Transactional
+    public void checkAlert(Long alertId) {
+        PushAlert pushAlert = pushAlertRepository.findById(alertId).orElseThrow(() -> new BusinessException(ErrorCode.ALERT_TYPE_NOT_FOUND));
+        pushAlert.checkAlert();
+    }
+
+    @Transactional
+    public PushAlertHistoryResponse getAllAlertsByUserId(String accessToken, Integer pgno, Integer spp) {
+        Integer userId = userService.getUserId(accessToken, internalRequestKey);
+        Pageable pageable = PageRequest.of(pgno, spp);
+        Page<PushAlert> pushAlerts = pushAlertRepository.findByUserIdOrderByIdDesc(userId, pageable);
+        List<PushAlertDetailResponse> pushAlertResponses = pushAlerts.stream().map(PushAlertDetailResponse::new).toList();
+        Long totalDataCount = pushAlertRepository.countByUserId(userId);
+        int totalPageCount = pushAlerts.getTotalPages();
+        return new PushAlertHistoryResponse(pushAlertResponses, totalDataCount, totalPageCount);
     }
 
     private String convertDateFormat(Date date) {

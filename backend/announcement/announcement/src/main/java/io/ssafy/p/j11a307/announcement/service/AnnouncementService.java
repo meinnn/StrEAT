@@ -119,14 +119,14 @@ public class AnnouncementService {
             System.out.println("Python 출력: " + output.toString());
 
             // Python에서 생성한 파일 경로
-            Path filePath = Paths.get("newfile.docx"); // Python에서 생성한 파일 경로를 지정
+            Path filePath = Paths.get("입점신청서.docx"); // Python에서 생성한 파일 경로를 지정
             File file = filePath.toFile();
 
             // 파일이 존재하지 않으면 오류 메시지 반환
             if (!file.exists()) throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=newfile.docx");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=입점신청서.docx");
 
             FileSystemResource fileSystemResource = new FileSystemResource(file);
 

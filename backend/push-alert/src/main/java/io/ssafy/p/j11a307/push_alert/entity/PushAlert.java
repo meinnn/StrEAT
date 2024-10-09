@@ -6,11 +6,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class PushAlert {
 
     @Id
@@ -35,5 +37,9 @@ public class PushAlert {
         this.message = message;
         this.orderId = orderId;
         this.checked = checked;
+    }
+
+    public void checkAlert() {
+        this.checked = true;
     }
 }
