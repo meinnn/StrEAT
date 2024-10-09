@@ -136,21 +136,27 @@ public class OrderService {
 
     @Transactional
     public void handleCompleteOrders(Integer ordersId, String token) {
+        System.out.println("서비스로 들어옴!!");
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
 
+        System.out.println(ownerId + " 사장님 아이디!!");
         //1. 주문 내역이 존재하지 않는다면?
         Optional<Orders> orders = ordersRepository.findById(ordersId);
 
         if(orders.isPresent()) {
+            System.out.println(orders.get().getOrderNumber() + " order 주문번호!!");
             //2. 처리할 권한이 없다면?
             ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
             if(ownerId != readStoreDTO.userId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
 
             //3. 내역이 조리 중인 상태가 아니라면?
             if(orders.get().getStatus().equals(OrderCode.PROCESSING)) {
+                System.out.println("상태가 진행중임!!" + orders.get().getStatus());
                 orders.get().updateStatus(OrderCode.WAITING_FOR_RECEIPT);
+                System.out.println("업데이트 완료!!");
 
                 ordersRepository.save(orders.get());
+                System.out.println("저장 완료!!" + orders.get().getStatus());
             } else throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
         } else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
     }
@@ -451,4 +457,15 @@ public class OrderService {
 
         return getStoreWaitingDTO;
     }
+
+//    @Transactional
+//    public String createOrderNumber(Integer storeId, CreateOrderNumberRequest createOrderNumberRequest, String token) {
+//        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+//
+//        Orders orders = Orders.builder()
+//                .orderNumber()
+//                .
+//                .build();
+//
+//    }
 }
