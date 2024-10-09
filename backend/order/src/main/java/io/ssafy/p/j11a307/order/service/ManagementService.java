@@ -5,6 +5,7 @@ import io.ssafy.p.j11a307.order.dto.GetDailySalesListDTO;
 import io.ssafy.p.j11a307.order.dto.ReadStoreDTO;
 import io.ssafy.p.j11a307.order.dto.UserInfoResponse;
 import io.ssafy.p.j11a307.order.entity.Orders;
+import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class ManagementService {
 
             for (Orders orders : ordersList) {
                 //orders의 i일인 주문내역을 찾아서.
-                if(orders.getCreatedAt().getDayOfMonth() == i && orders.getPaidAt() != null) {
+                if(orders.getCreatedAt().getDayOfMonth() == i && orders.getStatus() != OrderCode.REJECTED) {
                     UserInfoResponse userInfoResponse = ownerClient.getUserInformation(orders.getUserId());
 
                     GetDailySalesListDTO getDailySalesListDTO = GetDailySalesListDTO.builder()
