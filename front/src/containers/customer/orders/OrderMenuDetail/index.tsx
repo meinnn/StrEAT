@@ -5,7 +5,7 @@ export default function OrderMenuDetail({ item }: { item: ProductItem }) {
   return (
     <div className="flex items-start space-x-4">
       <Image
-        src={item.productSrc}
+        src={item.productSrc || '/images/default_img.jpg'}
         alt={item.productName}
         width={80}
         height={80}

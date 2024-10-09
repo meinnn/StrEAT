@@ -3,6 +3,7 @@ import localFont from 'next/font/local'
 import './globals.css'
 import Script from 'next/script'
 import { MapCenterProvider } from '@/contexts/MapCenterContext'
+import FCMHandler from '@/components/FCMHandler'
 
 const pretendard = localFont({
   src: '../../public/fonts/woff2/PretendardVariable.woff2',
@@ -13,6 +14,19 @@ const pretendard = localFont({
 export const metadata: Metadata = {
   title: 'StrEAT',
   description: '주문결제를 간편하게 StrEAT!',
+  icons: {
+    icon: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '48x48',
+        url: '/favicon-48x48.png',
+      },
+      { rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' },
+    ],
+    apple: '/apple-touch-icon.png', // Apple Touch Icon 설정
+    shortcut: '/favicon.ico', // Shortcut Icon 설정
+  },
 }
 
 export default function RootLayout({
@@ -28,6 +42,7 @@ export default function RootLayout({
         <MapCenterProvider>
           {modal}
           <main className="min-h-screen h-full">{children}</main>
+          <FCMHandler />
         </MapCenterProvider>
         <Script
           type="text/javascript"
