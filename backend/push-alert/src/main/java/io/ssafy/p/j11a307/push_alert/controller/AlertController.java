@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.push_alert.controller;
 
+import io.ssafy.p.j11a307.push_alert.dto.GlobalDibsAlertRequest;
 import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
 import io.ssafy.p.j11a307.push_alert.dto.PushAlertHistoryResponse;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
@@ -13,12 +14,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -140,5 +144,44 @@ public class AlertController {
         PushAlertHistoryResponse pushAlertHistoryResponse = alertService.getAllAlertsByUserId(accessToken, pgno, spp);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("전체 푸시 알림 목록 조회 성공", pushAlertHistoryResponse));
+    }
+
+    @PostMapping("/global/dibs-alert")
+    @Operation(summary = "전체 찜 알림 on", description = "전체 찜 알림 on")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "전체 찜 알림 on 성공"),
+            @ApiResponse(responseCode = "400", description = "내부에서만 요청 가능")
+    })
+    @Tag(name = "내부 서비스 간 요청")
+    public ResponseEntity<MessageResponse> turnOnAllDibsAlerts(
+            @RequestBody GlobalDibsAlertRequest globalDibsAlertRequest,
+            @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+        if (!internalRequestKey.equals(internalRequest)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+        String fcmToken = globalDibsAlertRequest.fcmToken();
+        List<Integer> storeIds = globalDibsAlertRequest.storeIds();
+        alertService.turnOnAllDibsAlerts(fcmToken, storeIds);
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of("전체 찜 알림을 켰습니다."));
+    }
+
+    @DeleteMapping("/global/dibs-alert")
+    @Operation(summary = "전체 찜 알림 off", description = "전체 찜 알림 off")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "전체 찜 알림 on 성공"),
+            @ApiResponse(responseCode = "400", description = "내부에서만 요청 가능")
+    })
+    @Tag(name = "내부 서비스 간 요청")
+    public ResponseEntity<MessageResponse> turnOffAllDibsAlerts(
+            @RequestBody GlobalDibsAlertRequest globalDibsAlertRequest,
+            @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+
+        if (!internalRequestKey.equals(internalRequest)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+        String fcmToken = globalDibsAlertRequest.fcmToken();
+        List<Integer> storeIds = globalDibsAlertRequest.storeIds();
+        alertService.turnOffAllDibsAlerts(fcmToken, storeIds);
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of("전체 찜 알림을 껐습니다."));
     }
 }
