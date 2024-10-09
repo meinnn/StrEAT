@@ -1,20 +1,25 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.*;
+import io.ssafy.p.j11a307.order.entity.OrderProduct;
 import io.ssafy.p.j11a307.order.entity.Orders;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.global.TimeUtil;
 import io.ssafy.p.j11a307.order.global.YearWeek;
+import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.time.format.TextStyle;
 import java.time.temporal.IsoFields;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 @Service
@@ -22,7 +27,9 @@ import java.util.*;
 public class ManagementService {
     private final OwnerClient ownerClient;
     private final OrdersRepository ordersRepository;
+    private final OrderProductRepository orderProductRepository;
     private final StoreClient storeClient;
+    private final ProductClient productClient;
     private final TimeUtil timeUtil;
 
     @Value("${streat.internal-request}")
@@ -83,11 +90,66 @@ public class ManagementService {
         Map<YearMonth, Integer> monthMap = new TreeMap<>();
         Map<Year, Integer> yearMap = new TreeMap<>();
 
+        //일별 맵
+        Map<String, GetSalesListByTimeTypeProductDTO> map = new HashMap<>();
+        int totalDailyOrders = 0;
+
+        //연별 맵
+        Map<String, GetSalesListByTimeTypeProductDTO> ymap = new HashMap<>();
+        int totalYearlyOrders = 0;
+
+        //월별 맵
+        Map<String, GetSalesListByTimeTypeProductDTO> mmap = new HashMap<>();
+        int totalMonthlyOrders = 0;
+
+        //주별 맵
+        Map<String, GetSalesListByTimeTypeProductDTO> wmap = new HashMap<>();
+        int totalWeeklyOrders = 0;
+
         //일별 매출
         //오늘로부터 6일 전부터 시작.
-        //그날 팔린 매출을 일별로 쭉 가져오면 됨!!
         for(LocalDateTime date= sixDaysAgo; !date.isAfter(now); date= date.plusDays(1)) {
-            Integer sales = ordersRepository.findOrdersByYearAndMonthAndDay(storeId, date).stream().mapToInt(Orders::getTotalPrice).sum();
+            List<Orders> dailyOrders = ordersRepository.findOrdersByYearAndMonthAndDay(storeId, date);
+            Integer sales = dailyOrders.stream().mapToInt(Orders::getTotalPrice).sum();
+
+            if(date.isEqual(now)) {
+                //Orders의 상품들 모두 가져오기
+
+
+                for(Orders orders : dailyOrders) {
+                    //상품 이름들 가져와서 map에다 집어넣기.
+                    List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(orders);
+
+                    //상품들 돌면서 몇개인지
+                    for (OrderProduct orderProduct : orderProducts) {
+                        totalDailyOrders += orderProduct.getCount();
+                        ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
+
+                        if(map.containsKey(readProductDTO.getName())) {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO
+                                    = map.get(readProductDTO.getName());
+
+                            getSalesListByTimeTypeProductDTO.setQuantity(getSalesListByTimeTypeProductDTO.getQuantity() + orderProduct.getCount());
+
+                            map.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }else {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO
+                                    = GetSalesListByTimeTypeProductDTO.builder().quantity(orderProduct.getCount()).build();
+
+                            map.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }
+                    }
+                }
+
+
+                //맵을 돌면서 퍼센트 계산
+                for(Map.Entry<String, GetSalesListByTimeTypeProductDTO> entry : map.entrySet()) {
+                    entry.getValue().setPercent((double)entry.getValue().getQuantity() /totalDailyOrders * 100);
+                }
+
+
+
+            }
 
             dailyMap.put(getFormattedDate(date), sales);
         }
@@ -95,7 +157,7 @@ public class ManagementService {
         //주별 매출
         for(LocalDateTime date= fiveWeeksAgo; !date.isAfter(now); date= date.plusWeeks(1)) {
             LocalDate localDate = date.toLocalDate();
-            YearWeek yearWeek = YearWeek.from(localDate);
+            //YearWeek yearWeek = YearWeek.from(localDate);
 
             // 주의 시작일과 종료일 계산
             // 주의 시작일 계산 (해당 날짜가 속한 주의 월요일 0시)
@@ -107,31 +169,154 @@ public class ManagementService {
             // 주의 종료일을 일요일의 23시 59분으로 계산
             LocalDate weekEndDate = weekStartDate.plusDays(6); // 일요일
             LocalDateTime weekEnd = weekEndDate.atTime(23, 59, 59); // 23시 59분으로 설정
-            Integer sales = ordersRepository.findOrdersByWeek(storeId, weekStart, weekEnd).stream().mapToInt(Orders::getTotalPrice).sum();
+
+            YearMonth yearMonth = YearMonth.from(localDate); // 몇 월인지
+            WeekFields weekFields = WeekFields.of(Locale.getDefault());
+            int weekOfMonth = localDate.get(weekFields.weekOfMonth()); // 몇 번째 주인지
+
+            // "몇 월 몇 번째 주" 문자열 생성
+            //String monthAndWeek = yearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " + weekOfMonth + "주";
+            YearWeek yearWeek = new YearWeek(yearMonth, weekOfMonth);
+
+            List<Orders> weeklyOrders = ordersRepository.findOrdersByWeek(storeId, weekStart, weekEnd);
+            Integer sales = weeklyOrders.stream().mapToInt(Orders::getTotalPrice).sum();
+
+            if(date.isEqual(now)) {
+                //Orders의 상품들 모두 가져오기
+
+
+                for(Orders orders : weeklyOrders) {
+                    //상품 이름들 가져와서 map에다 집어넣기.
+                    List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(orders);
+
+                    //상품들 돌면서 몇개인지
+                    for (OrderProduct orderProduct : orderProducts) {
+                        totalWeeklyOrders += orderProduct.getCount();
+                        ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
+
+                        if(wmap.containsKey(readProductDTO.getName())) {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO
+                                    = wmap.get(readProductDTO.getName());
+
+                            getSalesListByTimeTypeProductDTO.setQuantity(getSalesListByTimeTypeProductDTO.getQuantity() + orderProduct.getCount());
+
+                            wmap.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }else {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO
+                                    = GetSalesListByTimeTypeProductDTO.builder().quantity(orderProduct.getCount()).build();
+
+                            wmap.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }
+                    }
+                }
+
+
+                //맵을 돌면서 퍼센트 계산
+                for(Map.Entry<String, GetSalesListByTimeTypeProductDTO> entry : wmap.entrySet()) {
+                    entry.getValue().setPercent((double)entry.getValue().getQuantity() /totalWeeklyOrders * 100);
+                }
+
+
+
+            }
+
+
+
 
             weekMap.put(yearWeek, sales);
         }
 
         //월별 매출
         for(LocalDateTime date= fiveMonthsAgo; !date.isAfter(now); date= date.plusMonths(1)) {
-            Integer sales = ordersRepository.findOrdersByYearAndMonth(storeId, date).stream().mapToInt(Orders::getTotalPrice).sum();
+            List<Orders> monthlyOrders = ordersRepository.findOrdersByYearAndMonth(storeId, date);
+            Integer sales = monthlyOrders.stream().mapToInt(Orders::getTotalPrice).sum();
+
+            if(date.isEqual(now)) {
+                for (Orders orders : monthlyOrders) {
+                    //상품 이름들 가져와서 map에다 집어넣기.
+                    List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(orders);
+
+                    for (OrderProduct orderProduct : orderProducts) {
+                        totalMonthlyOrders += orderProduct.getCount();
+                        ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
+
+                        if(mmap.containsKey(readProductDTO.getName())) {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO
+                                    = mmap.get(readProductDTO.getName());
+
+                            getSalesListByTimeTypeProductDTO.setQuantity(getSalesListByTimeTypeProductDTO.getQuantity() + orderProduct.getCount());
+
+                            mmap.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }else {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO
+                                    = GetSalesListByTimeTypeProductDTO.builder().quantity(orderProduct.getCount()).build();
+
+                            mmap.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }
+                    }
+                }
+
+                //맵을 돌면서 퍼센트 계산
+                for(Map.Entry<String, GetSalesListByTimeTypeProductDTO> entry : mmap.entrySet()) {
+                    entry.getValue().setPercent((double)entry.getValue().getQuantity() /totalMonthlyOrders * 100);
+                }
+
+            }
 
             monthMap.put(YearMonth.from(date), sales);
         }
 
         //연별 매출
         for(LocalDateTime date= twoYearsAgo; !date.isAfter(now); date= date.plusYears(1)) {
-            Integer sales = ordersRepository.findOrdersByYear(storeId, date).stream().mapToInt(Orders::getTotalPrice).sum();
+            List<Orders> yearlyOrders = ordersRepository.findOrdersByYear(storeId, date);
+            Integer sales = yearlyOrders.stream().mapToInt(Orders::getTotalPrice).sum();
 
+            if(date.isEqual(now)) {
+                for(Orders orders : yearlyOrders) {
+                    List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(orders);
+
+                    //상품들 돌면서 몇개인지
+                    for (OrderProduct orderProduct : orderProducts) {
+                        totalYearlyOrders += orderProduct.getCount();
+                        ReadProductDTO readProductDTO = productClient.getProductById(orderProduct.getProductId()).getData();
+
+                        if(ymap.containsKey(readProductDTO.getName())) {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO = ymap.get(readProductDTO.getName());
+
+                            getSalesListByTimeTypeProductDTO.setQuantity(getSalesListByTimeTypeProductDTO.getQuantity() + orderProduct.getCount());
+
+                            ymap.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }else {
+                            GetSalesListByTimeTypeProductDTO getSalesListByTimeTypeProductDTO
+                                    = GetSalesListByTimeTypeProductDTO.builder().quantity(orderProduct.getCount()).build();
+
+                            ymap.put(readProductDTO.getName(), getSalesListByTimeTypeProductDTO);
+                        }
+                    }
+                }
+
+                //맵을 돌면서 퍼센트 계산
+                for(Map.Entry<String, GetSalesListByTimeTypeProductDTO> entry : ymap.entrySet()) {
+                    entry.getValue().setPercent((double)entry.getValue().getQuantity() /totalYearlyOrders * 100);
+                }
+            }
             yearMap.put(Year.from(date), sales);
         }
 
 
         GetSalesListByTimeTypeDTO getSalesListByTimeTypeDTO = GetSalesListByTimeTypeDTO.builder()
                 .daily(dailyMap)
+                .dailyProduct(map)
+                .dailyTotal(totalDailyOrders)
                 .weekly(weekMap)
+                .weeklyProduct(wmap)
+                .weeklyTotal(totalWeeklyOrders)
                 .monthly(monthMap)
+                .monthlyProduct(mmap)
+                .monthlyTotal(totalMonthlyOrders)
                 .yearly(yearMap)
+                .yearlyProduct(ymap)
+                .yearlyTotal(totalYearlyOrders)
                 .build();
 
         return getSalesListByTimeTypeDTO;

@@ -38,10 +38,6 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("일별 매출 조회에 성공했습니다.", dailySalesDTOMap));
     }
 
-    //일별, 주별, 월별, 연별 매출 정보 조회(어떤 상품이 몇 퍼센트로 많이 나갔는지도)
-    //이거 개수 퍼센트. 총 개수 중에 얘 개수 따져서 몇 퍼센트인지 확인!!
-    //1월, 2월, 3월.. ? -> 월별
-    //2020년, 2021년, 2022년 .. -> 연별
     @GetMapping("/{storeId}/report")
     @Operation(summary = "종류별 매출 조회", description = "일별, 주별, 월별, 연별의 매출액을 각각 조회한다.")
     @ApiResponses(value = {
@@ -55,6 +51,8 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("종류별 매출 조회에 성공했습니다.", getSalesListByTimeTypeDTO));
     }
 
+    //어떤 상품이 몇 퍼센트로 많이 나갔는지도)
+    //이거 개수 퍼센트. 총 개수 중에 얘 개수 따져서 몇 퍼센트인지 확인!!
 
 
 
