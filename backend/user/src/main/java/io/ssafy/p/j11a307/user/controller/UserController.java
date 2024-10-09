@@ -153,6 +153,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "이미 손님으로 등록된 유저"),
             @ApiResponse(responseCode = "400", description = "이미 사장님으로 등록된 유저")
     })
+    @Tag(name = "owner")
     public ResponseEntity<Void> registerOwner(@RequestHeader(HEADER_AUTH) String accessToken) {
         Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
         userId = userService.registerNewUserType(userId, UserType.OWNER);
