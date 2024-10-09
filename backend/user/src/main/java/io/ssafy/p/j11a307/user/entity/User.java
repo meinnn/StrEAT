@@ -78,4 +78,8 @@ public class User {
     public void toggleDibsStoreAlert(boolean alertOn) {
         this.dibsStoreAlert = alertOn;
     }
+
+    public void registerFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 }

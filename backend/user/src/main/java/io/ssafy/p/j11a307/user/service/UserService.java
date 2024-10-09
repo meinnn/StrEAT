@@ -139,4 +139,10 @@ public class UserService {
                 .storeId(storeId)
                 .build();
     }
+
+    @Transactional
+    public void registerFcmToken(Integer userId, String fcmToken) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        user.registerFcmToken(fcmToken);
+    }
 }
