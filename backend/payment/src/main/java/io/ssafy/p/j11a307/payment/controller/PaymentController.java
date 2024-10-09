@@ -55,7 +55,7 @@ public class PaymentController {
             @Parameter(name = "cancelReason", description = "취소 사유")
     })
     public ResponseEntity<MessageResponse> cancelTossPayment(
-            @PathVariable Integer orderId, @RequestBody TossPaymentCancelRequest tossPaymentCancelRequest) {
+            @PathVariable String orderId, @RequestBody TossPaymentCancelRequest tossPaymentCancelRequest) {
 
         paymentService.cancelTossPayment(orderId, tossPaymentCancelRequest);
         return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of("결제 취소 성공"));
