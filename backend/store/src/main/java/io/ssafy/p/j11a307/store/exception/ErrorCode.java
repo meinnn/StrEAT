@@ -24,7 +24,7 @@ public enum ErrorCode {
     FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "사진 업로드에 실패하였습니다."),
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "해당하는 ID의 가게 간편 위치 정보가 없습니다."),
     //Store Location
-    LOCATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
+    LOCATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당하는 ID의 가게 위치 정보가 없습니다."),
     UNAUTHORIZED_USER(HttpStatus.BAD_REQUEST, "간편 위치 저장 정보를 지울 권한이 없습니다."),
     //Store Simple Location
     SIMPLE_LOCATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당하는 ID의 가게 간편 위치 정보가 없습니다."),
