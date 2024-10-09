@@ -3,6 +3,7 @@ package io.ssafy.p.j11a307.order.repository;
 import io.ssafy.p.j11a307.order.entity.Orders;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.global.PayTypeCode;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +11,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -66,4 +69,17 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
 
     @Query(value = "SELECT * FROM orders WHERE store_id= :storeId AND MONTH(created_at) = :thisMonth", nativeQuery = true)
     List<Orders> findByStoreIdAndThisMonth(@Param("thisMonth") Integer thisMonth, @Param("storeId") Integer storeId);
+
+
+    @Query(value = "SELECT * FROM orders WHERE store_id = :storeId AND ((YEAR(paid_at)= YEAR(:date) AND MONTH(paid_at) = Month(:date)) AND DAY(paid_at)= DAY(:date))", nativeQuery = true)
+    List<Orders> findOrdersByYearAndMonthAndDay(Integer storeId, LocalDateTime date);
+
+    @Query(value = "SELECT * FROM orders WHERE store_id = :storeId AND (YEAR(paid_at)= YEAR(:date) AND MONTH(paid_at) = Month(:date))", nativeQuery = true)
+    List<Orders> findOrdersByYearAndMonth(Integer storeId, LocalDateTime date);
+
+    @Query(value = "SELECT * FROM orders WHERE store_id = :storeId AND (YEAR(paid_at)= YEAR(:date))", nativeQuery = true)
+    List<Orders> findOrdersByYear(Integer storeId, LocalDateTime date);
+
+    @Query(value = "SELECT * FROM orders WHERE store_id = :storeId AND (paid_at BETWEEN :weekStart AND :weekEnd)", nativeQuery = true)
+    List<Orders> findOrdersByWeek(Integer storeId, LocalDateTime weekStart, LocalDateTime weekEnd);
 }
