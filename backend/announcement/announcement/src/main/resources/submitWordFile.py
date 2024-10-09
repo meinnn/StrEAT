@@ -110,6 +110,6 @@ for table in doc.tables:
             print("1: " + cell.text)
 
 # 결과 문서 저장
-submit_name = '입점 신청서_'+truckName
+submit_name = '입점신청서_'+truckName
 #doc.save(submit_name+'.docx')
-doc.save('/'+submit_name+ '.docx')
+doc.save('/입점신청서.docx')
