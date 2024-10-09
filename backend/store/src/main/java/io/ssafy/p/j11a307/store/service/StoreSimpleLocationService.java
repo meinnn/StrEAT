@@ -110,7 +110,6 @@ public class StoreSimpleLocationService {
 
         simpleLocationRepository.save(simpleLocation);
 
-
         // 이미지가 있을 경우 처리
         for (MultipartFile image : images) {
             validateImageFile(image);  // 이미지 파일 검증
@@ -156,7 +155,6 @@ public class StoreSimpleLocationService {
         // 간편 위치 정보 수정
         simpleLocation.updateLocation(dto.address(), dto.latitude(), dto.longitude(), dto.nickname(), LocalDateTime.now());
 
-        System.out.println("simpleLocation은!!!"+simpleLocation);
         // 기존 이미지 삭제 및 새 이미지 추가
         storeLocationPhotoRepository.deleteByStoreSimpleLocation(simpleLocation);  // 기존 이미지를 모두 삭제
 
@@ -249,4 +247,29 @@ public class StoreSimpleLocationService {
             throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
         }
     }
+
+    @Transactional
+    public void deleteSimpleLocations(String token, List<Integer> locationIds) {
+        Integer storeId = getStoreIdByToken(token);
+
+        // 전달된 locationIds에 해당하는 위치 정보를 조회
+        List<StoreSimpleLocation> locations = storeSimpleLocationRepository.findAllById(locationIds);
+
+        // 조회된 위치 정보 개수와 요청된 ID 개수가 다르면 예외 처리
+        if (locations.size() != locationIds.size()) {
+            throw new BusinessException(ErrorCode.SIMPLE_LOCATION_NOT_FOUND);
+        }
+
+        // 각 위치 정보가 해당 사용자의 storeId에 속하는지 확인
+        for (StoreSimpleLocation location : locations) {
+            if (!location.getStore().getId().equals(storeId)) {
+                throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+            }
+        }
+
+        // 모든 검증이 끝난 후 삭제
+        storeSimpleLocationRepository.deleteAll(locations);
+    }
+
+
 }

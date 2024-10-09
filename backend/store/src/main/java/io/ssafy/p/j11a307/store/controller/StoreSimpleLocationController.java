@@ -46,6 +46,7 @@ public class StoreSimpleLocationController {
 
         // 간편 위치 정보만 생성
         Integer simpleLocationId = simpleLocationService.createSimpleLocationOnly(token, dto, images);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(DataResponse.of("간편 위치 정보 생성 성공", simpleLocationId));
     }
@@ -87,6 +88,18 @@ public class StoreSimpleLocationController {
     public ResponseEntity<MessageResponse> deleteSimpleLocation(
             @RequestHeader("Authorization") String token, @PathVariable Integer locationId) {
         simpleLocationService.deleteSimpleLocation(token, locationId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("간편 위치 삭제 성공"));
+    }
+
+    /**
+     * 리스트 위치 삭제
+     */
+    @DeleteMapping("/delete/multiple")
+    @Operation(summary = "여러 간편 위치 정보 삭제")
+    public ResponseEntity<MessageResponse> deleteSimpleLocations(
+            @RequestHeader("Authorization") String token, @RequestBody List<Integer> locationIds) {
+        simpleLocationService.deleteSimpleLocations(token, locationIds);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("간편 위치 삭제 성공"));
     }

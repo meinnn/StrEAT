@@ -110,8 +110,9 @@ public class ProductService {
                     product.getDescription(),
                     product.getPrice(),
                     product.getCategory().getId(),
-                    optionCategoryDTOs,
-                    photoUrls
+                    product.getStockStatus(),
+                    photoUrls,
+                    optionCategoryDTOs
             );
         }).collect(Collectors.toList());
     }
