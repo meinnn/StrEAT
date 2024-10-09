@@ -12,7 +12,7 @@ doc = Document('/truck.docx')
 
 ownerName = sys.argv[1]
 gender = sys.argv[2]
-age = int(sys.argv[3])  # age는 문자열이므로 정수로 변환
+age = sys.argv[3]
 birth = sys.argv[4]
 address = sys.argv[5]
 home_num = sys.argv[6]
@@ -39,56 +39,56 @@ for table in doc.tables:
             if '대표자' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('이주호')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(ownerName)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '성 별' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('남')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(gender)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '연 령' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('21세')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(age + '세')
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '주민등록번호' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('990202')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(birth)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '주 소' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('경기도 용인시 기흥구 보정동 죽현마을 현대아이파크1차 206동 2304호')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(address)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '연 락 처' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     if '일반전화' in row.cells[i+1].text:
                         row.cells[i + 1].text = ''
                         cell_to_update = row.cells[i + 1].paragraphs[0].add_run(
-                            '031-274-3878')
+                            home_num)
                         cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
                     if '휴대폰' in row.cells[i + 1].text:
                         row.cells[i + 1].text = ''
                         cell_to_update = row.cells[i + 1].paragraphs[0].add_run(
-                            '010-2572-3878')
+                            phone_num)
                         cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif 'ON-LINE' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     if 'E-Mail' in row.cells[i + 1].text:
                         row.cells[i + 1].text = ''
                         cell_to_update = row.cells[i + 1].paragraphs[0].add_run(
-                            'jeuslee99@naver.com')
+                            email)
                         cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
                     if 'SNS' in row.cells[i + 1].text:
                         row.cells[i + 1].text = ''
                         cell_to_update = row.cells[i + 1].paragraphs[0].add_run(
-                            'Intagram@: ' + 'rat_leeho')
+                            'Intagram@: ' + sns)
                         cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '푸드트럭명' in cell.text:
                 if i + 1 < len(row.cells):  # 오른쪽 셀이 존재하는지 확인
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('민지네 카페트럭')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(truckName)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '사업자등록\n유무' in cell.text:
                 if i + 1 < len(row.cells):
@@ -99,17 +99,17 @@ for table in doc.tables:
             elif '사업자등록번호' in cell.text:
                 if i + 1 < len(row.cells):
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('165-128763721')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(businessNum)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
             elif '신청행사명' in cell.text:
                 if i + 1 < len(row.cells):
                     row.cells[i + 1].text = ''
-                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run('삼성전자 어린이날 행사')
+                    cell_to_update = row.cells[i + 1].paragraphs[0].add_run(eventName)
                     cell_to_update.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
             print("1: " + cell.text)
 
 # 결과 문서 저장
-#submit_name = '20241008_입점 신청서_'+'민지네 푸드트럭'
+submit_name = '입점 신청서_'+truckName
 #doc.save(submit_name+'.docx')
-doc.save('/newfile.docx')
+doc.save('/'+submit_name+ '.docx')
