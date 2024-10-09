@@ -288,8 +288,8 @@ public class OrderService {
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
         Pageable pageable = PageRequest.of(orderSearchRequest.pgno(), orderSearchRequest.spp());
 
-        List<OrderCode> status = orderSearchRequest.statusTag();
-        List<PayTypeCode> paymentMethod = orderSearchRequest.paymentMethodTag();
+        List<String> status = orderSearchRequest.statusTag();
+        List<String> paymentMethod = orderSearchRequest.paymentMethodTag();
         LocalDateTime startTime= orderSearchRequest.startDate();
         LocalDateTime endTime= orderSearchRequest.endDate();
 
