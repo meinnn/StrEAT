@@ -68,7 +68,9 @@ public class AlertService {
                 .storeId(orderStatusChangeRequest.storeId())
                 .build();
 
-        firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
+        if (customerFcmToken != null) {
+            firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
+        }
         pushAlertRepository.save(pushAlert);
     }
 
