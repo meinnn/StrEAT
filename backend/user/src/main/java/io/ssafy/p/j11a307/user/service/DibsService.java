@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.user.service;
 
 import io.ssafy.p.j11a307.user.dto.DibsStoreStatusResponse;
 import io.ssafy.p.j11a307.user.dto.GlobalDibsAlertRequest;
+import io.ssafy.p.j11a307.user.dto.ReviewAveragesResponse;
 import io.ssafy.p.j11a307.user.dto.StoreDibsResponse;
 import io.ssafy.p.j11a307.user.entity.Subscription;
 import io.ssafy.p.j11a307.user.entity.User;
@@ -27,6 +28,7 @@ public class DibsService {
     private final UserService userService;
     private final FcmService fcmService;
     private final StoreService storeService;
+    private final ReviewService reviewService;
 
     private final SubscriptionRepository subscriptionRepository;
 
@@ -81,12 +83,15 @@ public class DibsService {
         Map<Integer, DibsStoreStatusResponse> storeIdToDibsStoreStatusResponse =
                 dibsStoreStatusResponse.stream().collect(Collectors.toMap(DibsStoreStatusResponse::storeId, store -> store));
 
+        ReviewAveragesResponse reviewAveragesResponse = reviewService.getReviewAverageList(storeIds, internalRequestKey);
+        Map<Integer, Double> reviewAverages = reviewAveragesResponse.averageReviewList();
+
         List<StoreDibsResponse> storeDibsResponses = subscriptions.stream().map(subscription ->
                 StoreDibsResponse.builder()
                         .storeId(subscription.getSubscriptionId().getStoreId())
                         .storeName(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).name())
                         .status(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).status())
-                        .averageScore(2.5)
+                        .averageScore(reviewAverages.get(subscription.getSubscriptionId().getStoreId()))
                         .alertOn(subscription.getAlertOn()).build()).toList();
         return storeDibsResponses;
     }
