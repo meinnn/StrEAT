@@ -1,13 +1,13 @@
 package io.ssafy.p.j11a307.product.service;
 
-import io.ssafy.p.j11a307.product.dto.CreateProductDTO;
-import io.ssafy.p.j11a307.product.dto.ReadProductDTO;
-import io.ssafy.p.j11a307.product.dto.UpdateProductDTO;
+import io.ssafy.p.j11a307.product.dto.*;
 import io.ssafy.p.j11a307.product.entity.Product;
 import io.ssafy.p.j11a307.product.entity.ProductCategory;
+import io.ssafy.p.j11a307.product.entity.ProductOptionCategory;
 import io.ssafy.p.j11a307.product.exception.BusinessException;
 import io.ssafy.p.j11a307.product.exception.ErrorCode;
 import io.ssafy.p.j11a307.product.repository.ProductCategoryRepository;
+import io.ssafy.p.j11a307.product.repository.ProductOptionCategoryRepository;
 import io.ssafy.p.j11a307.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +26,7 @@ public class ProductService {
     private final OwnerClient ownerClient;
     private final StoreClient storeClient;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ProductOptionCategoryRepository productOptionCategoryRepository;
     @Value("${streat.internal-request}")
     private String internalRequestKey;
 
@@ -75,26 +76,33 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReadProductDTO> getProductsByStoreId(Integer storeId) {
-        List<Product> products = productRepository.findByStoreId(storeId);
-        return products.stream()
-                .map(ReadProductDTO::new)
-                .collect(Collectors.toList());
-    }
 
-//    public void updateProduct(String token, Integer productId, UpdateProductDTO updateProductDTO) {
-//        Integer storeId = getStoreIdByToken(token);
-//
-//        Optional<Product> product = productRepository.findByStoreIdAndId(storeId, productId);
-//        // storeId와 productId로 product 조회
-//
-//        if(product.isPresent()){
-//            Product updatedProduct = product.get().updateWith(updateProductDTO);
-//            productRepository.save(updatedProduct);
-//        }
-//        else throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
-//
-//    }
+    @Transactional(readOnly = true)
+    public List<ReadProductAllDTO> getProductsByStoreId(Integer storeId) {
+        // storeId로 해당 가게의 모든 상품 조회
+        List<Product> products = productRepository.findByStoreId(storeId);
+
+        // 각 상품에 대해 ReadProductAllDTO를 생성하고 리스트로 반환
+        return products.stream().map(product -> {
+            // 옵션 카테고리 가져오기
+            List<ProductOptionCategory> optionCategories = productOptionCategoryRepository.findByProductId(product.getId());
+
+            // DTO 변환: ReadProductOptionCategoryDTO의 생성자를 활용
+            List<ReadProductOptionCategoryDTO> optionCategoryDTOs = optionCategories.stream()
+                    .map(ReadProductOptionCategoryDTO::new)
+                    .toList();
+
+            // 최종적으로 ReadProductAllDTO 생성
+            return new ReadProductAllDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getPrice(),
+                    product.getCategory().getId(),
+                    optionCategoryDTOs
+            );
+        }).collect(Collectors.toList());
+    }
 
     public void updateProduct(String token, Integer productId, UpdateProductDTO updateProductDTO) {
         Integer storeId = getStoreIdByToken(token);
