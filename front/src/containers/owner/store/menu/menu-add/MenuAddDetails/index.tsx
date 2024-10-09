@@ -4,14 +4,18 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { FaCamera, FaChevronDown } from 'react-icons/fa'
 
-const categories = ['붕어빵', '군고구마', '와플', '떡꼬치']
-
 export default function MenuAddDetails({ onDetailsChange, onImageChange }) {
   const [foodName, setFoodName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [price, setPrice] = useState<string>('')
   const [image, setImage] = useState<File | null>(null)
-  const [category, setCategory] = useState<string>('카테고리 선택')
+  const [category, setCategory] = useState<{ id: number; name: string }>({
+    id: 0,
+    name: '카테고리 선택',
+  })
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>(
+    []
+  ) // 서버로부터 받은 카테고리 리스트
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
   useEffect(() => {
@@ -19,9 +23,28 @@ export default function MenuAddDetails({ onDetailsChange, onImageChange }) {
       foodName,
       description,
       price: parseInt(price, 10),
-      category,
+      categoryId: category.id, // 선택된 카테고리의 id를 부모로 전달
     })
   }, [foodName, description, price, category, onDetailsChange])
+
+  // API 호출로 카테고리 데이터를 가져오는 함수
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/services/menu/category') // Next 서버 경로로 GET 요청
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.data) // 카테고리 이름과 id를 배열로 변환하여 상태에 저장
+      } else {
+        console.error('카테고리 데이터를 가져오지 못했습니다.')
+      }
+    } catch (error) {
+      console.error('API 호출 실패:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories() // 컴포넌트가 마운트될 때 카테고리 데이터를 불러옴
+  }, [])
 
   // 파일 업로드 핸들러
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,8 +56,11 @@ export default function MenuAddDetails({ onDetailsChange, onImageChange }) {
   }
 
   // 카테고리 선택 핸들러
-  const handleSelectCategory = (category: string) => {
-    setCategory(category)
+  const handleSelectCategory = (selectedCategory: {
+    id: number
+    name: string
+  }) => {
+    setCategory(selectedCategory)
     setIsDropdownOpen(false) // 선택 후 드롭다운 닫기
   }
 
@@ -107,18 +133,18 @@ export default function MenuAddDetails({ onDetailsChange, onImageChange }) {
             className="w-full p-2 border bg-gray-200 rounded flex justify-between items-center"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
-            {category}
+            {category.name}
             <FaChevronDown className="text-gray-500 ml-2" />
           </button>
           {isDropdownOpen && (
-            <ul className="absolute w-full bg-white border rounded mt-1 shadow-lg z-10">
-              {categories.map((cat, index) => (
+            <ul className="absolute w-full bg-white border rounded mt-1 shadow-lg z-10 max-h-40 overflow-y-auto">
+              {categories.map((cat) => (
                 <li
-                  key={index}
+                  key={cat.id}
                   onClick={() => handleSelectCategory(cat)}
                   className="p-2 hover:bg-gray-200 cursor-pointer"
                 >
-                  {cat}
+                  {cat.name}
                 </li>
               ))}
             </ul>

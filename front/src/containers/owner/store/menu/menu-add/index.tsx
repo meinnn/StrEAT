@@ -23,23 +23,20 @@ export default function MenuAdd() {
       name: details.foodName,
       description: details.description,
       price: parseInt(details.price, 10),
-      categories: [
-        {
-          name: details.category,
-          parentCategoryId: 0, // 필요한 경우 조정
-        },
-      ],
-      optionCategories: options.map((group) => ({
-        name: group.name,
-        isEssential: group.isRequired,
-        maxSelect: group.maxOptions,
-        minSelect: group.minOptions,
-        productOptions: group.options.map((option) => ({
-          productOptionName: option.name,
-          productOptionPrice: parseInt(option.price, 10),
-        })),
-      })),
+      categoryId: details.categoryId,
+      optionCategories:
+        options?.map((group) => ({
+          name: group.name,
+          maxSelect: group.maxOptions,
+          minSelect: group.minOptions,
+          productOptions: group.options.map((option) => ({
+            productOptionName: option.name,
+            productOptionPrice: parseInt(option.price, 10),
+          })),
+        })) || [], // 옵션이 없을 경우 빈 배열을 사용
     }
+
+    console.log(JSON.stringify(productInfo, null, 2))
 
     const formData = new FormData()
     formData.append('productInfo', JSON.stringify(productInfo))
