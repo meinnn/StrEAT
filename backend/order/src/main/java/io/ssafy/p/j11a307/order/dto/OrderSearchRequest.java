@@ -29,11 +29,11 @@ public record OrderSearchRequest (
                 "    PROCESSING(\"조리중\"),\n" +
                 "    WAITING_FOR_RECEIPT(\"수령 대기중\"),\n" +
                 "    RECEIVED(\"수령 완료\");", example = "[\"PROCESSING\"]")
-        List<OrderCode> statusTag, //조리완료, 주문취소 등
+        List<String> statusTag, //조리완료, 주문취소 등
 
         @Schema(description = "결제 방법 태그: CREDIT_CARD(\"신용카드\"),\n" +
                 "    CASH(\"현금\"),\n" +
                 "    SIMPLE_PAYMENT(\"간편결제\"),\n" +
                 "    ACCOUNT_TRANSFER(\"계좌이체\");", example = "[\"CREDIT_CARD\", \"ACCOUNT_TRANSFER\"]")
-        List<PayTypeCode> paymentMethodTag //카드결제, 간편결제, 현금결제, 계좌이체
+        List<String> paymentMethodTag //카드결제, 간편결제, 현금결제, 계좌이체
 ){}

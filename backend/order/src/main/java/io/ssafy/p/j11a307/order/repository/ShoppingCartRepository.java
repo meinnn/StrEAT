@@ -12,4 +12,6 @@ import java.util.List;
 public interface ShoppingCartRepository  extends JpaRepository<ShoppingCart, Integer> {
     List<ShoppingCart> findAllByCustomerIdAndProductId(Integer customerId, Integer productId);
     Page<ShoppingCart> findAllByCustomerId(Integer customerId, Pageable pageable);
+
+    void deleteByCustomerId(Integer customerId);
 }

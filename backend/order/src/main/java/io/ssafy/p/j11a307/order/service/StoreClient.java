@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "STORE")
 public interface StoreClient {
+    @GetMapping("/api/stores/user/{userId}")
+    Integer getStoreIdByUserId(@PathVariable Integer userId);
+
     @GetMapping("/api/stores/{id}")
     DataResponse<ReadStoreDTO> getStoreInfo(@PathVariable Integer id);
 

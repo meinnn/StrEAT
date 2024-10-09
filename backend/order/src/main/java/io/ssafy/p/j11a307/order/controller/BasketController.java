@@ -106,4 +106,20 @@ public class BasketController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("장바구니에서 삭제를 완료했습니다."));
     }
+
+    @DeleteMapping(value= "/basket")
+    @Operation(summary = "장바구니 비우기", description = "내 장바구니 내역을 모두 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "장바구니에서 삭제 성공"),
+    })
+    public ResponseEntity<MessageResponse> deleteBasket(@RequestHeader("Authorization") String token) {
+
+        basketService.deleteBasket(token);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("장바구니 비우기를 완료했습니다."));
+    }
+
+
+
 }

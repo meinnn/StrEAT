@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.order.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +13,12 @@ public class OrderProductOption {
     @EmbeddedId
     private OrdersUserId orderProductId;
 
-//    public Integer getProductOptionId() {
+    @Builder
+    public OrderProductOption(OrdersUserId orderProductId) {
+        this.orderProductId = orderProductId;
+    }
+
+    //    public Integer getProductOptionId() {
 //        return this.orderProductId.getProductOptionId();
 //    }
 }
