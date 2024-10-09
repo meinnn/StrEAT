@@ -28,7 +28,6 @@ public class ProductController {
     private final ProductOptionService productOptionService;
     private final ProductOptionCategoryService productOptionCategoryService;
     private final ProductPhotoService productPhotoService;
-    private final ProductCategoryService productCategoryService;
 
     // 1. 상품 등록
     @Transactional
@@ -50,16 +49,11 @@ public class ProductController {
             @RequestHeader("Authorization") String token,
             @RequestPart("productInfo") CreateProductAllDTO productDTO,
             @RequestPart("images") List<MultipartFile> images) {
-        // 1. 유효성 검증
-        System.out.println("======1");
         validateInput(productDTO, images);
-        System.out.println("======2");
         // 2. 상품 등록 및 상품 ID 반환 (단일 카테고리로 처리)
         Integer productId = productService.createProduct(token, productDTO.toCreateProductDTO());
-        System.out.println("======3");
         // 3. 상품 이미지 저장
         productPhotoService.createProductPhoto(token, productId, images);
-        System.out.println("======4");
 
         // 4. 옵션 카테고리 및 옵션 저장 (null 체크 추가)
         if (productDTO.optionCategories() != null && !productDTO.optionCategories().isEmpty()) {
@@ -184,8 +178,8 @@ public class ProductController {
     @GetMapping("/store/{storeId}")
     @Operation(summary = "가게별 상품 목록 조회")
     @Transactional(readOnly = true)
-    public ResponseEntity<DataResponse<List<ReadProductDTO>>> getProductsByStoreId(@PathVariable Integer storeId) {
-        List<ReadProductDTO> productResponses = productService.getProductsByStoreId(storeId);
+    public ResponseEntity<DataResponse<List<ReadProductAllDTO>>> getProductsByStoreId(@PathVariable Integer storeId) {
+        List<ReadProductAllDTO> productResponses = productService.getProductsByStoreId(storeId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("가게별 상품 리스트 조회 성공", productResponses));
     }

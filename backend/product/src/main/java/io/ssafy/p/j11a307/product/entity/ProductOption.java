@@ -21,6 +21,7 @@ public class ProductOption {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Getter
     @ManyToOne
     @JoinColumn(name = "product_option_category_id")
     private ProductOptionCategory productOptionCategory;

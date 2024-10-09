@@ -26,12 +26,6 @@ public record ReadProductOptionCategoryDTO(
         @Schema(description = "최소 선택 개수", example = "1")
         Integer minSelect,
 
-//        @Schema(description = "상위 옵션 카테고리 ID", example = "0")
-//        Integer parentOptionCategoryId,
-
-//        @Schema(description = "하위 옵션 카테고리 목록")
-//        List<ReadProductOptionCategoryDTO> subCategories,
-
         @Schema(description = "옵션 목록")
         List<ReadProductOptionDTO> options
 ) {
@@ -44,10 +38,6 @@ public record ReadProductOptionCategoryDTO(
                 optionCategory.getIsEssential(),
                 optionCategory.getMaxSelect(),
                 optionCategory.getMinSelect(),
-//                optionCategory.getParentCategory() != null ? optionCategory.getParentCategory().getId() : null,
-//                optionCategory.getSubCategories().stream()
-//                        .map(ReadProductOptionCategoryDTO::new)
-//                        .toList(),
                 optionCategory.getOptions().stream()
                         .map(ReadProductOptionDTO::new)
                         .toList()
