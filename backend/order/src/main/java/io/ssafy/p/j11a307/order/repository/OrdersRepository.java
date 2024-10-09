@@ -15,6 +15,8 @@ import java.util.List;
 
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders, Integer> {
+    Orders findByOrderNumber(String orderNumber);
+
     Page<Orders> findByUserId(Integer userId, Pageable pageable);
 
     @Query(value = "SELECT * FROM orders o WHERE o.store_id = :storeId AND (o.status = :status1 OR o.status = :status2)", nativeQuery = true)

@@ -22,7 +22,8 @@ public enum ErrorCode {
     WRONG_ORDER_ID(HttpStatus.BAD_REQUEST, "주문이 유효하지 않은 상태입니다."),
     WRONG_FLAG(HttpStatus.BAD_REQUEST,"올바른 flag 정보를 입력해주세요."),
     WRONG_SEARCHTIME(HttpStatus.BAD_REQUEST, "올바른 검색 시간 정보를 입력하세요." ),
-    PHOTO_NOT_FOUND(HttpStatus.BAD_REQUEST, "사진을 찾을 수 없습니다. 존재하지 않는다면 디폴트 사진을 넣어주세요.");
+    PHOTO_NOT_FOUND(HttpStatus.BAD_REQUEST, "사진을 찾을 수 없습니다. 존재하지 않는다면 디폴트 사진을 넣어주세요."),
+    WRONG_PAYTYPECODE(HttpStatus.BAD_REQUEST,"지원하지 않는 결제 방식입니다." );
 
     private final HttpStatus status;
     private final String message;

@@ -4,6 +4,7 @@ import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.entity.*;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
+import io.ssafy.p.j11a307.order.global.MessageResponse;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.global.PayTypeCode;
 import io.ssafy.p.j11a307.order.global.TimeUtil;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -518,5 +520,32 @@ public class OrderService {
         }
 
         return orderNum.toString();
+    }
+
+    @Transactional
+    public void paymentProcessing(PayProcessRequest payProcessRequest) {
+        //결제 완료(실패 or 성공), 주문번호 받아서 처리
+        //성공 시 paid_at 업데이트, payment_method 생성, status 상태 변경
+        //실패 시 payment_method만 생성
+
+        String orderNum = payProcessRequest.orderNumber();
+        Orders orders = ordersRepository.findByOrderNumber(orderNum);
+
+        if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+
+        PayTypeCode payTypeCode = switch (payProcessRequest.method()) {
+            case "카드" -> PayTypeCode.CREDIT_CARD;
+            case "간편결제" -> PayTypeCode.SIMPLE_PAYMENT;
+            default -> throw new BusinessException(ErrorCode.WRONG_PAYTYPECODE);
+        };
+
+        //주문 성공
+        if(payProcessRequest.isSuccess() == 1) {
+            orders.setPaidAt(timeUtil.convertToLocalDateTime(payProcessRequest.approvedAt()));
+            orders.setStatus(OrderCode.WAITING_FOR_PROCESSING);
+        }
+
+        orders.setPaymentMethod(payTypeCode);
+        ordersRepository.save(orders);
     }
 }
