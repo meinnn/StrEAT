@@ -28,9 +28,13 @@ public record ReadProductAllDTO(
         @NotNull(message = "상품 카테고리는 필수 입력 항목입니다.")
         Integer categoryId,
 
-        @Schema(description = "상품 옵션 카테고리 목록 (예: 사이즈, 맛 선택)")
-        List<ReadProductOptionCategoryDTO> optionCategories,
+        @Schema(description = "재고 상태", example = "true")
+        Boolean stockStatus,
 
         @Schema(description = "상품 사진 목록")
-        List<String> photos  // 상품 사진의 src 경로 리스트
+        List<String> photos,  // 상품 사진의 src 경로 리스트
+
+        @Schema(description = "상품 옵션 카테고리 목록 (예: 사이즈, 맛 선택)")
+        List<ReadProductOptionCategoryDTO> optionCategories
+
 ) {}
