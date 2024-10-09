@@ -2,6 +2,7 @@ from docx import Document
 from docx.enum.text import WD_COLOR_INDEX
 
 import os
+import sys
 
 # 현재 작업 디렉토리 출력
 print("현재 작업 디렉토리:", os.getcwd())
@@ -9,15 +10,27 @@ print("현재 작업 디렉토리:", os.getcwd())
 # Word 문서 템플릿 로드
 doc = Document('/truck.docx')
 
+ownerName = sys.argv[1]
+gender = sys.argv[2]
+age = int(sys.argv[3])  # age는 문자열이므로 정수로 변환
+birth = sys.argv[4]
+address = sys.argv[5]
+home_num = sys.argv[6]
+phone_num = sys.argv[7]
+email = sys.argv[8]
+sns = sys.argv[9]
+truckName = sys.argv[10]
+businessNum = sys.argv[11]
+eventName = sys.argv[12]
+
+print("가져온 이름: " + ownerName)
+
 # 회원 정보를 사전(Dictionary) 형태로 준비
 # user_info = {
 #     '이름': '홍길동',
 #     '회원번호': '123456'
 # }
 
-# 문서의 각 문단을 순회하며 자리표시자를 대체
-# for paragraph in doc.paragraphs:
-#     print(paragraph.text, 'hi')
 
 # 문서 내 모든 표를 순회하며 각 셀의 자리표시자를 대체
 for table in doc.tables:
