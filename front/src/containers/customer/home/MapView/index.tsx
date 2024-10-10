@@ -34,6 +34,37 @@ export default function MapView({
   const markersRef = useRef<naver.maps.Marker[]>([]) // 마커 배열
   const isInitialRender = useRef(true) // 처음 렌더링 여부를 추적하는 useRef
   const [showAlert, setShowAlert] = useState(false) // 알림 메시지 상태
+  const [isLocationAvailable, setIsLocationAvailable] = useState(true) // 위치 정보 사용 가능 여부
+
+  // 위치 권한 확인 및 버튼 표시 여부 결정
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => setIsLocationAvailable(true),
+        () => setIsLocationAvailable(false)
+      )
+    } else {
+      setIsLocationAvailable(false)
+    }
+  }, [])
+
+  // 위치 권한 요청 함수
+  const requestLocationPermission = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log('위치 권한 허용됨', position)
+          setIsLocationAvailable(true) // 위치 정보 사용 가능 상태로 변경
+        },
+        (error) => {
+          console.error('위치 권한 거부됨', error)
+          setIsLocationAvailable(false) // 위치 정보 사용 불가 상태로 유지
+        }
+      )
+    } else {
+      console.warn('이 브라우저에서는 위치 서비스를 지원하지 않습니다.')
+    }
+  }
 
   // 좌표로부터 주소를 가져오는 함수
   const fetchAddressFromCoords = useCallback(
@@ -166,7 +197,17 @@ export default function MapView({
         id="map"
         className="fixed inset-0 w-full flex items-center justify-center text-center"
         style={{ height: 'calc(100vh - 4rem)' }}
-      />
+      >
+        {!isLocationAvailable && (
+          <button
+            type="button"
+            className="border-2 border-primary-500 text-primary-500 rounded-xl px-3 py-2"
+            onClick={requestLocationPermission} // 위치 권한 요청
+          >
+            위치 정보 켜기
+          </button>
+        )}
+      </div>
 
       <div className="fixed top-0 inset-x-0 z-[200]">
         <StoreSearchHeader

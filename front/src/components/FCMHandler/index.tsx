@@ -1,8 +1,15 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getMessaging, isSupported, onMessage } from 'firebase/messaging'
 import { firebaseApp } from '@/firebase'
+import InAppNotification from '@/containers/customer/notifications/InAppNotification'
+
+interface NotificationData {
+  title: string
+  body: string
+  url: string
+}
 
 const messaging = async () => {
   try {
@@ -18,6 +25,8 @@ const messaging = async () => {
 }
 
 export default function FCMHandler() {
+  const [notifications, setNotifications] = useState<NotificationData[]>([])
+
   useEffect(() => {
     const onMessageListener = async () => {
       const messagingResolve = await messaging()
@@ -26,26 +35,43 @@ export default function FCMHandler() {
           if (!('Notification' in window)) {
             return
           }
+
+          const title = payload.notification?.title || '알림'
+          const body = payload.notification?.body || '메시지 내용'
+          const redirectUrl = payload.data?.url || '/'
+
+          // 브라우저 알림 표시
           const { permission } = Notification
-          const title = `${payload.notification?.title} foreground`
-          const redirectUrl = payload.data?.url
-          const body = payload.notification?.body
           if (permission === 'granted') {
-            if (payload.notification) {
-              console.log(payload)
-              const notification = new Notification(title, {
-                body,
-                icon: '/web-app-manifest-192x192.png',
-              })
-              notification.onclick = () => {
-                window.open(redirectUrl, '_blank')?.focus()
-              }
+            new Notification(title, {
+              body,
+              icon: '/icons/icon-96.png',
+            }).onclick = () => {
+              window.open(redirectUrl, '_blank')?.focus()
             }
           }
+
+          // 알림 리스트에 새 알림 추가
+          setNotifications((prev) => [
+            ...prev,
+            { title, body, url: redirectUrl },
+          ])
+
+          // 3.5초 후 알림 제거
+          setTimeout(() => {
+            setNotifications((prev) => prev.slice(1))
+          }, 3500)
         })
       }
     }
     onMessageListener().then()
   }, [])
-  return null
+
+  return (
+    <>
+      {notifications.map((notification, index) => (
+        <InAppNotification key={notification.url} notification={notification} />
+      ))}
+    </>
+  )
 }
