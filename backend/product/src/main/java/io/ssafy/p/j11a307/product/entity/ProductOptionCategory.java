@@ -30,6 +30,7 @@ public class ProductOptionCategory {
     private Integer maxSelect;
     private Integer minSelect;
 
+    @Getter
     @OneToMany(mappedBy = "productOptionCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductOption> options;
 
@@ -67,6 +68,6 @@ public class ProductOptionCategory {
         this.name = dto.name();
         this.isEssential = dto.isEssential();
         this.maxSelect = dto.maxSelect();
-//        this.parentCategory = null;
     }
+
 }

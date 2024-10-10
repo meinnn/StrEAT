@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import io.ssafy.p.j11a307.product.global.S3Service;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class ProductPhotoService {
     private final AmazonS3 amazonS3;
     private final OwnerClient ownerClient;
     private final StoreClient storeClient;
+    private final S3Service s3Service;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
@@ -124,6 +126,46 @@ public class ProductPhotoService {
 
         // 변경된 내용 저장
         productPhotoRepository.save(productPhoto);
+    }
+
+
+    @Transactional
+    public void updateProductPhotos(String token, Integer productId, List<MultipartFile> images) {
+        Integer storeId = getStoreIdByToken(token);
+
+        // storeId와 productId로 product 조회
+        Product product = productRepository.findByStoreIdAndId(storeId, productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        // 1. 기존 상품 사진 삭제
+        List<ProductPhoto> existingPhotos = productPhotoRepository.findByProductId(productId);
+        for (ProductPhoto photo : existingPhotos) {
+            // S3에서 기존 이미지 삭제 (필요한 경우)
+            if (photo.getSrc() != null) {
+                s3Service.deleteFile(photo.getSrc());
+            }
+            // 데이터베이스에서 사진 삭제
+            productPhotoRepository.delete(photo);
+        }
+
+        // 2. 새로운 사진 업로드 및 저장
+        for (MultipartFile imageFile : images) {
+            // 이미지 파일 검증
+            validateImageFile(imageFile);
+
+            // 이미지 S3에 업로드하고 URL 반환
+            String imageUrl = uploadImageToS3(imageFile);
+
+            // 새로운 ProductPhoto 엔티티 생성
+            ProductPhoto newPhoto = ProductPhoto.builder()
+                    .product(product)  // 조회한 product 객체 설정
+                    .src(imageUrl)  // S3에 저장된 이미지 URL 설정
+                    .createdAt(LocalDateTime.now())  // 현재 시간 설정
+                    .build();
+
+            // 새로운 사진 저장
+            productPhotoRepository.save(newPhoto);
+        }
     }
 
     /**
