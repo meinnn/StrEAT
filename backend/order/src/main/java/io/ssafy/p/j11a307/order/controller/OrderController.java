@@ -184,7 +184,7 @@ public class OrderController {
     @Operation(summary = "결제 성공/실패 처리", description = "결제 성공/실패에 따라 처리한다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "결제 성공/실패 처리 완료."),
-            @ApiResponse(responseCode = "400", description = "지원하지 않는 결제 방식"),
+            @ApiResponse(responseCode = "400", description = "지원하지 않는 결제 방식이거나 이미 처리 완료된 결제임"),
             @ApiResponse(responseCode = "404", description = "주문내역이 존재하지 않음")
     })
     @Tag(name = "내부 서비스 간 요청")
@@ -198,7 +198,6 @@ public class OrderController {
         }
         return null;
     }
-
 
     //주문 취소
 

@@ -174,7 +174,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void toggleProductStockStatus(Integer productId, String token) {
+    public boolean toggleProductStockStatus(Integer productId, String token) {
         // 1. 공통 메서드로 Token을 통해 사용자의 storeId 가져오기
         Integer storeId = getStoreIdByToken(token);
 
@@ -192,6 +192,7 @@ public class ProductService {
 
         // 4. 변경된 정보를 저장
         productRepository.save(product);
+        return !currentStockStatus;
     }
 
 }

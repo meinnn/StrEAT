@@ -176,10 +176,6 @@ public class StoreService{
         });
     }
 
-
-    /**
-     * 위도와 경도로 근처 1km 이내의 가게 조회
-     */
     public Page<ReadNearByStoreDTO> getStoresWithin1KM(double latitude, double longitude, int page, int size) {
         // 페이지네이션을 위한 PageRequest 생성
         Pageable pageable = PageRequest.of(page, size);
@@ -189,23 +185,46 @@ public class StoreService{
 
         // Store 엔티티를 ReadNearByStoreDTO로 변환하여 Page로 반환
         return storePage.map(store -> {
-            // Store의 사진 가져오기
-            String storePhotoSrc = storePhotoRepository.findByStoreId(store.getId())
-                    .stream().findFirst()
-                    .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())
-                    .orElseGet(() -> storeLocationPhotoRepository.findByStoreId(store.getId())
-                            .stream().findFirst()
-                            .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())
-                            .orElse(""));
+            // 1. 사진 선택 로직
+            String storePhotoSrc = "";
 
-            // Store의 상품 카테고리 가져오기
+            // 2. selectedSimpleLocationId가 null이 아닐 경우, 해당 StoreLocationPhoto의 src를 가져옴
+            if (store.getSelectedSimpleLocation() != null) {
+                // SimpleLocation이 설정되어 있을 때의 로직
+                storePhotoSrc = storeLocationPhotoRepository.findByStoreSimpleLocationId(store.getSelectedSimpleLocation().getId())
+                        .stream()
+                        .findFirst()
+                        .map(storeLocationPhoto -> storeLocationPhoto.getSrc() != null && !storeLocationPhoto.getSrc().isEmpty()
+                                ? storeLocationPhoto.getSrc()
+                                : storePhotoRepository.findByStoreId(store.getId())
+                                .stream()
+                                .findFirst()
+                                .map(StorePhoto::getSrc)
+                                .orElse(""))  // StorePhoto에서 src를 가져오지 못할 경우에는 빈 문자열
+                        .orElseGet(() -> storePhotoRepository.findByStoreId(store.getId())
+                                .stream()
+                                .findFirst()
+                                .map(StorePhoto::getSrc)
+                                .orElse(""));
+            } else {
+                // 3. selectedSimpleLocationId가 null일 경우
+                storePhotoSrc = storeLocationPhotoRepository.findByStoreId(store.getId())
+                        .stream().findFirst()
+                        .map(storeLocationPhoto -> new ReadStoreLocationPhotoSrcDTO(storeLocationPhoto).src())
+                        .orElseGet(() -> storePhotoRepository.findByStoreId(store.getId())
+                                .stream().findFirst()
+                                .map(storePhoto -> new ReadStorePhotoSrcDTO(storePhoto).src())
+                                .orElse(""));
+            }
+
+            // 4. Store의 상품 카테고리 가져오기
             DataResponse<List<String>> categoryResponse = productClient.getProductCategories(store.getId());
             List<String> categories = categoryResponse.getData();
 
-            // 거리 계산 (Java에서 Haversine 공식을 적용)
+            // 5. 거리 계산 (Java에서 Haversine 공식을 적용)
             Integer distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
 
-            // ReadNearByStoreDTO 생성
+            // 6. ReadNearByStoreDTO 생성 및 반환
             return new ReadNearByStoreDTO(
                     store.getId(),
                     store.getName(),
@@ -421,12 +440,6 @@ public class StoreService{
     public List<DibsStoreStatusDTO> getStoresByIds(List<Integer> storeIds) {
         // 가게 ID 리스트로 가게 정보 조회
         List<Store> stores = storeRepository.findAllById(storeIds);
-
-//        // Store 엔티티를 ReadStoreStatusDTO로 변환
-//        return stores.stream()
-//                .map(store -> new DibsStoreStatusDTO(store.getId(), store.getName(), store.getStatus()))
-//                .collect(Collectors.toList());
-
         return stores.stream()
                 .map(store -> new DibsStoreStatusDTO(
                         store.getId(),
@@ -458,6 +471,27 @@ public class StoreService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.changeStatus(status);  // 상태 변경 메서드 호출
         storeRepository.save(store); // 변경된 상태를 저장
+    }
+
+    @Transactional(readOnly = true)
+    public ReadStoreCategoryDTO getStoreCategoryByStoreId(Integer storeId) {
+        // Store 조회
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // SubCategory와 TopCategory 정보 가져오기
+        var subCategory = store.getSubCategory();
+        var topCategory = subCategory.getTopCategory();
+
+        // DTO 생성 후 반환
+        return new ReadStoreCategoryDTO(
+                subCategory.getId(),
+                subCategory.getName(),
+                subCategory.getCode(),
+                topCategory.getId(),
+                topCategory.getName(),
+                topCategory.getCode()
+        );
     }
 
 
