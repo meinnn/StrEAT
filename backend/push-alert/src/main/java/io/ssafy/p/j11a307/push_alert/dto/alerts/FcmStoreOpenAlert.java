@@ -26,7 +26,7 @@ public class FcmStoreOpenAlert implements FcmAlertData {
 
     @Override
     public String getLink() {
-        return "";
+        return "/customer/stores/" + storeId;
     }
 
     @Override
