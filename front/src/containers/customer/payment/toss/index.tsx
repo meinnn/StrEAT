@@ -1,16 +1,16 @@
 'use client'
 
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useCart } from '@/contexts/CartContext'
-import { useSearchParams } from 'next/navigation' // URL 쿼리 파라미터를 가져오기 위한 훅
 
 const clientKey =
   process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY ||
   'test_ck_Z61JOxRQVEnQpON5xeMzrW0X9bAq'
 const customerKey = 'SfRLtISYsjv6yX7CV2Wuz'
 
-export default function PaymentCheckoutPage() {
+function PaymentCheckoutComponent() {
   const [payment, setPayment] = useState<any>(null)
 
   const { cartItems } = useCart() // storeId 제거
@@ -96,5 +96,13 @@ export default function PaymentCheckoutPage() {
     <div>
       <h2>결제 이동 중...</h2>
     </div>
+  )
+}
+
+export default function PaymentCheckoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentCheckoutComponent />
+    </Suspense>
   )
 }

@@ -8,7 +8,7 @@ interface MenuAddDetailsProps {
   onDetailsChange: (details: {
     foodName: string
     description: string
-    price: number
+    price: string // price를 string으로 수정
     categoryId: number
   }) => void
   onImageChange: (fileList: File[]) => void
@@ -20,7 +20,7 @@ export default function MenuAddDetails({
 }: MenuAddDetailsProps) {
   const [foodName, setFoodName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
-  const [price, setPrice] = useState<string>('')
+  const [price, setPrice] = useState<string>('') // price는 string으로 관리
   const [image, setImage] = useState<File | null>(null)
   const [category, setCategory] = useState<{ id: number; name: string }>({
     id: 0,
@@ -28,25 +28,24 @@ export default function MenuAddDetails({
   })
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
-  ) // 서버로부터 받은 카테고리 리스트
+  )
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
   useEffect(() => {
     onDetailsChange({
       foodName,
       description,
-      price: parseInt(price, 10),
-      categoryId: category.id, // 선택된 카테고리의 id를 부모로 전달
+      price, // price는 string으로 전달
+      categoryId: category.id,
     })
   }, [foodName, description, price, category, onDetailsChange])
 
-  // API 호출로 카테고리 데이터를 가져오는 함수
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/services/menu/category') // Next 서버 경로로 GET 요청
+      const response = await fetch('/services/menu/category')
       if (response.ok) {
         const data = await response.json()
-        setCategories(data.data) // 카테고리 이름과 id를 배열로 변환하여 상태에 저장
+        setCategories(data.data)
       } else {
         console.error('카테고리 데이터를 가져오지 못했습니다.')
       }
@@ -56,30 +55,27 @@ export default function MenuAddDetails({
   }
 
   useEffect(() => {
-    fetchCategories() // 컴포넌트가 마운트될 때 카테고리 데이터를 불러옴
+    fetchCategories()
   }, [])
 
-  // 파일 업로드 핸들러
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const fileList = Array.from(e.target.files) // FileList를 배열로 변환
-      setImage(fileList[0]) // 첫 번째 이미지를 선택
-      onImageChange(fileList) // 배열로 전달하여 처리
+      const fileList = Array.from(e.target.files)
+      setImage(fileList[0])
+      onImageChange(fileList)
     }
   }
 
-  // 카테고리 선택 핸들러
   const handleSelectCategory = (selectedCategory: {
     id: number
     name: string
   }) => {
     setCategory(selectedCategory)
-    setIsDropdownOpen(false) // 선택 후 드롭다운 닫기
+    setIsDropdownOpen(false)
   }
 
   return (
     <div className="grid grid-cols-10 gap-4">
-      {/* 메뉴 사진 */}
       <div className="col-span-6 rounded-lg pl-2">
         <label
           htmlFor="menu-image"
@@ -109,7 +105,6 @@ export default function MenuAddDetails({
         />
       </div>
 
-      {/* 음식 이름, 요리 설명, 금액 */}
       <div className="col-span-4 pr-2">
         <div className="mb-1">
           <h3 className="block font-bold text-black">음식 이름</h3>
@@ -153,7 +148,7 @@ export default function MenuAddDetails({
             <ul className="absolute w-full bg-white border rounded mt-1 shadow-lg z-10 max-h-40 overflow-y-auto">
               {categories.map((cat) => (
                 <li
-                  key={cat.id} // 고유한 id를 key로 사용
+                  key={cat.id}
                   onClick={() => handleSelectCategory(cat)}
                   className="p-2 hover:bg-gray-200 cursor-pointer"
                 >

@@ -3,6 +3,13 @@
 import React, { useEffect, useState } from 'react'
 import { WiThermometer, WiRaindrop } from 'react-icons/wi' // 날씨 관련 아이콘
 
+// 날씨 데이터의 타입 정의
+interface WeatherData {
+  weather: { main: string; description: string }[]
+  main: { temp: number }
+  clouds: { all: number }
+}
+
 // 날씨에 따른 이모티콘 반환 함수
 const getWeatherEmoji = (weather: string) => {
   switch (weather) {
@@ -20,7 +27,7 @@ const getWeatherEmoji = (weather: string) => {
 }
 
 export default function OwnerHome() {
-  const [weatherData, setWeatherData] = useState(null)
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
 
   // Next.js API Route로 날씨 정보를 가져오는 함수
   const fetchWeather = async (lat: number, lon: number) => {

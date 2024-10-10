@@ -1,13 +1,32 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import MenuAddDetails from '@/containers/owner/store/menu/menu-add/MenuAddDetails'
 import MenuAddOptions from '@/containers/owner/store/menu/menu-add/MenuAddOptions'
 
+interface MenuDetails {
+  foodName: string
+  description: string
+  price: string // price는 string으로 정의
+  categoryId: number
+}
+
+interface Option {
+  name: string
+  price: string
+}
+
+interface OptionGroup {
+  name: string
+  maxOptions: number
+  minOptions: number
+  options: Option[]
+}
+
 export default function MenuAdd() {
-  const [details, setDetails] = useState(null)
-  const [options, setOptions] = useState(null)
+  const [details, setDetails] = useState<MenuDetails | null>(null)
+  const [options, setOptions] = useState<OptionGroup[] | null>(null)
   const [images, setImages] = useState<File[]>([]) // 이미지 상태 배열로 설정
   const [loading, setLoading] = useState(false)
 
@@ -22,7 +41,7 @@ export default function MenuAdd() {
     const productInfo = {
       name: details.foodName,
       description: details.description,
-      price: parseInt(details.price, 10),
+      price: parseInt(details.price, 10), // 저장할 때 숫자로 변환
       categoryId: details.categoryId,
       optionCategories:
         options?.map((group) => ({
@@ -31,7 +50,7 @@ export default function MenuAdd() {
           minSelect: group.minOptions,
           productOptions: group.options.map((option) => ({
             productOptionName: option.name,
-            productOptionPrice: parseInt(option.price, 10),
+            productOptionPrice: parseInt(option.price, 10), // 옵션 가격도 숫자로 변환
           })),
         })) || [], // 옵션이 없을 경우 빈 배열을 사용
     }
@@ -49,7 +68,6 @@ export default function MenuAdd() {
       })
 
       if (response.ok) {
-        // 메뉴 목록 페이지로 리다이렉트
         window.location.href = '/owner/store'
       } else {
         const errorData = await response.json()
@@ -65,7 +83,6 @@ export default function MenuAdd() {
   return (
     <div>
       <div className="max-w-xl mx-auto flex flex-col">
-        {/* 메뉴 추가 타이틀 */}
         <div className="relative mb-6 mt-4 w-full flex items-center">
           <button
             type="button"
@@ -78,7 +95,6 @@ export default function MenuAdd() {
           </h1>
         </div>
 
-        {/* 메뉴 세부 정보 */}
         <div className="w-full">
           <MenuAddDetails
             onDetailsChange={setDetails}
@@ -86,12 +102,10 @@ export default function MenuAdd() {
           />
         </div>
 
-        {/* 옵션 관리 */}
         <div className="w-full">
           <MenuAddOptions onOptionsChange={setOptions} />
         </div>
 
-        {/* 저장하기 버튼 */}
         <div className="mt-2 flex justify-center mb-6 px-4">
           <button
             onClick={handleSave}
