@@ -10,11 +10,14 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -204,4 +207,15 @@ public class OrderController {
     //NFC 태그 후 손님의 가장 최근 주문번호 조회
 
     //NFC 태그 후 수령 완료하기
+    @PostMapping("/pick-up")
+    @Operation(summary = "음식 수령하기", description = "음식 수령하기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "음식 수령 성공")
+    })
+    public ResponseEntity<DataResponse<PickupCompletedResponse>> pickupFood(HttpServletRequest request, @RequestBody Integer storeId) {
+        String token = request.getHeader("Authorization");
+        PickupCompletedResponse pickupCompletedResponse= orderService.pickupFood(token, storeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of("음식 수령에 성공했습니다.", pickupCompletedResponse));
+    }
 }
