@@ -16,6 +16,8 @@ export const searchOrderList = async (
 ) => {
   const { storeId, body } = payload
 
+  console.log('storeId:', storeId)
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-request/${storeId}/search`,
     {

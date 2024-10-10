@@ -125,6 +125,8 @@ export default function RegisterStoreBusinessLocation() {
       })
     )
 
+    console.log(ownerInfo)
+
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < 2; i++) {
       formData.append('images', locationImage.file, locationImage.file.name)

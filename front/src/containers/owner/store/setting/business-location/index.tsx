@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { GoPlus } from 'react-icons/go'
 import { HiOutlineLocationMarker } from 'react-icons/hi'
 import Link from 'next/link'
 import { useQueryClient } from '@tanstack/react-query'
