@@ -1,9 +1,12 @@
 import Favorites from '@/containers/customer/favorites'
+import ClientWrapper from '@/utils/ClientWrapper'
 
 export default function CustomerFavorites() {
   return (
-    <div>
-      <Favorites />
-    </div>
+    <ClientWrapper>
+      <div>
+        <Favorites />
+      </div>
+    </ClientWrapper>
   )
 }

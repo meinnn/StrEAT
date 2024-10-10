@@ -4,6 +4,8 @@ import ChooseDate from '@/containers/owner/order-management/OrderInquiry/ChooseD
 import OrderSummary from '@/containers/owner/order-management/OrderInquiry/OrderSummary'
 import OrderTag from '@/containers/owner/order-management/OrderInquiry/OrderTag'
 import OrderDetails from '@/containers/owner/order-management/OrderInquiry/OrderDetails'
+import { useOwnerInfo } from '@/hooks/useOwnerInfo'
+import { useMyStoreInfo } from '@/hooks/useMyStoreInfo'
 
 interface Option {
   optionName: string
@@ -43,7 +45,16 @@ export interface Condition {
 }
 
 export default function OrderInquiry() {
-  const storeId = 60
+  const {
+    data: ownerInfo,
+    error: ownerInfoError,
+    isLoading: ownerInfoLoading,
+  } = useOwnerInfo()
+  const {
+    data: storeInfo,
+    error: storeError,
+    isLoading: storeLoading,
+  } = useMyStoreInfo(ownerInfo?.storeId)
   const now = new Date()
   const start = new Date(new Date().setDate(new Date().getDate() - 7))
   const [condition, setCondition] = useState<Condition>({
@@ -62,13 +73,16 @@ export default function OrderInquiry() {
 
     if (startDate.length === 0 || endDate.length === 0) return []
 
-    const response = await fetch(`/services/order/${storeId}/search`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(condition),
-    })
+    const response = await fetch(
+      `/services/order/${storeInfo?.storeInfo?.id}/search`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(condition),
+      }
+    )
 
     if (!response.ok) {
       console.error('주문 내역 리스트 조회에 실패했습니다')
@@ -89,7 +103,7 @@ export default function OrderInquiry() {
     },
     Error
   >({
-    queryKey: ['/order/search', storeId, condition],
+    queryKey: ['/order/search', storeInfo?.storeInfo?.id, condition],
     queryFn: getSearchedOrderList,
   })
 
@@ -107,11 +121,11 @@ export default function OrderInquiry() {
     }, 0)
   }, [searchedOrderListData])
 
-  if (isLoading) {
+  if (isLoading || storeLoading || ownerInfoLoading) {
     return <p>로딩중</p>
   }
 
-  if (error) {
+  if (error || storeError || ownerInfoError) {
     return <p>에러 발생</p>
   }
 

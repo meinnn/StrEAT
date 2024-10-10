@@ -61,6 +61,8 @@ export interface StoreReview {
 }
 
 export const useMyStoreInfo = (storeId: number | null | undefined) => {
+  console.log('내 점포 아이디:', storeId)
+
   const getStoreInfo = async () => {
     const response = await fetch(`/services/store/${storeId}`, {
       method: 'GET',

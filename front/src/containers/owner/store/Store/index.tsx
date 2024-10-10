@@ -4,6 +4,7 @@ import StoreBusinessHours from '@/containers/owner/store/StoreBusinessHours'
 import StoreInformation from '@/containers/owner/store/StoreInformation'
 import { StoreBusinessDays, useMyStoreInfo } from '@/hooks/useMyStoreInfo'
 import { useOwnerInfo } from '@/hooks/useOwnerInfo'
+import StoreSkeleton from '@/components/skeleton/StoreSkeleton'
 
 export default function Store() {
   const {
@@ -75,7 +76,7 @@ export default function Store() {
   }
 
   if (isLoading || ownerInfoLoading) {
-    return <div>로딩중</div>
+    return <StoreSkeleton />
   }
 
   if (error || ownerInfoError) {

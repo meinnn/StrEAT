@@ -107,7 +107,7 @@ export default function MyReviewList() {
       {reviewData && reviewData?.pages?.length > 0 ? (
         <>
           {reviewData?.pages?.map((page) =>
-            page?.data?.getMyReviewList.map((review) => {
+            page?.data?.getMyReviewList?.map((review) => {
               const isVisibleDate =
                 lastDate !== getConvertedDate(review.createdAt)
               lastDate = getConvertedDate(review.createdAt)
