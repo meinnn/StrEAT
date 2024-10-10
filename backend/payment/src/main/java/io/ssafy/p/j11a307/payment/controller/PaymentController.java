@@ -42,6 +42,9 @@ public class PaymentController {
     })
     public ResponseEntity<DataResponse<PaymentResponse>> tossRequestPayment(@RequestBody TossPaymentBaseRequest tossPaymentBaseRequest) throws JsonProcessingException {
         PaymentResponse paymentResponse = paymentService.tossRequestPayment(tossPaymentBaseRequest);
+        if (paymentResponse == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("결제 성공", paymentResponse));
     }
 
