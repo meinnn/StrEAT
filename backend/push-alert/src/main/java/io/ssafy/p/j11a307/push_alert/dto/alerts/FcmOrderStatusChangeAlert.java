@@ -37,7 +37,7 @@ public class FcmOrderStatusChangeAlert implements FcmAlertData {
                 "createdAt", createdAt,
                 "title", alertType.getMessage(),
                 "message", storeName,
-                "url", "https://j11a307.p.ssafy.io"
+                "url", "/customer/orders/" + orderId
         );
     }
 }
