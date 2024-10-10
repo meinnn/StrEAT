@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   BarChart,
   Bar,
@@ -13,63 +13,72 @@ import {
 } from 'recharts'
 import '@/containers/owner/store-management/SalesManagement/DateGraph/graphStyles.css'
 
-const sampleData = {
-  daily: [
-    { date: '2024-10-01', sales: 4000 },
-    { date: '2024-10-02', sales: 3000 },
-    { date: '2024-10-03', sales: 2000 },
-    { date: '2024-10-04', sales: 4500 },
-    { date: '2024-10-05', sales: 3200 },
-    { date: '2024-10-06', sales: 2800 },
-    { date: '2024-10-07', sales: 3800 },
-  ],
-  weekly: [
-    { week: 'Week 1', sales: 21000 },
-    { week: 'Week 2', sales: 17000 },
-    { week: 'Week 3', sales: 25000 },
-    { week: 'Week 4', sales: 23000 },
-    { week: 'Week 5', sales: 24000 },
-    { week: 'Week 6', sales: 22000 },
-  ],
-  monthly: [
-    { month: 'January', sales: 43000 },
-    { month: 'February', sales: 39000 },
-    { month: 'March', sales: 50000 },
-    { month: 'April', sales: 47000 },
-    { month: 'May', sales: 52000 },
-    { month: 'June', sales: 49000 },
-    { month: 'July', sales: 51000 },
-    { month: 'August', sales: 48000 },
-    { month: 'September', sales: 53000 },
-    { month: 'October', sales: 49000 },
-    { month: 'November', sales: 47000 },
-    { month: 'December', sales: 52000 },
-  ],
-  yearly: [
-    { year: '2022', sales: 450000 },
-    { year: '2023', sales: 380000 },
-    { year: '2024', sales: 570000 },
-  ],
+// 가짜 데이터 대신 사용할 기본값 (로딩 전 상태)
+const defaultData = {
+  daily: [],
+  weekly: [],
+  monthly: [],
+  yearly: [],
 }
 
 export default function DateGraph() {
   const [selectedRange, setSelectedRange] = useState('monthly')
+  const [salesData, setSalesData] = useState(defaultData) // API로 불러온 데이터를 저장
+  const [loading, setLoading] = useState(true)
 
+  // 범위 선택 변경 시 호출되는 함수
   const handleRangeChange = (range: string) => {
     setSelectedRange(range)
   }
 
+  // 데이터 불러오는 함수
+  const fetchSalesData = async () => {
+    try {
+      // storeId를 쿼리 파라미터로 전달
+      const storeId = 60 // storeId를 변수로 설정
+      const response = await fetch(`/services/graph?storeId=${storeId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch sales data')
+      }
+
+      const result = await response.json()
+      setSalesData({
+        daily: result.daily,
+        weekly: result.weekly,
+        monthly: result.monthly,
+        yearly: result.yearly,
+      })
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching sales data:', error)
+      setLoading(false)
+    }
+  }
+
+  // 컴포넌트 마운트 시 데이터 불러오기
+  useEffect(() => {
+    fetchSalesData().then()
+  }, [])
+
+  // 선택된 범위에 따른 데이터를 반환하는 함수
   const getDisplayData = () => {
+    if (loading) return [] // 로딩 중일 때는 빈 데이터 반환
     switch (selectedRange) {
       case 'daily':
-        return sampleData.daily.slice(0, 7) // 일주일치 데이터
+        return salesData.daily.slice(0, 7) // 일주일치 데이터
       case 'weekly':
-        return sampleData.weekly.slice(0, 6) // 주간 데이터 6개
+        return salesData.weekly.slice(0, 6) // 주간 데이터 6개
       case 'monthly':
-        return sampleData.monthly.slice(0, 6) // 월간 데이터 6개
+        return salesData.monthly.slice(0, 6) // 월간 데이터 6개
       case 'yearly':
       default:
-        return sampleData.yearly // 년간 데이터
+        return salesData.yearly // 년간 데이터
     }
   }
 
@@ -137,21 +146,25 @@ export default function DateGraph() {
         </button>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={getDisplayData()} barCategoryGap="20%">
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={getDataKey()} tick={{ fontSize: 12 }} />
-          <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
-          <Tooltip />
-          <Legend />
-          <Bar
-            dataKey="sales"
-            className="bar"
-            background={{ className: 'bar-background' }}
-            radius={[20, 20, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      {loading ? (
+        <p>Loading...</p> // 데이터가 로딩 중일 때 표시
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={getDisplayData()} barCategoryGap="20%">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={getDataKey()} tick={{ fontSize: 12 }} />
+            <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
+            <Tooltip />
+            <Legend />
+            <Bar
+              dataKey="sales"
+              className="bar"
+              background={{ className: 'bar-background' }}
+              radius={[20, 20, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
     </div>
   )
 }
