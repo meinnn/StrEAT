@@ -1,20 +1,18 @@
 package io.ssafy.p.j11a307.push_alert.service;
 
-import com.google.firebase.messaging.Notification;
 import io.ssafy.p.j11a307.push_alert.dto.OrderStatusChangeRequest;
 import io.ssafy.p.j11a307.push_alert.dto.PushAlertDetailResponse;
 import io.ssafy.p.j11a307.push_alert.dto.PushAlertHistoryResponse;
-import io.ssafy.p.j11a307.push_alert.entity.PushAlert;
-import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
-import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
-import io.ssafy.p.j11a307.push_alert.global.DataResponse;
-import io.ssafy.p.j11a307.push_alert.repository.PushAlertRepository;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.AlertType;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmOrderStatusChangeAlert;
 import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmStoreOpenAlert;
 import io.ssafy.p.j11a307.push_alert.dto.internalapi.ApiResponse;
 import io.ssafy.p.j11a307.push_alert.dto.internalapi.FcmTokenResponse;
+import io.ssafy.p.j11a307.push_alert.entity.PushAlert;
+import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
+import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
+import io.ssafy.p.j11a307.push_alert.repository.PushAlertRepository;
 import io.ssafy.p.j11a307.push_alert.util.FirebaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +52,7 @@ public class AlertService {
                 .createdAt(creationTime)
                 .alertType(alertType)
                 .build();
-        
+
         PushAlert pushAlert = PushAlert.builder()
                 .userId(orderStatusChangeRequest.customerId())
                 .createdAt(creationTime)
