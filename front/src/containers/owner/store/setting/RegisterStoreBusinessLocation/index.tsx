@@ -125,16 +125,21 @@ export default function RegisterStoreBusinessLocation() {
       })
     )
 
+    console.log('사장정보', ownerInfo)
+
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < 2; i++) {
       formData.append('images', locationImage.file, locationImage.file.name)
     }
     // formData.append('images', locationImage.file, locationImage.file.name)
 
-    const response = await fetch(`/services/store/${60}/business-location`, {
-      method: 'POST',
-      body: formData,
-    })
+    const response = await fetch(
+      `/services/store/${ownerInfo?.storeId}/business-location`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    )
 
     if (response.ok) {
       router.back()

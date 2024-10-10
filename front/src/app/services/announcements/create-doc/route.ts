@@ -1,14 +1,24 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
-import { postStoreBusinessLocation } from '@/libs/store'
+import { cookies } from 'next/headers'
 import { postAnnouncementFile } from '@/libs/announcement'
 
+export const dynamic = 'force-dynamic' // 강제로 동적 렌더링
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 /* 푸드트럭 공고 제출 파일 자동화 API */
 export async function POST(req: NextRequest) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
     const body = await req.json()
 
-    const announcementFileResponse = await postAnnouncementFile(body)
+    const announcementFileResponse = await postAnnouncementFile(token, body)
 
     if (!announcementFileResponse.ok) {
       const errorMessage = await announcementFileResponse.text()

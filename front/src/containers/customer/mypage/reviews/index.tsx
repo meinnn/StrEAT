@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+
 'use client'
 
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -49,7 +51,6 @@ const fetchMyReview = async ({ pageParam = 0 }: any) => {
     return await response.json()
   } catch (error) {
     console.error('Error:', error)
-    throw error
   }
 }
 
@@ -106,7 +107,7 @@ export default function MyReviewList() {
       {reviewData && reviewData?.pages?.length > 0 ? (
         <>
           {reviewData?.pages?.map((page) =>
-            page?.data?.getMyReviewList.map((review) => {
+            page?.data?.getMyReviewList?.map((review) => {
               const isVisibleDate =
                 lastDate !== getConvertedDate(review.createdAt)
               lastDate = getConvertedDate(review.createdAt)

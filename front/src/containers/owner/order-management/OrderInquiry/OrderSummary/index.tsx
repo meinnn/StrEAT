@@ -1,5 +1,3 @@
-import { RiSearchLine } from 'react-icons/ri'
-
 interface OrderSummaryProps {
   orderCount: number
   totalPaymentAmount: number | string
@@ -25,7 +23,7 @@ export default function OrderSummary({
           <span className="text-gray-500 text-sm ">결제 금액</span>
           <div className="flex items-end">
             <div className="flex font-bold text-xl">
-              {totalPaymentAmount.toLocaleString()}
+              {totalPaymentAmount?.toLocaleString()}
             </div>
             {/* 결제 금액은 나중에 처리 */}
             <div className="text-sm font-bold pl-1">원</div>

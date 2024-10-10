@@ -5,6 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { HiOutlineLocationMarker } from 'react-icons/hi'
+import { useOwnerInfo } from '@/hooks/useOwnerInfo'
+import { useMyStoreInfo } from '@/hooks/useMyStoreInfo'
 
 interface StoreLocationPhoto {
   createdAt: string
@@ -26,17 +28,22 @@ interface StoreLocation {
 
 export default function SelectBusinessLocation() {
   const router = useRouter()
-  const storeId = 60
+  const {
+    data: ownerInfo,
+    error: ownerInfoError,
+    isLoading: ownerInfoLoading,
+  } = useOwnerInfo()
+  const {
+    data: storeInfo,
+    error: storeError,
+    isLoading: storeLoading,
+  } = useMyStoreInfo(ownerInfo?.storeId)
+
   const getStoreLocation = async () => {
     const response = await fetch(
-      `/services/store/${storeId}/business-location`,
+      `/services/store/${storeInfo?.storeInfo.id}/business-location`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization':
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
-        },
       }
     )
     if (!response.ok) {
@@ -50,17 +57,17 @@ export default function SelectBusinessLocation() {
     error,
     isLoading,
   } = useQuery<StoreLocation[], Error>({
-    queryKey: ['/store/business-location', storeId],
+    queryKey: ['/store/business-location', storeInfo?.storeInfo.id],
     queryFn: getStoreLocation,
   })
 
   console.log('storeBusinessLocationData:', storeBusinessLocationData)
 
-  if (isLoading) {
+  if (isLoading || ownerInfoLoading || storeLoading) {
     return <p>로딩중</p>
   }
 
-  if (error) {
+  if (error || ownerInfoError || storeError) {
     return <p>에러 발생</p>
   }
 

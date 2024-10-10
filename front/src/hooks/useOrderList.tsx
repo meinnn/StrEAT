@@ -31,11 +31,12 @@ export const useOrderList = (
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization':
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
         },
       }
     )
+
+    console.log('response:', response)
+
     if (!response.ok) {
       console.error(errorMessage)
     }

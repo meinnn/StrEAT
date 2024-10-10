@@ -48,6 +48,7 @@ export default function OrderItem({
   date,
   storeImageUrl,
   storeName,
+  storeId,
   orderList,
   orderStatus,
   isReviewed,
@@ -56,6 +57,7 @@ export default function OrderItem({
   date: string
   storeImageUrl: string
   storeName: string
+  storeId: number
   orderList: { productName: string; orderProductCount: number }[]
   orderStatus: ProcessIdKeys
   isReviewed: boolean
@@ -112,7 +114,7 @@ export default function OrderItem({
             <div className="flex flex-col w-full">
               <div className="flex flex-col justify-center items-start gap-[2px]">
                 <Link
-                  href={`/customer/stores/${id}`}
+                  href={`/customer/stores/${storeId}`}
                   className="flex items-center gap-2 text-text"
                 >
                   <h3 className="font-normal">{storeName}</h3>

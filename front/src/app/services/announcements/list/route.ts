@@ -1,14 +1,31 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { fetchAnnouncementList } from '@/libs/announcement'
 
+export const dynamic = 'force-dynamic' // 강제로 동적 렌더링
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 /* 푸드트럭 공고 내역 조회 API */
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const announcementListResponse = await fetchAnnouncementList()
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+    console.log(token)
+
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
+    const announcementListResponse = await fetchAnnouncementList(token)
 
     if (!announcementListResponse.ok) {
       const errorMessage = await announcementListResponse.text()

@@ -32,7 +32,8 @@ async function fetchStoreReviewSummary(
 
 async function fetchStoreDetails(storeId: string): Promise<Store> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/stores/${storeId}/details/customer`
+    `https://j11a307.p.ssafy.io/api/stores/${storeId}/details/customer`,
+    { cache: 'no-store' }
   )
 
   if (!response.ok) {

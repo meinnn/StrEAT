@@ -61,6 +61,7 @@ export default function OwnerNav() {
     '/owner/store/regist',
     '/owner/store/setting/\\d+/',
     '/owner/store/menu',
+    '/owner/account',
   ]
 
   const isHiddenPath = HIDDEN_PATHS.some((hiddenPath) =>

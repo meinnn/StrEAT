@@ -1,12 +1,3 @@
-import withPWAInit from '@ducanh2912/next-pwa'
-
-const withPWA = withPWAInit({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development', // 개발 환경에서는 PWA 비활성화
-  register: true,
-  skipWaiting: true,
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -27,4 +18,4 @@ const nextConfig = {
   },
 }
 
-export default withPWA(nextConfig)
+export default nextConfig

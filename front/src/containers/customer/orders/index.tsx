@@ -2,6 +2,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import AppBar from '@/components/AppBar'
 import OrderItem from '@/containers/customer/orders/OrderItem'
 import ReviewSkeleton from '@/components/skeleton/ReviewSkeleton'
@@ -86,6 +87,8 @@ export default function Orders() {
     initialPageParam: 0,
   })
 
+  console.log('?/', orderListData)
+
   const observerElem = useRef(null)
 
   useEffect(() => {
@@ -109,6 +112,25 @@ export default function Orders() {
     }
   }, [fetchNextPage, hasNextPage])
 
+  if (orderListData?.pages[0]?.data?.getMyOrderList?.length === 0) {
+    return (
+      <div>
+        <AppBar title="주문내역 조회" />
+        <div className="flex justify-center items-center h-80 flex-col gap-1">
+          <Image
+            src="/images/no_content_illustration.png"
+            className="object-cover"
+            alt="내용이 없다는 일러스트"
+            width={80}
+            height={80}
+            priority
+          />
+          <p className="text-text font-bold">주문내역이 없습니다</p>
+        </div>
+      </div>
+    )
+  }
+
   if (status === 'pending') {
     return <ReviewSkeleton />
   }
@@ -121,7 +143,7 @@ export default function Orders() {
           {orderListData && orderListData?.pages?.length > 0 ? (
             <>
               {orderListData?.pages?.map((page) =>
-                page?.data?.getMyOrderList.map((order) => {
+                page?.data?.getMyOrderList?.map((order) => {
                   const isVisibleDate =
                     lastDate !== getConvertedDate(order.ordersCreatedAt)
                   lastDate = getConvertedDate(order.ordersCreatedAt)
@@ -136,6 +158,7 @@ export default function Orders() {
                       <OrderItem
                         key={order.ordersId}
                         id={order.ordersId}
+                        storeId={order.storeId}
                         date={getConvertedDate(order.ordersCreatedAt)}
                         storeImageUrl={order.storePhoto}
                         storeName={order.storeName}
@@ -152,7 +175,17 @@ export default function Orders() {
               </div>
             </>
           ) : (
-            <p>값 없어</p>
+            <div className="flex justify-center items-center h-80 flex-col gap-1">
+              <Image
+                src="/images/no_content_illustration.png"
+                className="object-cover"
+                alt="내용이 없다는 일러스트"
+                width={80}
+                height={80}
+                priority
+              />
+              <p className="text-text font-bold">주문내역이 없습니다</p>
+            </div>
           )}
         </div>
       </main>

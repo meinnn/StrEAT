@@ -151,7 +151,7 @@ export default function OwnerAll() {
                       <span className="whitespace-nowrap flex py-1 items-center text-xs border border-primary-500 rounded-full text-primary-500 px-5 text-[10px] font-semibold">
                         {(
                           announcement.recruitPostTitle as unknown as string
-                        ).slice(0, 4) === '-마감-'
+                        )?.slice(0, 4) === '-마감-'
                           ? '모집마감'
                           : '모집중'}
                       </span>
