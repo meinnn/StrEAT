@@ -75,10 +75,11 @@ public class PaymentService {
                 .isSuccess(1)
                 .build();
 
-        orderService.completeOrder(payProcessRequest, internalRequestKey);
+        DataResponseFromOtherService<Integer> dataResponseFromOtherService = orderService.completeOrder(payProcessRequest, internalRequestKey);
+        Integer orderId = dataResponseFromOtherService.getData();
 
         paymentRepository.save(payment);
-        return new PaymentResponse(payment.getId(), payment.getOrderId());
+        return new PaymentResponse(payment.getId(), orderId);
     }
 
     @Transactional
