@@ -1,37 +1,77 @@
 'use client'
 
-import { useEffect } from 'react'
-import { onMessage, getMessaging } from 'firebase/messaging'
-import { getApps, initializeApp } from 'firebase/app'
+import { useEffect, useState } from 'react'
+import { getMessaging, isSupported, onMessage } from 'firebase/messaging'
+import { firebaseApp } from '@/firebase'
+import InAppNotification from '@/containers/customer/notifications/InAppNotification'
 
-// Firebase 설정
-const firebaseConfig = {
-  apiKey: 'AIzaSyAyQpFxfnNdtIN8m_awd1cNzi2ZbLScfoI',
-  authDomain: 'streat-c2387.firebaseapp.com',
-  projectId: 'streat-c2387',
-  storageBucket: 'streat-c2387.appspot.com',
-  messagingSenderId: '164341366312',
-  appId: '1:164341366312:web:a51145fa1024cdf3cbff1d',
-  measurementId: 'G-5C2TRT8GEB',
+interface NotificationData {
+  title: string
+  body: string
+  url: string
+}
+
+const messaging = async () => {
+  try {
+    const isSupportedBrowser = await isSupported()
+    if (isSupportedBrowser) {
+      return getMessaging(firebaseApp)
+    }
+    return null
+  } catch (err) {
+    console.error(err)
+    return null
+  }
 }
 
 export default function FCMHandler() {
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      // Firebase 앱이 이미 초기화되어 있는지 확인 후 초기화
-      const firebaseApp = !getApps().length
-        ? initializeApp(firebaseConfig)
-        : getApps()[0]
-      const messagingInstance = getMessaging(firebaseApp)
-      console.log(messagingInstance)
+  const [notifications, setNotifications] = useState<NotificationData[]>([])
 
-      // 포그라운드 메시지 수신 처리
-      onMessage(messagingInstance, (payload) => {
-        console.log('Foreground message received: ', payload)
-        // 포그라운드 메시지 처리 로직 추가
-      })
+  useEffect(() => {
+    const onMessageListener = async () => {
+      const messagingResolve = await messaging()
+      if (messagingResolve) {
+        onMessage(messagingResolve, (payload) => {
+          if (!('Notification' in window)) {
+            return
+          }
+
+          const title = payload.notification?.title || '알림'
+          const body = payload.notification?.body || '메시지 내용'
+          const redirectUrl = payload.data?.url || '/'
+
+          // 브라우저 알림 표시
+          const { permission } = Notification
+          if (permission === 'granted') {
+            new Notification(title, {
+              body,
+              icon: '/icons/icon-96.png',
+            }).onclick = () => {
+              window.open(redirectUrl, '_blank')?.focus()
+            }
+          }
+
+          // 알림 리스트에 새 알림 추가
+          setNotifications((prev) => [
+            ...prev,
+            { title, body, url: redirectUrl },
+          ])
+
+          // 3.5초 후 알림 제거
+          setTimeout(() => {
+            setNotifications((prev) => prev.slice(1))
+          }, 3500)
+        })
+      }
     }
+    onMessageListener().then()
   }, [])
 
-  return null // UI 요소가 필요 없으므로 null 반환
+  return (
+    <>
+      {notifications.map((notification, index) => (
+        <InAppNotification key={notification.url} notification={notification} />
+      ))}
+    </>
+  )
 }

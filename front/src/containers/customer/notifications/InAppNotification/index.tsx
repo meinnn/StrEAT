@@ -1,10 +1,31 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { NOTIFICATIONS } from '@/containers/customer/notifications'
+import { useRouter } from 'next/navigation'
 
-export default function InAppNotification() {
-  const notification = NOTIFICATIONS[2]
+interface NotificationProps {
+  notification: {
+    title: string
+    body: string
+    url: string
+  }
+}
+
+export default function InAppNotification({ notification }: NotificationProps) {
+  // 애니메이션을 제어하는 상태
+  const [isVisible, setIsVisible] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    setIsVisible(true)
+
+    // 3초 후에 애니메이션 종료
+    const timer = setTimeout(() => {
+      setIsVisible(false)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [notification])
 
   // 현재 시간을 가져오는 함수
   const getCurrentTime = () => {
@@ -18,33 +39,19 @@ export default function InAppNotification() {
     })
   }
 
-  // 애니메이션을 제어하는 상태
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    setIsVisible(true)
-
-    // 3초 후에 애니메이션을 트리거
-    const timer = setTimeout(() => {
-      setIsVisible(false)
-    }, 3000)
-
-    // 타이머 정리
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
     <div
-      className={`fixed top-0 inset-x-0 m-4 z-50 p-4 rounded-lg shadow transition-all duration-500 ease-in-out ${
+      role="presentation"
+      onClick={() => router.push(notification.url)}
+      className={`fixed top-0 inset-x-0 m-4 z-[500] p-4 rounded-lg shadow transition-all duration-500 ease-in-out ${
         isVisible
           ? 'transform translate-y-0 opacity-100 bg-secondary-medium'
           : 'transform -translate-y-full opacity-0'
       }`}
     >
       <div>
-        <p className="font-semibold">{`${notification.icon} ${notification.title}`}</p>
-        <p className="text-sm">옐로우 키친 치킨</p>
-        {/* 현재 시간 표시 */}
+        <p className="font-semibold">{notification.title}</p>
+        <p className="text-sm">{notification.body}</p>
         <p className="mt-2 text-xs text-gray-dark">{getCurrentTime()}</p>
       </div>
     </div>
