@@ -210,7 +210,7 @@ export default function MapView({
         markersRef.current.push(marker)
       })
     }
-  }, [map, storeList, setCenter])
+  }, [map, storeList, setCenter, scrollToStore])
 
   // 처음 렌더링 시만 onReSearch 실행
   useEffect(() => {
