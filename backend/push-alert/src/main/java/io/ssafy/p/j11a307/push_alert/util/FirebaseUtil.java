@@ -36,11 +36,11 @@ public class FirebaseUtil {
         FirebaseApp.initializeApp(options);
     }
 
-    public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken, Notification notification) {
+    public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken) {
+        WebpushConfig webpushConfig = createWebpushConfig(fcmAlertData);
         Message message = Message.builder()
-                .putAllData(fcmAlertData.getData())
-                .setNotification(notification)
                 .setToken(receiverFcmToken)
+                .setWebpushConfig(webpushConfig)
                 .build();
 
         try {
@@ -50,11 +50,11 @@ public class FirebaseUtil {
         }
     }
 
-    public void pushAlertTopic(FcmAlertData fcmAlertData, String topic, Notification notification) {
+    public void pushAlertTopic(FcmAlertData fcmAlertData, String topic) {
+        WebpushConfig webpushConfig = createWebpushConfig(fcmAlertData);
         Message message = Message.builder()
-                .putAllData(fcmAlertData.getData())
-                .setNotification(notification)
                 .setTopic(topic)
+                .setWebpushConfig(webpushConfig)
                 .build();
 
         try {
@@ -78,5 +78,21 @@ public class FirebaseUtil {
         } catch (FirebaseMessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private WebpushConfig createWebpushConfig(FcmAlertData fcmAlertData) {
+        WebpushFcmOptions webpushFcmOptions = WebpushFcmOptions.builder()
+                .setLink(fcmAlertData.getLink())
+                .build();
+        WebpushNotification webpushNotification = WebpushNotification.builder()
+                .setTitle(fcmAlertData.getTitle())
+                .setBody(fcmAlertData.getMessage())
+                .setIcon("/web-app-manifest-192x192.png")
+                .build();
+        return WebpushConfig.builder()
+                .setFcmOptions(webpushFcmOptions)
+                .setNotification(webpushNotification)
+                .putAllData(fcmAlertData.getData())
+                .build();
     }
 }
