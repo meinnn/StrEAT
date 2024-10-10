@@ -9,11 +9,10 @@ export default function OrderSuccess() {
   useEffect(() => {
     // URL에서 쿼리 파라미터 값 가져오기
     const paymentKey = searchParams.get('paymentKey')
-    const orderId = searchParams.get('orderId')
-    const amount = searchParams.get('amount')
+    const amount = searchParams.get('amount') // 결제 금액
 
     // 필수 값이 없으면 실패 페이지로 리다이렉트
-    if (!paymentKey || !orderId || !amount) {
+    if (!paymentKey || !amount) {
       console.error('필수 결제 정보가 없습니다.')
       router.push('/customer/payment/result?status=failure')
       return
@@ -27,10 +26,13 @@ export default function OrderSuccess() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ paymentKey, orderId, amount }),
+          body: JSON.stringify({ paymentKey, amount }),
         })
 
         if (response.ok) {
+          const data = await response.json()
+          const { orderId } = data.orderId // 응답에서 orderId 가져오기
+
           // 성공 시 주문 완료 UI를 보여준 후 1초 뒤에 리다이렉트
           const timer = setTimeout(() => {
             router.push(`/customer/orders/${orderId}`)
@@ -39,12 +41,14 @@ export default function OrderSuccess() {
           return () => clearTimeout(timer)
         }
 
+        // 결제 실패 처리
         const errorData = await response.json()
         console.error('결제 실패:', errorData.message)
         // 결제 실패 시 실패 페이지로 리다이렉트
         router.push('/customer/payment/OrderFailure')
       } catch (error) {
         console.error('결제 요청 오류:', error)
+        // 오류 시 실패 페이지로 리다이렉트
         router.push('/customer/payment/OrderFailure')
       }
 
