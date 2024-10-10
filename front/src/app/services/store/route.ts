@@ -1,15 +1,27 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { postStoreBusinessDays, postStoreInfo } from '@/libs/store'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
 
     // 점포 정보 저장하는 API
     // 점포 영업일 및 영업시간 저장하는 API
-    const storeInfoResponse = await postStoreInfo(body.storeInfo)
+    const storeInfoResponse = await postStoreInfo(token, body.storeInfo)
     const storeBusinessDaysResponse = await postStoreBusinessDays(
+      token,
       body.businessDays
     )
 

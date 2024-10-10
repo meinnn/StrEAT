@@ -2,13 +2,24 @@
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { updateStoreBusinessHours } from '@/libs/store'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const storeId = params.id
 
     // 점포 영업일 및 영업시간 가져오는 api
@@ -16,8 +27,7 @@ export async function GET(
       `${process.env.NEXT_PUBLIC_BACK_URL}/api/stores/business-days/${storeId}`,
       {
         headers: {
-          Authorization:
-            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
+          Authorization: `Bearer ${token}`,
         },
       }
     )
@@ -55,9 +65,17 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await req.json()
 
-    const storeBusinessHoursResponse = await updateStoreBusinessHours(body)
+    const storeBusinessHoursResponse = await updateStoreBusinessHours(
+      token,
+      body
+    )
 
     if (!storeBusinessHoursResponse.ok) {
       const errorMessage = await storeBusinessHoursResponse.text()

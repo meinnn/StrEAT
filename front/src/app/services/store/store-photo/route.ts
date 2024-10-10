@@ -1,9 +1,20 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { postStoreImage } from '@/libs/store'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const formData = await req.formData()
 
     const formEntries = Array.from(formData.entries())
@@ -22,7 +33,7 @@ export async function POST(req: NextRequest) {
       (formEntries[0][1] as File).name
     )
 
-    const storeImageResponse = await postStoreImage(newFormData)
+    const storeImageResponse = await postStoreImage(token, newFormData)
 
     if (!storeImageResponse.ok) {
       const errorMessage = await storeImageResponse.text()

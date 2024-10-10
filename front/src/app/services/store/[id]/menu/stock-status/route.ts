@@ -1,6 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { updateProductStockStatus } from '@/libs/product'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 /* 메뉴 품절 여부 수정 API  */
 export async function PUT(
@@ -8,9 +14,17 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const productId = params.id
 
-    const menuStockStatusResponse = await updateProductStockStatus(productId)
+    const menuStockStatusResponse = await updateProductStockStatus(
+      token,
+      productId
+    )
 
     if (!menuStockStatusResponse.ok) {
       const errorMessage = await menuStockStatusResponse.text()

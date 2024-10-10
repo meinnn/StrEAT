@@ -1,6 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { fetchOrderDetail } from '@/libs/order'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 // 주문 내역 상세조회 API
 export async function GET(
@@ -8,9 +14,14 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const orderId = params.id
 
-    const storeOrderDetailResponse = await fetchOrderDetail(orderId)
+    const storeOrderDetailResponse = await fetchOrderDetail(token, orderId)
 
     if (!storeOrderDetailResponse.ok) {
       const errorMessage = await storeOrderDetailResponse.text()

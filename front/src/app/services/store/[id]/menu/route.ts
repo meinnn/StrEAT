@@ -1,6 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { fetchStoreMenuList } from '@/libs/product'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 // 가게의 모든 메뉴 조회
 export async function GET(
@@ -8,9 +14,14 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const storeId = params.id
 
-    const storeMenuListResponse = await fetchStoreMenuList(storeId)
+    const storeMenuListResponse = await fetchStoreMenuList(token, storeId)
 
     if (!storeMenuListResponse.ok) {
       const errorMessage = await storeMenuListResponse.text()

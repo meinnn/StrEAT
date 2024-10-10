@@ -1,6 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { updateStoreStatus } from '@/libs/store'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 /* 가게 영업 상태 바꾸는 API  */
 export async function PATCH(
@@ -8,10 +14,15 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const storeId = params.id
     const { status } = await req.json()
 
-    const storeStatusResponse = await updateStoreStatus({
+    const storeStatusResponse = await updateStoreStatus(token, {
       storeId,
       status,
     })

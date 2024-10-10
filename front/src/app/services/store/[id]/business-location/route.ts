@@ -1,10 +1,16 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import {
   deleteStoreBusinessLocation,
   fetchStoreLocation,
   postStoreBusinessLocation,
 } from '@/libs/store'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 /* 점포 영업 위치 리스트 조회 */
 export async function GET(
@@ -12,10 +18,15 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const storeId = params.id
 
     // 점포 영업 위치 조회하는  API
-    const storeLocationResponse = await fetchStoreLocation(storeId)
+    const storeLocationResponse = await fetchStoreLocation(token, storeId)
 
     if (!storeLocationResponse.ok) {
       const errorMessage = await storeLocationResponse.text()
@@ -49,10 +60,17 @@ export async function GET(
 /* 점포 영업 장소 위치 저장  */
 export async function POST(req: NextRequest) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const formData = await req.formData()
 
-    const storeBusinessLocationResponse =
-      await postStoreBusinessLocation(formData)
+    const storeBusinessLocationResponse = await postStoreBusinessLocation(
+      token,
+      formData
+    )
 
     if (!storeBusinessLocationResponse.ok) {
       const errorMessage = await storeBusinessLocationResponse.text()
@@ -85,10 +103,17 @@ export async function POST(req: NextRequest) {
 /* 점포 영업 장소 위치 저장  */
 export async function DELETE(req: NextRequest) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const locationIdList = await req.json()
 
-    const storeBusinessLocationResponse =
-      await deleteStoreBusinessLocation(locationIdList)
+    const storeBusinessLocationResponse = await deleteStoreBusinessLocation(
+      token,
+      locationIdList
+    )
 
     if (!storeBusinessLocationResponse.ok) {
       const errorMessage = await storeBusinessLocationResponse.text()

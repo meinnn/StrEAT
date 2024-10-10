@@ -1,12 +1,22 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
-import { fetchOrderDetail } from '@/libs/order'
+import { cookies } from 'next/headers'
 import { fetchOwnerInformation } from '@/libs/user'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 // 사장 정보 조회 API
 export async function GET(req: NextRequest) {
   try {
-    const ownerInfoResponse = await fetchOwnerInformation()
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
+    const ownerInfoResponse = await fetchOwnerInformation(token)
 
     if (!ownerInfoResponse.ok) {
       const errorMessage = await ownerInfoResponse.text()

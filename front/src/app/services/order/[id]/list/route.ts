@@ -1,6 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { fetchStoreOrderList } from '@/libs/order'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 // 점포별 주문내역 조회 API (PROCESSING/RECEIVING)
 export async function GET(
@@ -8,6 +14,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const storeId = params.id
     const { searchParams } = req.nextUrl
     const pgno = Number(searchParams.get('page') ?? '0')
@@ -15,7 +26,7 @@ export async function GET(
     const status = searchParams.get('status') ?? 'PROCESSING'
 
     // 점포별 주문내역 조회하는 API
-    const storeOrderListResponse = await fetchStoreOrderList({
+    const storeOrderListResponse = await fetchStoreOrderList(token, {
       storeId,
       pgno,
       spp,

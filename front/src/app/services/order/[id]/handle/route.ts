@@ -1,6 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { NextResponse, NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { postOrderStatus } from '@/libs/order'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 /* 주문 승인/거절 API - flag 값 거절은 0/승인은 1 */
 export async function GET(
@@ -8,6 +14,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const orderId = params.id
     const { searchParams } = req.nextUrl
     const flag = Number(searchParams.get('flag'))
@@ -21,7 +32,7 @@ export async function GET(
     //   )
     // }
 
-    const orderStatusResponse = await postOrderStatus({
+    const orderStatusResponse = await postOrderStatus(token, {
       orderId,
       flag,
     })
