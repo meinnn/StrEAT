@@ -45,6 +45,7 @@ public class ProductService {
                 .price(createProductDTO.price())
                 .description(createProductDTO.description())
                 .category(category)  // 카테고리 설정
+                .stockStatus(true)
                 .build();
 
         // 상품 저장
