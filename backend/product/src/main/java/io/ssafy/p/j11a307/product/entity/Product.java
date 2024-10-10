@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -23,7 +24,8 @@ public class Product {
     private String name;
     private Integer price;
     private String description;
-    private Boolean stockStatus;
+    @ColumnDefault("true")
+    private Boolean stockStatus = true;
 
     @ManyToOne
     @JoinColumn(name = "product_category_id", nullable = false)
