@@ -1,14 +1,11 @@
-package io.ssafy.p.j11a307.order.dto;
+package io.ssafy.p.j11a307.store.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Builder
-public record StoreSimpleLocationDTO(
+public record GetStoreSimpleLocationDTO(
         @Schema(description = "가게위치저장이름", example = "멀티캠퍼스 앞")
         String nickname,
 
@@ -23,8 +20,7 @@ public record StoreSimpleLocationDTO(
         @NotNull(message = "경도는 필수 입력 항목입니다.")
         Double longitude,
 
-        @Schema(description = "이미지 파일", example = "사진")
-        @NotNull(message = "이미지 파일은 필수 입력 항목입니다.")
-        List<MultipartFile> images // 이미지 파일 배열로 처리
-) {
+        @Schema(description = "이미지 경로")
+        String src
+        ) {
 }

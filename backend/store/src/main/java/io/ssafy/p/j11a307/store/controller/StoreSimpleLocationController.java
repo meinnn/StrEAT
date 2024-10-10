@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.store.controller;
 
+import io.ssafy.p.j11a307.store.dto.GetStoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.store.dto.StoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.store.entity.StoreSimpleLocation;
 import io.ssafy.p.j11a307.store.global.DataResponse;
@@ -81,7 +82,7 @@ public class StoreSimpleLocationController {
 
     @GetMapping("/{id}/info")
     @Operation(summary = "간편위치 id로 간편위치 상세조회")
-    public StoreSimpleLocationDTO  getStoreSimpleLocationInfo(@PathVariable Integer id) {
+    public GetStoreSimpleLocationDTO getStoreSimpleLocationInfo(@PathVariable Integer id) {
         return simpleLocationService.getStoreSimpleLocationInfo(id);
     }
 
