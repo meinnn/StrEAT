@@ -19,6 +19,7 @@ public class Orders {
 
     private Integer userId; //외부 마이크로서비스
     private Integer storeId; //외부 마이크로서비스
+    private Integer storeSimpleLocationId; //외부 마이크로서비스
 
     private String orderNumber;
 
@@ -43,7 +44,8 @@ public class Orders {
 
 
     @Builder
-    public Orders(Integer userId, Integer storeId, LocalDateTime createdAt, String orderNumber, OrderCode status, String request, Integer totalPrice, PayTypeCode paymentMethod, LocalDateTime paidAt, LocalDateTime receivedAt, String phone) {
+    public Orders(Integer storeSimpleLocationId, Integer userId, Integer storeId, LocalDateTime createdAt, String orderNumber, OrderCode status, String request, Integer totalPrice, PayTypeCode paymentMethod, LocalDateTime paidAt, LocalDateTime receivedAt, String phone) {
+        this.storeSimpleLocationId = storeSimpleLocationId;
         this.userId = userId;
         this.storeId = storeId;
         this.orderNumber = orderNumber;

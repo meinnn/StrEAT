@@ -473,13 +473,16 @@ public class OrderService {
         ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
         if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
 
+        //현재 storeSimpleLocationId 찾아야 함!!!!
+        Integer storeSimpleLocationId = storeClient.getSelectedSimpleLocationByStoreId(storeId);
+
         Orders orders = Orders.builder()
                 .storeId(storeId)
                 .userId(customerId)
+                .storeSimpleLocationId(storeSimpleLocationId)
                 .createdAt(timeUtil.getCurrentSeoulTime())
                 .status(OrderCode.WAITING_FOR_PAYING)
                 .totalPrice(createOrderNumberRequest.totalPrice())
-                .request(createOrderNumberRequest.request())
                 .build();
 
         ordersRepository.save(orders);
@@ -524,7 +527,6 @@ public class OrderService {
 
     @Transactional
     public void paymentProcessing(PayProcessRequest payProcessRequest) {
-        //결제 완료(실패 or 성공), 주문번호 받아서 처리
         //성공 시 paid_at 업데이트, payment_method 생성, status 상태 변경
         //실패 시 payment_method만 생성
 
@@ -532,6 +534,7 @@ public class OrderService {
         Orders orders = ordersRepository.findByOrderNumber(orderNum);
 
         if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+        if(orders.getPaidAt() != null) throw new BusinessException(ErrorCode.ALREADY_DONE);
 
         PayTypeCode payTypeCode = switch (payProcessRequest.method()) {
             case "카드" -> PayTypeCode.CREDIT_CARD;

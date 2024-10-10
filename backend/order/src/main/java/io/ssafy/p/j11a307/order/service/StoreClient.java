@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.ReadStoreBasicInfoDTO;
 import io.ssafy.p.j11a307.order.dto.ReadStoreDTO;
+import io.ssafy.p.j11a307.order.dto.StoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -19,4 +20,11 @@ public interface StoreClient {
 
     @GetMapping("/api/stores/{id}/photo-name")
     DataResponse<ReadStoreBasicInfoDTO> getStoreBasicInfo(@PathVariable Integer id);
+
+    @GetMapping("/api/stores/locations/store/{storeId}/current-loc")
+    Integer getSelectedSimpleLocationByStoreId (@PathVariable Integer storeId);
+
+    @GetMapping("/api/stores/locations/{id}/info")
+    StoreSimpleLocationDTO getStoreSimpleLocationInfo(@PathVariable Integer id);
+
 }
