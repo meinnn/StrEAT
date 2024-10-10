@@ -444,7 +444,8 @@ public class StoreService{
                 .map(store -> new DibsStoreStatusDTO(
                         store.getId(),
                         store.getName(),
-                        store.getStatus().name()
+                        store.getStatus().name(),
+                        store.getStorePhotos().isEmpty() ? null : store.getStorePhotos().getFirst().getSrc()
                 ))
                 .collect(Collectors.toList());
     }
