@@ -16,12 +16,17 @@ public class FcmOrderStatusChangeAlert implements FcmAlertData {
 
     @Override
     public String getMessage() {
-        return alertType.getMessage();
+        return storeName;
     }
 
     @Override
     public String getTitle() {
-        return storeName;
+        return alertType.getMessage();
+    }
+
+    @Override
+    public String getLink() {
+        return "/customer/orders/" + orderId;
     }
 
     @Override
@@ -29,7 +34,10 @@ public class FcmOrderStatusChangeAlert implements FcmAlertData {
         return Map.of(
                 "orderId", orderId,
                 "storeName", storeName,
-                "createdAt", createdAt
+                "createdAt", createdAt,
+                "title", alertType.getMessage(),
+                "message", storeName,
+                "url", "/customer/orders/" + orderId
         );
     }
 }

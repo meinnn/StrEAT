@@ -16,4 +16,5 @@ public interface StoreLocationPhotoRepository extends JpaRepository<StoreLocatio
 
     void deleteByStoreSimpleLocation(StoreSimpleLocation storeSimpleLocation);
 
+    List<StoreLocationPhoto> findByStoreSimpleLocationId(Integer simpleLocationId);
 }

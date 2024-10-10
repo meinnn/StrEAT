@@ -526,7 +526,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void paymentProcessing(PayProcessRequest payProcessRequest) {
+    public Integer paymentProcessing(PayProcessRequest payProcessRequest) {
         //성공 시 paid_at 업데이트, payment_method 생성, status 상태 변경
         //실패 시 payment_method만 생성
 
@@ -549,6 +549,7 @@ public class OrderService {
         }
 
         orders.setPaymentMethod(payTypeCode);
-        ordersRepository.save(orders);
+        orders = ordersRepository.save(orders);
+        return orders.getId();
     }
 }
