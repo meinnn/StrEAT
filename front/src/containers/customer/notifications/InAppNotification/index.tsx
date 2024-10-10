@@ -43,7 +43,7 @@ export default function InAppNotification({ notification }: NotificationProps) {
     <div
       role="presentation"
       onClick={() => router.push(notification.url)}
-      className={`fixed top-0 inset-x-0 m-4 z-50 p-4 rounded-lg shadow transition-all duration-500 ease-in-out ${
+      className={`fixed top-0 inset-x-0 m-4 z-[500] p-4 rounded-lg shadow transition-all duration-500 ease-in-out ${
         isVisible
           ? 'transform translate-y-0 opacity-100 bg-secondary-medium'
           : 'transform -translate-y-full opacity-0'
