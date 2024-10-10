@@ -1,14 +1,32 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { GoChevronRight } from 'react-icons/go'
 import { HiOutlineLocationMarker, HiOutlineSpeakerphone } from 'react-icons/hi'
 import { IoSettingsOutline } from 'react-icons/io5'
+import { TbPhone } from 'react-icons/tb'
 
-export default function StoreInformation() {
+export default function StoreInformation({
+  name,
+  status,
+  address,
+  phoneNum,
+  ownerWord,
+  type,
+  review,
+}: {
+  name: string
+  status: string
+  address: string
+  phoneNum: string
+  ownerWord: string
+  type: string
+  review: {
+    averageScore: number
+    reviewTotalCount: number
+  }
+}) {
   const router = useRouter()
-  const [isBusinessStart, setIsBusinessStart] = useState(false)
 
   return (
     <section className="flex flex-col px-6 pt-6">
@@ -22,57 +40,69 @@ export default function StoreInformation() {
             </div>
           </Link>
         </div>
-        <h1 className="text-2xl font-bold">옐로우 키친 치킨</h1>
+        <h1 className="text-2xl font-bold">{name}</h1>
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <div className="flex justify-between items-center">
           <div className="flex gap-4">
             <div className="flex gap-[2px] items-center">
               <FaStar className="text-yellow-400" />
-              <span>4.9</span>
+              <span>{review?.averageScore || 0}</span>
             </div>
             <Link href="/owner/store/review">
               <div className="flex gap items-center gap-1">
-                <p>리뷰 333개</p>
+                <p>리뷰 {review?.reviewTotalCount || 0}개</p>
                 <GoChevronRight />
               </div>
             </Link>
           </div>
           <div className="flex gap-1 items-center">
             <span
-              className={`${isBusinessStart ? 'bg-green-500' : 'bg-red-500'} h-2 w-2 block rounded-full`}
+              className={`${status === '영업중' ? 'bg-green-500' : 'bg-red-500'} h-2 w-2 block rounded-full`}
             />
-            <p className="font-normal pr-2">
-              {isBusinessStart ? '영업중' : '영업전'}
-            </p>
+            <p className="font-normal pr-2">{status}</p>
           </div>
         </div>
-        <div className="flex justify-between">
-          <div className="flex gap-[2px] items-center">
-            <HiOutlineLocationMarker className="text-primary-500" />
-            <p className="text-xs font-normal">
-              서울특별시 강남구 테헤란로 212
-            </p>
+        <div className="flex justify-between items-start gap-2">
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-[2px] items-start">
+              <HiOutlineLocationMarker className="shrink-0 text-primary-500 w-4 h-4" />
+              <p className="text-xs font-normal flex">{address}</p>
+            </div>
+            <div className="flex gap-1 items-center">
+              <TbPhone className="shrink-0 text-primary-500 w-4 h-4" />
+              <p className="text-xs font-normal">{phoneNum}</p>
+            </div>
           </div>
           <button
             type="button"
             onClick={() => {
-              if (!isBusinessStart) {
-                router.push('/owner/store/open')
+              if (status === '준비중') {
+                if (type === '고정형') {
+                  router.push(`/owner/store/open?address=${address}`)
+                } else {
+                  router.push('/select-business-location')
+                }
+              } else {
+                router.push('/owner/store/close')
+                console.log('상태가 영업중입니다.')
               }
-              setIsBusinessStart(!isBusinessStart)
             }}
-            className={`rounded-full font-semibold py-1 px-5 border ${isBusinessStart ? 'border-green-500 text-green-500' : 'border-[#3e3e3e] text-[#3e3e3e] hover:text-primary-500 hover:border-primary-500'}`}
+            className={`whitespace-nowrap rounded-full font-semibold py-1 px-5 border ${status === '영업중' ? 'border-green-500 text-green-500' : 'border-[#3e3e3e] text-[#3e3e3e] hover:text-primary-500 hover:border-primary-500'}`}
           >
-            {isBusinessStart ? '영업 종료하기' : '영업 시작하기'}
+            {status === '영업중' ? '영업 종료하기' : '영업 시작하기'}
           </button>
         </div>
       </div>
       <div className="flex flex-col gap-2">
         <div className="py-3 px-4 border-gray-dark border rounded-lg">
-          <p className="flex gap-2 items-center text-xs">
-            <HiOutlineSpeakerphone className="w-4 h-4 text-red-500" />
-            역삼역 1번 출구 앞 큰 건물 뒤에 있습니다! 오늘 주방장 폼 미침
+          <p
+            className={`${ownerWord.length > 0 ? 'text-red-500 ' : 'text-gray-dark'} flex gap-2 items-center text-xs`}
+          >
+            <HiOutlineSpeakerphone className="text-red-500 w-4 h-4" />
+            {ownerWord.length > 0
+              ? ownerWord
+              : '등록된 사장님의 한 마디가 없습니다'}
           </p>
         </div>
         <Link href="/owner/store/setting/announcement">

@@ -1,66 +1,140 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import ChooseDate from '@/containers/owner/order-management/OrderInquiry/ChooseDate'
 import OrderSummary from '@/containers/owner/order-management/OrderInquiry/OrderSummary'
 import OrderTag from '@/containers/owner/order-management/OrderInquiry/OrderTag'
 import OrderDetails from '@/containers/owner/order-management/OrderInquiry/OrderDetails'
 
+interface Option {
+  optionName: string
+  optionPrice: number
+}
+
+interface Product {
+  optionList: Option[]
+  productName: string
+  productPrice: number
+  productSrc: string | null
+  quantity: number
+}
+
+export interface SearchedOrder {
+  menuCount: number
+  orderCreatedAt: string
+  orderNumber: string
+  orderReceivedAt: string | null
+  ordersId: number
+  paymentMethod: string
+  productList: Product[]
+  status: string
+  storeId: number
+  storeName: string
+  storeSrc: string
+  totalPrice: number
+  waitingMenu?: string | null
+  waitingTeam?: string | null
+}
+
+export interface Condition {
+  startDate: string
+  endDate: string
+  statusTag: string[]
+  paymentMethodTag: string[]
+}
+
 export default function OrderInquiry() {
-  // 더미 주문 데이터 생성
-  const dummyOrders = [
-    {
-      orderNumber: 'T1RE0001AA',
-      type: '수령완료', // 태그와 매칭되는 필드
-      orderTime: '2024.09.01 오후 08:20:21',
-      receiptTime: '2024.09.01 오후 09:30:30',
-      orderDetails: '햄버거 유경 세트 외 1건',
-      paymentType: '간편결제',
-      totalAmount: '54,000원',
-    },
-    {
-      orderNumber: 'T1RE0002BB',
-      type: '주문취소', // 태그와 매칭되는 필드
-      orderTime: '2024.09.02 오후 06:15:00',
-      receiptTime: '2024.09.02 오후 07:20:00',
-      orderDetails: '치킨 세트 외 2건',
-      paymentType: '카드결제',
-      totalAmount: '75,000원',
-    },
-  ]
+  const storeId = 60
+  const now = new Date()
+  const start = new Date(new Date().setDate(new Date().getDate() - 7))
+  const [condition, setCondition] = useState<Condition>({
+    startDate: new Date(
+      start.getTime() - start.getTimezoneOffset() * 60000
+    ).toISOString(),
+    endDate: new Date(
+      now.getTime() - now.getTimezoneOffset() * 60000
+    ).toISOString(),
+    statusTag: ['REJECTED'],
+    paymentMethodTag: ['CASH'],
+  })
 
-  const [filters, setFilters] = useState<string[]>([]) // 필터 상태 관리
-  const [filteredOrders, setFilteredOrders] = useState(dummyOrders) // 필터링된 주문 상태 관리
-  const [orders, setOrders] = useState(dummyOrders) // 전체 주문 상태 관리 (더미 데이터 사용)
+  const getSearchedOrderList = async () => {
+    const { startDate, endDate } = condition
 
-  // 필터 변경 시 호출되는 함수
-  const handleFilterChange = (updatedFilters: string[]) => {
-    setFilters(updatedFilters)
+    if (startDate.length === 0 || endDate.length === 0) return []
 
-    if (updatedFilters.length === 0) {
-      // 필터가 없으면 전체 데이터를 보여줌
-      setFilteredOrders(orders)
-    } else {
-      // 선택된 태그에 따라 필터링된 데이터로 업데이트
-      const filtered = orders.filter((order) => {
-        // order.type이 배열이라면, 해당 배열에 필터 중 하나라도 포함되는지 확인
-        if (Array.isArray(order.type)) {
-          return updatedFilters.some((filter) => order.type.includes(filter))
-        }
-        // order.type이 단일 문자열일 경우
-        return updatedFilters.includes(order.type)
-      })
-      setFilteredOrders(filtered)
+    const response = await fetch(`/services/order/${storeId}/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(condition),
+    })
+
+    if (!response.ok) {
+      console.error('주문 내역 리스트 조회에 실패했습니다')
     }
+    return response.json()
+  }
+
+  const {
+    data: searchedOrderListData,
+    error,
+    isLoading,
+  } = useQuery<
+    {
+      searchOrderList: SearchedOrder[]
+      totalCount: number
+      totalDataCount: number
+      totalPageCount: number
+    },
+    Error
+  >({
+    queryKey: ['/order/search', storeId, condition],
+    queryFn: getSearchedOrderList,
+  })
+
+  // 주문 수에 따른 총 결제 금액
+  const totalPaymentAmount = useMemo(() => {
+    if (
+      !searchedOrderListData ||
+      searchedOrderListData?.searchOrderList?.length === 0
+    )
+      return '-'
+
+    return searchedOrderListData?.searchOrderList?.reduce((acc, order) => {
+      const price = order.totalPrice
+      return acc + price
+    }, 0)
+  }, [searchedOrderListData])
+
+  if (isLoading) {
+    return <p>로딩중</p>
+  }
+
+  if (error) {
+    return <p>에러 발생</p>
   }
 
   return (
     <div>
-      <ChooseDate />
-      <OrderTag onFilterChange={handleFilterChange} />
-      <OrderSummary orders={filteredOrders} /> {/* 필터링된 주문 전달 */}
-      {/* 필터링된 주문을 각각 OrderDetails로 렌더링 */}
-      {filteredOrders.map((order) => (
-        <OrderDetails key={order.orderNumber} order={order} />
-      ))}
+      <ChooseDate condition={condition} setCondition={setCondition} />
+      <OrderTag condition={condition} setCondition={setCondition} />
+      {searchedOrderListData ? (
+        <>
+          <OrderSummary
+            orderCount={searchedOrderListData?.totalDataCount}
+            totalPaymentAmount={totalPaymentAmount}
+          />
+          <div className="flex flex-col p-2">
+            {searchedOrderListData?.searchOrderList?.map((searchedOrder) => (
+              <OrderDetails
+                key={searchedOrder.ordersId}
+                order={searchedOrder}
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
     </div>
   )
 }

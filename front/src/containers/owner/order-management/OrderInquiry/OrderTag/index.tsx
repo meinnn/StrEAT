@@ -1,45 +1,83 @@
-import { useState } from 'react'
-import { CiFilter } from 'react-icons/ci'
+import { Condition } from '..'
 
 interface OrderTagProps {
-  onFilterChange: (filters: string[]) => void
+  condition: Condition
+  setCondition: React.Dispatch<React.SetStateAction<Condition>>
 }
 
-export default function OrderTag({ onFilterChange }: OrderTagProps) {
-  // 태그 목록
-  const tags = ['카드', '계좌이체', '간편결제', '현금', '수령완료', '주문취소']
+const TAGS = [
+  {
+    id: 'CREDIT_CARD',
+    label: '카드',
+  },
+  {
+    id: 'ACCOUNT_TRANSFER',
+    label: '계좌이체',
+  },
+  {
+    id: 'SIMPLE_PAYMENT',
+    label: '간편결제',
+  },
+  {
+    id: 'CASH',
+    label: '현금',
+  },
+  {
+    id: 'RECEIVED',
+    label: '수령완료',
+  },
+  {
+    id: 'REJECTED',
+    label: '주문거절',
+  },
+]
 
-  // 선택된 태그 상태 (기본값으로 모든 태그 선택)
-  const [selectedTags, setSelectedTags] = useState<string[]>(tags)
-
-  // 태그 클릭 시 선택 상태 변경
+export default function OrderTag({ condition, setCondition }: OrderTagProps) {
   const handleTagClick = (tag: string) => {
-    let updatedTags = [...selectedTags]
-    if (updatedTags.includes(tag)) {
-      updatedTags = updatedTags.filter((t) => t !== tag) // 이미 선택된 태그는 제거
+    if (tag === 'RECEIVED' || tag === 'REJECTED') {
+      const nStatusTag = [...condition.statusTag]
+
+      if (nStatusTag.includes(tag)) {
+        const index = nStatusTag.indexOf(tag)
+        nStatusTag.splice(index, 1)
+      } else {
+        nStatusTag.push(tag)
+      }
+
+      setCondition((pre) => ({ ...pre, statusTag: nStatusTag }))
     } else {
-      updatedTags.push(tag) // 선택되지 않은 태그는 추가
+      // 카드, 계좌이체, 간편결제, 현금
+      const nPaymentMethodTag = [...condition.paymentMethodTag]
+
+      if (nPaymentMethodTag.includes(tag)) {
+        const index = nPaymentMethodTag.indexOf(tag)
+        nPaymentMethodTag.splice(index, 1)
+      } else {
+        nPaymentMethodTag.push(tag)
+      }
+
+      setCondition((pre) => ({ ...pre, paymentMethodTag: nPaymentMethodTag }))
     }
-    setSelectedTags(updatedTags)
-    onFilterChange(updatedTags) // 부모 컴포넌트에 필터 변경사항 전달
   }
 
   return (
     <div className="flex flex-wrap justify-center gap-2 mt-4 mx-2 mb-4">
       {/* 태그 버튼들 */}
       <div className="grid grid-cols-3 gap-2 w-full">
-        {tags.map((tag) => (
+        {TAGS.map((tag) => (
           <button
             type="button"
-            key={tag}
-            onClick={() => handleTagClick(tag)}
+            key={tag.id}
+            onClick={() => handleTagClick(tag.id)}
             className={`w-full py-2 border-2 rounded-lg ${
-              selectedTags.includes(tag)
+              [...condition.statusTag, ...condition.paymentMethodTag].includes(
+                tag.id
+              )
                 ? 'border-primary-400 text-primary-400'
                 : 'border-gray-300 text-gray-500'
             } transition-colors duration-300 ease-in-out`}
           >
-            {tag}
+            {tag.label}
           </button>
         ))}
       </div>

@@ -48,6 +48,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'no-console': 'off',
     'react/require-default-props': 'off',
+    'import/no-cycle': 'off',
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {

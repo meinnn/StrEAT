@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { VscAdd } from 'react-icons/vsc'
 import { TfiClose } from 'react-icons/tfi'
 
-export interface ImageList {
+export interface ImageFile {
   preview: string
   file: File
 }
@@ -13,8 +13,8 @@ export default function ReviewImageUploader({
   reviewImageList,
   setReviewImageList,
 }: {
-  reviewImageList: ImageList[]
-  setReviewImageList: React.Dispatch<React.SetStateAction<ImageList[]>>
+  reviewImageList: ImageFile[]
+  setReviewImageList: React.Dispatch<React.SetStateAction<ImageFile[]>>
 }) {
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

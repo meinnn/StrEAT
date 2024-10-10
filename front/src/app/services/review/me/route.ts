@@ -1,8 +1,19 @@
 /* eslint-disable import/prefer-default-export */
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = req.nextUrl
     const page = Number(searchParams.get('page') ?? '0')
     const limit = Number(searchParams.get('limit') ?? '5')
@@ -13,8 +24,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization':
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
+          'Authorization': `Bearer ${token}`,
         },
         cache: 'no-store',
       }
