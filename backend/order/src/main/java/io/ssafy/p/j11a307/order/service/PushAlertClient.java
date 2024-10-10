@@ -12,4 +12,8 @@ public interface PushAlertClient {
     @GetMapping("/api/push-alert/order-accept")
     void sendOrderAcceptedAlert(@RequestParam OrderStatusChangeRequest orderStatusChangeRequest,
                                     @RequestHeader(value = "X-Internal-Request") String internalRequest);
+
+    @GetMapping("/api/push-alert/cooking-completed")
+    void sendCookingCompletedAlert(@RequestParam OrderStatusChangeRequest orderStatusChangeRequest,
+                                   @RequestHeader(value = "X-Internal-Request") String internalRequest);
 }

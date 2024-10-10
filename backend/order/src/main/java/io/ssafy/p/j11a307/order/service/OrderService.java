@@ -172,6 +172,13 @@ public class OrderService {
         }
 
         orders.updateStatus(OrderCode.WAITING_FOR_RECEIPT);
+        OrderStatusChangeRequest orderStatusChangeRequest = OrderStatusChangeRequest.builder()
+                .orderId(orders.getId())
+                .customerId(orders.getUserId())
+                .storeName(readStoreDTO.name())
+                .storeId(orders.getStoreId())
+                .build();
+        pushAlertClient.sendCookingCompletedAlert(orderStatusChangeRequest, internalRequestKey);
     }
 
     @Transactional
