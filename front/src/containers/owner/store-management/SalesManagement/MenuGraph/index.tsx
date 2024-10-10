@@ -1,83 +1,72 @@
 'use client'
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { useEffect, useState } from 'react'
 
-const menuData = {
-  daily: [
-    { id: 1, name: '후라이드', value: 65, percentage: 0.4 },
-    { id: 2, name: '양념', value: 1556, percentage: 37 },
-    { id: 3, name: '트러플', value: 1003, percentage: 33 },
-    { id: 4, name: '뿌링클', value: 265, percentage: 16 },
-    { id: 5, name: '굽네', value: 1026, percentage: 10 },
-  ],
-  weekly: [
-    { id: 1, name: '후라이드', value: 320, percentage: 2 },
-    { id: 2, name: '양념', value: 850, percentage: 50 },
-    { id: 3, name: '트러플', value: 600, percentage: 35 },
-    { id: 4, name: '뿌링클', value: 130, percentage: 8 },
-    { id: 5, name: '굽네', value: 100, percentage: 5 },
-  ],
-  monthly: [
-    { id: 1, name: '후라이드', value: 1200, percentage: 3 },
-    { id: 2, name: '양념', value: 15000, percentage: 40 },
-    { id: 3, name: '트러플', value: 12000, percentage: 32 },
-    { id: 4, name: '뿌링클', value: 4500, percentage: 12 },
-    { id: 5, name: '굽네', value: 3500, percentage: 13 },
-  ],
-  yearly: [
-    { id: 1, name: '후라이드', value: 15000, percentage: 4 },
-    { id: 2, name: '양념', value: 175000, percentage: 38 },
-    { id: 3, name: '트러플', value: 125000, percentage: 27 },
-    { id: 4, name: '뿌링클', value: 50000, percentage: 11 },
-    { id: 5, name: '굽네', value: 80000, percentage: 20 },
-  ],
-}
-
+// 원형 그래프에서 사용할 색상 배열
 const COLORS = ['#F5B63F', '#61AF3E', '#D8D8D8', '#246FB7', '#FF4365']
 
-const RADIAN = Math.PI / 180
-
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  index,
-}: {
-  cx: number
-  cy: number
-  midAngle: number
-  innerRadius: number
-  outerRadius: number
-  percent: number
-  index: number
-}) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5
-  const x = cx + radius * Math.cos(-midAngle * RADIAN)
-  const y = cy + radius * Math.sin(-midAngle * RADIAN)
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="black"
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      fontSize="12"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  )
+interface MenuGraphProps {
+  salesData: any // 부모 컴포넌트에서 전달받는 판매 데이터
+  selectedRange: string // 선택된 범위 (daily, weekly, monthly, yearly)
 }
 
-export default function MenuGraph() {
-  const data = menuData.daily
+export default function MenuGraph({
+  salesData,
+  selectedRange,
+}: MenuGraphProps) {
+  const [menuData, setMenuData] = useState<any[]>([]) // 그래프에 표시할 메뉴 데이터를 저장
+
+  // 선택된 범위에 맞는 product 데이터를 설정하는 함수
+  const getProductData = () => {
+    if (!salesData) return []
+
+    switch (selectedRange) {
+      case 'daily':
+        return Object.entries(salesData.dailyProduct || {}).map(
+          ([name, value]: any) => ({
+            name,
+            value: value.quantity,
+            percentage: value.percent,
+          })
+        )
+      case 'weekly':
+        return Object.entries(salesData.weeklyProduct || {}).map(
+          ([name, value]: any) => ({
+            name,
+            value: value.quantity,
+            percentage: value.percent,
+          })
+        )
+      case 'monthly':
+        return Object.entries(salesData.monthlyProduct || {}).map(
+          ([name, value]: any) => ({
+            name,
+            value: value.quantity,
+            percentage: value.percent,
+          })
+        )
+      case 'yearly':
+        return Object.entries(salesData.yearlyProduct || {}).map(
+          ([name, value]: any) => ({
+            name,
+            value: value.quantity,
+            percentage: value.percent,
+          })
+        )
+      default:
+        return []
+    }
+  }
+
+  // selectedRange가 변경될 때마다 menuData 업데이트
+  useEffect(() => {
+    setMenuData(getProductData())
+  }, [salesData, selectedRange])
 
   return (
     <div
-      className="w-full flex flex-col items-center mb-4"
+      className="w-full flex flex-col items-center mb-4 mt-6"
       style={{
         padding: '20px',
         backgroundColor: '#FFFBF3',
@@ -85,28 +74,31 @@ export default function MenuGraph() {
         maxWidth: '600px',
       }}
     >
-      <ResponsiveContainer width="100%" height={270}>
+      {/* ResponsiveContainer로 원형 그래프 출력 */}
+      <ResponsiveContainer width="100%" height={280}>
         <PieChart>
           <Pie
-            data={data}
+            data={menuData}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={false}
+            label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
             outerRadius={100}
             fill="#8884d8"
             dataKey="value"
           >
-            {data.map((entry) => (
+            {menuData.map((entry, index) => (
               <Cell
-                key={`cell-${entry.id}`}
-                fill={COLORS[entry.id % COLORS.length]}
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
               />
             ))}
           </Pie>
           <Tooltip />
         </PieChart>
       </ResponsiveContainer>
+
+      {/* 메뉴와 퍼센트를 나열해서 보여주기 */}
       <div
         className="w-full grid grid-cols-2 gap-2"
         style={{
@@ -116,9 +108,9 @@ export default function MenuGraph() {
           maxWidth: '500px',
         }}
       >
-        {data.map((entry) => (
+        {menuData.map((entry) => (
           <div
-            key={entry.id}
+            key={entry.name}
             className="flex items-center justify-between"
             style={{
               display: 'flex',
@@ -130,14 +122,15 @@ export default function MenuGraph() {
               <div
                 className="w-3 h-3 rounded-full"
                 style={{
-                  backgroundColor: COLORS[entry.id % COLORS.length],
+                  backgroundColor:
+                    COLORS[menuData.indexOf(entry) % COLORS.length],
                   marginRight: '8px',
                 }}
               />
               <span>{entry.name}</span>
             </div>
             <span>{entry.percentage}%</span>
-            <span>{entry.value}</span>
+            <span>{entry.value}개</span>
           </div>
         ))}
       </div>

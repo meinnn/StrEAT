@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import SingleDatePicker from '@/containers/owner/store-management/AssetCalendar/SingleDatePicker'
 import TransactionList from '@/containers/owner/store-management/AssetCalendar/TransactionList'
 
@@ -67,7 +67,7 @@ export default function AssetCalendar() {
     }
   }, [])
 
-  // 달이 변경될 때만 API를 호출하는 함수
+  // API 요청 함수
   const loadTransactionsForMonth = async (month: string) => {
     if (!token) {
       console.error('No token available for fetching transactions') // 토큰이 없을 때
@@ -86,12 +86,22 @@ export default function AssetCalendar() {
     setLoading(false) // 로딩 끝
   }
 
-  // 선택한 달이 변경될 때만 데이터를 불러옴
+  // 페이지 로드 시와 달 변경 시 API 요청
+  useEffect(() => {
+    const selectedMonth = selectedDate.split('-')[1] // 월을 추출
+    console.log('Selected month:', selectedMonth) // 선택된 월 확인
+
+    if (token) {
+      loadTransactionsForMonth(selectedMonth) // 페이지 로드 시 API 호출
+    }
+  }, [token]) // token이 업데이트되면 바로 API 요청
+
+  // 달 변경 시 API 요청
   useEffect(() => {
     const selectedMonth = selectedDate.split('-')[1] // 월을 추출
     console.log('Selected month:', selectedMonth) // 선택된 월 확인
     loadTransactionsForMonth(selectedMonth).then()
-  }, [selectedDate, token]) // token이 업데이트되었을 때도 다시 요청
+  }, [selectedDate]) // selectedDate가 업데이트될 때도 다시 요청
 
   return (
     <div>

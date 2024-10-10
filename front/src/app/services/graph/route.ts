@@ -3,14 +3,8 @@ import { cookies } from 'next/headers'
 
 // eslint-disable-next-line import/prefer-default-export
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const storeId = searchParams.get('storeId') // URL에서 storeId 파라미터 가져오기
   const cookieStore = cookies()
   const token = cookieStore.get('accessToken')?.value // 쿠키에서 access_token 가져오기
-
-  if (!storeId) {
-    return NextResponse.json({ message: 'storeId is missing' }, { status: 400 })
-  }
 
   if (!token) {
     return NextResponse.json({ message: 'Token is missing' }, { status: 401 })
@@ -18,7 +12,7 @@ export async function GET(req: Request) {
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/order-manage/${storeId}/report`,
+      `https://j11a307.p.ssafy.io/api/orders/order-manage/report`, // 엔드포인트에서 storeId 제거
       {
         method: 'GET',
         headers: {
