@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // API로 JSON 요청 보내기 (Swagger 형식에 맞춰 요청)
     const response = await fetch(
-      'http://70.12.247.148:8787/api/payments/toss/request-payment',
+      'https://j11a307.p.ssafy.io/api/payments/toss/request-payment',
       {
         method: 'POST',
         headers: {
