@@ -47,16 +47,11 @@ export async function GET(request: Request) {
     })
 
     const data = await response.json()
-    if (data.userType === 'NOT_SELECTED') {
-      // 신규 가입
-      return NextResponse.redirect(new URL('/sign-up', BASE_URL))
-    }
-    if (data.userType === 'CUSTOMER') {
-      return NextResponse.redirect(new URL('/customer', BASE_URL))
-    }
-    if (data.userType === 'OWNER') {
-      return NextResponse.redirect(new URL('/owner', BASE_URL))
-    }
+    const { userType } = data
+
+    return NextResponse.redirect(
+      new URL(`/permission?userType=${userType}`, BASE_URL)
+    )
   } catch (error) {
     // 네트워크 오류 등의 예외 처리
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 })
