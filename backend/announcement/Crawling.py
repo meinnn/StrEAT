@@ -23,7 +23,7 @@ def crawl_notice_list():
         connection = mysql.connector.connect(
             host='j11a307.p.ssafy.io',  # 데이터베이스 호스트
             user='root',  # 사용자 이름
-            password='1234',  # 비밀번호
+            password='02837472837492',  # 비밀번호
             database='streat'  # 데이터베이스 이름
         )
         cursor = connection.cursor()
