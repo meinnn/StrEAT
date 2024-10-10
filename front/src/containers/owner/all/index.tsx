@@ -1,10 +1,78 @@
-import Image from 'next/image'
-import { GoChevronRight } from 'react-icons/go'
+'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { GoChevronRight } from 'react-icons/go'
+import { useOwnerInfo } from '@/hooks/useOwnerInfo'
+import { useMyStoreInfo } from '@/hooks/useMyStoreInfo'
+
+interface Announcement {
+  entryConditions: string
+  eventDays: string
+  eventName: string
+  eventPlace: string
+  eventTimes: string
+  recruitPostTitle: number
+  recruitSize: string
+  specialNotes: string
+}
 export default function OwnerAll() {
+  const router = useRouter()
+  const {
+    data: ownerInfo,
+    error: ownerInfoError,
+    isLoading: ownerInfoLoading,
+  } = useOwnerInfo()
+  const {
+    data: storeInfoData,
+    error: storeInfoError,
+    isLoading: storeInfoLoading,
+  } = useMyStoreInfo(ownerInfo?.storeId)
+
+  const getAnnouncementList = async () => {
+    const response = await fetch(`/services/announcements/list`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+          'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
+      },
+    })
+    if (!response.ok) {
+      console.error('푸드트럭 공고 조회에 실패했습니다')
+    }
+    return response.json()
+  }
+
+  const {
+    data: announcementData,
+    error,
+    isLoading,
+  } = useQuery<
+    {
+      getAnnouncementListDTOList: Announcement[]
+    },
+    Error
+  >({
+    queryKey: ['/announcements/list'],
+    queryFn: getAnnouncementList,
+  })
+
+  if (isLoading || ownerInfoLoading || storeInfoLoading) {
+    return <p>로딩중</p>
+  }
+
+  if (error || ownerInfoError || storeInfoError) {
+    return <p>에러 발생</p>
+  }
+
   return (
     <div className="pt-12 bg-navbar-all-gradient pb-32">
-      <h1 className="font-semibold mb-4 text-xl pl-11">야옹이님, 안녕하세요</h1>
+      <h1 className="font-semibold mb-4 text-xl pl-11">
+        {ownerInfo?.name}님, 안녕하세요
+      </h1>
 
       <section className="px-7 flex flex-col gap-5 pb-12">
         <div className="text-text pt-5 pb-7 px-5 flex bg-secondary-light flex-col gap-4 border rounded-lg border-gray-medium">
@@ -19,7 +87,7 @@ export default function OwnerAll() {
             </p>
             <h4 className="font-medium">현재 운영중인 점포</h4>
           </div>
-          <p className="font-bold text-xl">옐로우 키친 치킨</p>
+          <p className="font-bold text-xl">{storeInfoData?.storeInfo.name}</p>
         </div>
         <div className="text-text pt-5 pb-7 px-5 flex bg-secondary-medium flex-col gap-6 border rounded-lg border-gray-medium">
           <div className="flex justify-between">
@@ -47,44 +115,63 @@ export default function OwnerAll() {
       <section className="px-8 pt-6 pb-10">
         <div className="flex justify-between items-center mb-5 pr-4">
           <h4 className="font-medium text-gray-dark text-sm">푸드트럭 공고</h4>
-          <button
-            type="button"
-            className="flex items-center text-xs font-normal"
-          >
-            전체보기
-            <GoChevronRight />
-          </button>
+          <Link href="/owner/all/announcement">
+            <button
+              type="button"
+              className="flex items-center text-xs font-normal"
+            >
+              전체보기
+              <GoChevronRight />
+            </button>
+          </Link>
         </div>
         <div className="flex flex-col border border-gray-medium rounded-xl px-2 pt-3 pb-2">
           <h5 className="text-primary-500 text-xs pl-2">최신 공고</h5>
-          {new Array(2).fill(0).map((_) => {
-            return (
-              <div
-                className="text-text flex flex-col gap-2 border-b py-4 px-2 last:border-b-0"
-                key={_}
-              >
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-4">
-                    <p className="font-mediumm">전북장수목장 숲속음악회</p>
-                    <span className="flex items-center text-xs border border-primary-500 rounded-full text-primary-500 px-5 text-[10px] font-semibold">
-                      모집중
-                    </span>
+          {announcementData?.getAnnouncementListDTOList
+            .slice(0, 2)
+            .map((announcement, index) => {
+              return (
+                <div
+                  onClick={() => {
+                    const queryString = encodeURIComponent(
+                      JSON.stringify(announcement)
+                    )
+                    router.push(
+                      `/owner/all/announcement/${index}?value=${queryString}`
+                    )
+                  }}
+                  className="cursor-pointer text-text flex flex-col gap-2 border-b py-4 px-2 last:border-b-0"
+                  key={`${announcement.eventName} ${announcement.eventPlace}`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-4 items-center">
+                      <p className="font-medium">
+                        {announcement.recruitPostTitle}
+                      </p>
+                      <span className="whitespace-nowrap flex py-1 items-center text-xs border border-primary-500 rounded-full text-primary-500 px-5 text-[10px] font-semibold">
+                        {(
+                          announcement.recruitPostTitle as unknown as string
+                        ).slice(0, 4) === '-마감-'
+                          ? '모집마감'
+                          : '모집중'}
+                      </span>
+                    </div>
+                    <GoChevronRight />
                   </div>
-                  <GoChevronRight />
+                  <ul className="text-xs flex flex-col gap-2 font-normal">
+                    <li className="flex">
+                      <span className="w-14">운영장소</span>
+                      <p>{announcement.eventPlace}</p>
+                    </li>
+                    <li className="flex">
+                      <span className="w-14">행사일</span>
+                      <p>{announcement.eventDays}</p>
+                      {/* <p>2024년 10월 4일</p> */}
+                    </li>
+                  </ul>
                 </div>
-                <ul className="text-xs flex flex-col gap-2 font-normal">
-                  <li className="flex">
-                    <span className="w-14">운영장소</span>
-                    <p>한국마사회 장수목장</p>
-                  </li>
-                  <li className="flex">
-                    <span className="w-14">행사일</span>
-                    <p>2024년 10월 4일</p>
-                  </li>
-                </ul>
-              </div>
-            )
-          })}
+              )
+            })}
         </div>
       </section>
 
