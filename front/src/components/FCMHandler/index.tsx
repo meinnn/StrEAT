@@ -45,7 +45,7 @@ export default function FCMHandler() {
           if (permission === 'granted') {
             new Notification(title, {
               body,
-              icon: '/icons/icon-96.png',
+              icon: '/web-app-manifest-192x192.png',
             }).onclick = () => {
               window.open(redirectUrl, '_blank')?.focus()
             }
@@ -69,7 +69,7 @@ export default function FCMHandler() {
 
   return (
     <>
-      {notifications.map((notification, index) => (
+      {notifications.map((notification) => (
         <InAppNotification key={notification.url} notification={notification} />
       ))}
     </>
