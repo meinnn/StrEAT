@@ -3,78 +3,38 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { useEffect, useState } from 'react'
 
-// 원형 그래프에서 사용할 색상 배열
 const COLORS = ['#F5B63F', '#61AF3E', '#D8D8D8', '#246FB7', '#FF4365']
 
 interface MenuGraphProps {
-  salesData: any // 부모 컴포넌트에서 전달받는 판매 데이터
-  selectedRange: string // 선택된 범위 (daily, weekly, monthly, yearly)
+  salesData: Record<string, any>
+  selectedRange: string
 }
 
 export default function MenuGraph({
   salesData,
   selectedRange,
 }: MenuGraphProps) {
-  const [menuData, setMenuData] = useState<any[]>([]) // 그래프에 표시할 메뉴 데이터를 저장
+  const [menuData, setMenuData] = useState<
+    { name: string; value: number; percentage: number }[]
+  >([])
 
-  // 선택된 범위에 맞는 product 데이터를 설정하는 함수
-  const getProductData = () => {
-    if (!salesData) return []
-
-    switch (selectedRange) {
-      case 'daily':
-        return Object.entries(salesData.dailyProduct || {}).map(
-          ([name, value]: any) => ({
-            name,
-            value: value.quantity,
-            percentage: value.percent,
-          })
-        )
-      case 'weekly':
-        return Object.entries(salesData.weeklyProduct || {}).map(
-          ([name, value]: any) => ({
-            name,
-            value: value.quantity,
-            percentage: value.percent,
-          })
-        )
-      case 'monthly':
-        return Object.entries(salesData.monthlyProduct || {}).map(
-          ([name, value]: any) => ({
-            name,
-            value: value.quantity,
-            percentage: value.percent,
-          })
-        )
-      case 'yearly':
-        return Object.entries(salesData.yearlyProduct || {}).map(
-          ([name, value]: any) => ({
-            name,
-            value: value.quantity,
-            percentage: value.percent,
-          })
-        )
-      default:
-        return []
-    }
-  }
-
-  // selectedRange가 변경될 때마다 menuData 업데이트
   useEffect(() => {
+    const getProductData = () => {
+      if (!salesData) return []
+
+      const rangeData = salesData[`${selectedRange}Product`] || {}
+      return Object.entries(rangeData).map(([name, value]: any) => ({
+        name,
+        value: value.quantity,
+        percentage: value.percent,
+      }))
+    }
+
     setMenuData(getProductData())
   }, [salesData, selectedRange])
 
   return (
-    <div
-      className="w-full flex flex-col items-center mb-4 mt-6"
-      style={{
-        padding: '20px',
-        backgroundColor: '#FFFBF3',
-        borderRadius: '15px',
-        maxWidth: '600px',
-      }}
-    >
-      {/* ResponsiveContainer로 원형 그래프 출력 */}
+    <div className="w-full flex flex-col items-center mb-4 mt-6 p-5 bg-yellow-50 rounded-lg max-w-md">
       <ResponsiveContainer width="100%" height={280}>
         <PieChart>
           <Pie
@@ -87,10 +47,10 @@ export default function MenuGraph({
             fill="#8884d8"
             dataKey="value"
           >
-            {menuData.map((entry, index) => (
+            {menuData.map((entry) => (
               <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
+                key={entry.name} // 'name' 필드를 사용해 고유한 key 지정
+                fill={COLORS[menuData.indexOf(entry) % COLORS.length]}
               />
             ))}
           </Pie>
@@ -98,33 +58,15 @@ export default function MenuGraph({
         </PieChart>
       </ResponsiveContainer>
 
-      {/* 메뉴와 퍼센트를 나열해서 보여주기 */}
-      <div
-        className="w-full grid grid-cols-2 gap-2"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '20px',
-          maxWidth: '500px',
-        }}
-      >
+      <div className="w-full grid grid-cols-2 gap-5 max-w-xs">
         {menuData.map((entry) => (
-          <div
-            key={entry.name}
-            className="flex items-center justify-between"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
+          <div key={entry.name} className="flex items-center justify-between">
             <div className="flex items-center">
               <div
-                className="w-3 h-3 rounded-full"
+                className="w-3 h-3 rounded-full mr-2"
                 style={{
                   backgroundColor:
                     COLORS[menuData.indexOf(entry) % COLORS.length],
-                  marginRight: '8px',
                 }}
               />
               <span>{entry.name}</span>

@@ -18,10 +18,9 @@ export async function GET(req: Request) {
   if (response.ok) {
     const weatherData = await response.json()
     return NextResponse.json(weatherData)
-  } else {
-    return NextResponse.json(
-      { message: 'Error fetching weather data' },
-      { status: 500 }
-    )
   }
+  return NextResponse.json(
+    { message: 'Error fetching weather data' },
+    { status: 500 }
+  )
 }

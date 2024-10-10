@@ -42,7 +42,7 @@ export default function CartPage() {
 
     const requestBody = {
       storeId: cartStore.storeId,
-      totalPrice: totalPrice, // 총 가격
+      totalPrice, // 총 가격
       orderProducts: cartItems.map((item) => ({
         id: item.id,
         quantity: item.quantity,

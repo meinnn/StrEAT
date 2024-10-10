@@ -49,6 +49,8 @@ export default function OrderSuccess() {
         console.error('결제 요청 오류:', error)
         router.push('/customer/payment/OrderFailure')
       }
+
+      return undefined // 실패 시에도 undefined를 명시적으로 반환
     }
 
     // 결제 처리 함수 호출

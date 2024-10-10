@@ -72,8 +72,8 @@ export default function TransactionList({
       </h2>
 
       {dailySalesList.length > 0 ? (
-        dailySalesList.map((sale, index) => (
-          <div key={index} className="transaction-item mb-4">
+        dailySalesList.map((sale) => (
+          <div key={sale.customerName} className="transaction-item mb-4">
             <div className="flex items-center space-x-4 mb-4">
               <div className="bg-blue-500 text-white p-2 rounded-full">
                 <FaArrowDown className="text-white text-2xl" />

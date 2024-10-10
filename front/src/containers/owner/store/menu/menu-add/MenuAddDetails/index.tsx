@@ -4,7 +4,20 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { FaCamera, FaChevronDown } from 'react-icons/fa'
 
-export default function MenuAddDetails({ onDetailsChange, onImageChange }) {
+interface MenuAddDetailsProps {
+  onDetailsChange: (details: {
+    foodName: string
+    description: string
+    price: number
+    categoryId: number
+  }) => void
+  onImageChange: (fileList: File[]) => void
+}
+
+export default function MenuAddDetails({
+  onDetailsChange,
+  onImageChange,
+}: MenuAddDetailsProps) {
   const [foodName, setFoodName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [price, setPrice] = useState<string>('')
@@ -140,7 +153,7 @@ export default function MenuAddDetails({ onDetailsChange, onImageChange }) {
             <ul className="absolute w-full bg-white border rounded mt-1 shadow-lg z-10 max-h-40 overflow-y-auto">
               {categories.map((cat) => (
                 <li
-                  key={cat.id}
+                  key={cat.id} // 고유한 id를 key로 사용
                   onClick={() => handleSelectCategory(cat)}
                   className="p-2 hover:bg-gray-200 cursor-pointer"
                 >

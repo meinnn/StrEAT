@@ -1,11 +1,31 @@
 'use client'
 
+/* eslint-disable react/no-array-index-key */
 import { useState, useEffect } from 'react'
 import { LuPencil } from 'react-icons/lu'
 import { FaRegTrashAlt, FaPlus } from 'react-icons/fa'
 
-export default function MenuAddOptions({ onOptionsChange }) {
-  const [optionGroups, setOptionGroups] = useState([
+interface Option {
+  name: string
+  price: string
+}
+
+interface OptionGroup {
+  name: string
+  options: Option[]
+  isRequired: boolean
+  minOptions: number
+  maxOptions: number
+}
+
+interface MenuAddOptionsProps {
+  onOptionsChange: (optionGroups: OptionGroup[]) => void
+}
+
+export default function MenuAddOptions({
+  onOptionsChange,
+}: MenuAddOptionsProps) {
+  const [optionGroups, setOptionGroups] = useState<OptionGroup[]>([
     {
       name: '옵션 1',
       options: [{ name: '선택 1', price: '' }],
@@ -78,7 +98,7 @@ export default function MenuAddOptions({ onOptionsChange }) {
     <div className="mb-4 mt-6 pr-4 pl-4">
       {optionGroups.map((group, groupIndex) => (
         <div
-          key={groupIndex}
+          key={`group-${groupIndex}`} // 배열 인덱스 대신 고유한 문자열을 사용
           className="mb-6 border-2 border-gray-300 rounded-md p-4"
         >
           <div className="mb-4 flex justify-between items-center">
@@ -116,7 +136,10 @@ export default function MenuAddOptions({ onOptionsChange }) {
           {/* 옵션들 */}
           <div className="border-2 border-gray-500 rounded-md p-4">
             {group.options.map((option, optionIndex) => (
-              <div key={optionIndex} className="flex items-center mb-2">
+              <div
+                key={`option-${groupIndex}-${optionIndex}`} // 배열 인덱스 대신 고유한 문자열을 사용
+                className="flex items-center mb-2"
+              >
                 <input
                   type="text"
                   value={option.name}
@@ -182,7 +205,7 @@ export default function MenuAddOptions({ onOptionsChange }) {
                     { length: group.options.length + 1 },
                     (_, i) => i
                   ).map((value) => (
-                    <option key={value} value={value}>
+                    <option key={`min-${groupIndex}-${value}`} value={value}>
                       {value}개
                     </option>
                   ))}
@@ -206,7 +229,7 @@ export default function MenuAddOptions({ onOptionsChange }) {
                     { length: group.options.length },
                     (_, i) => i + 1
                   ).map((value) => (
-                    <option key={value} value={value}>
+                    <option key={`max-${groupIndex}-${value}`} value={value}>
                       {value}개
                     </option>
                   ))}

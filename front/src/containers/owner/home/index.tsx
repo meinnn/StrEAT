@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { WiThermometer, WiRaindrop } from 'react-icons/wi' // 날씨 관련 아이콘
 
 // 날씨에 따른 이모티콘 반환 함수
-const getWeatherEmoji = (weather) => {
+const getWeatherEmoji = (weather: string) => {
   switch (weather) {
     case 'Clear':
       return '🌞' // 맑음
@@ -22,19 +22,8 @@ const getWeatherEmoji = (weather) => {
 export default function OwnerHome() {
   const [weatherData, setWeatherData] = useState(null)
 
-  // 사용자의 위치 정보를 가져오는 함수
-  const fetchLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords
-        fetchWeather(latitude, longitude) // 위치 정보를 가져온 후 날씨 API 요청
-      },
-      (error) => console.error('위치 정보를 가져오지 못했습니다:', error)
-    )
-  }
-
   // Next.js API Route로 날씨 정보를 가져오는 함수
-  const fetchWeather = async (lat, lon) => {
+  const fetchWeather = async (lat: number, lon: number) => {
     try {
       const response = await fetch(
         `/services/weather?lat=${lat}&lon=${lon}&lang=kr`
@@ -48,6 +37,17 @@ export default function OwnerHome() {
     } catch (error) {
       console.error('API 호출 실패:', error)
     }
+  }
+
+  // 사용자의 위치 정보를 가져오는 함수
+  const fetchLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        fetchWeather(latitude, longitude) // 위치 정보를 가져온 후 날씨 API 요청
+      },
+      (error) => console.error('위치 정보를 가져오지 못했습니다:', error)
+    )
   }
 
   useEffect(() => {
