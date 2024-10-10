@@ -54,11 +54,7 @@ public class AlertService {
                 .createdAt(creationTime)
                 .alertType(alertType)
                 .build();
-        Notification notification = Notification.builder()
-                .setTitle(data.getTitle())
-                .setBody(data.getMessage())
-                .build();
-
+        
         PushAlert pushAlert = PushAlert.builder()
                 .userId(orderStatusChangeRequest.customerId())
                 .createdAt(creationTime)
@@ -69,7 +65,7 @@ public class AlertService {
                 .build();
 
         if (customerFcmToken != null) {
-            firebaseUtil.pushAlertToClient(data, customerFcmToken, notification);
+            firebaseUtil.pushAlertToClient(data, customerFcmToken);
         }
         pushAlertRepository.save(pushAlert);
     }
@@ -83,10 +79,6 @@ public class AlertService {
                 .createdAt(creationTime)
                 .alertType(alertType)
                 .build();
-        Notification notification = Notification.builder()
-                .setTitle(fcmAlertData.getTitle())
-                .setBody(fcmAlertData.getMessage())
-                .build();
         List<Integer> dibsUserIds = userService.getCalledDibsUserByStoreId(storeId, internalRequestKey).getData();
         // push alert 데이터 생성
         List<PushAlert> pushAlerts = dibsUserIds.stream().map(id ->
@@ -97,7 +89,7 @@ public class AlertService {
                         .title(fcmAlertData.getTitle())
                         .message(fcmAlertData.getMessage())
                         .build()).toList();
-        firebaseUtil.pushAlertTopic(fcmAlertData, topic, notification);
+        firebaseUtil.pushAlertTopic(fcmAlertData, topic);
         pushAlertRepository.saveAll(pushAlerts);
     }
 

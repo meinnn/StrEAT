@@ -36,7 +36,7 @@ public class FirebaseUtil {
         FirebaseApp.initializeApp(options);
     }
 
-    public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken, Notification notification) {
+    public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken) {
         WebpushConfig webpushConfig = createWebpushConfig(fcmAlertData);
         Message message = Message.builder()
                 .setToken(receiverFcmToken)
@@ -50,7 +50,7 @@ public class FirebaseUtil {
         }
     }
 
-    public void pushAlertTopic(FcmAlertData fcmAlertData, String topic, Notification notification) {
+    public void pushAlertTopic(FcmAlertData fcmAlertData, String topic) {
         WebpushConfig webpushConfig = createWebpushConfig(fcmAlertData);
         Message message = Message.builder()
                 .setTopic(topic)
