@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { WiThermometer, WiRaindrop } from 'react-icons/wi' // 날씨 관련 아이콘
+import useNaverMap from '@/hooks/useNaverMap'
 
 // 날씨 데이터의 타입 정의
 interface WeatherData {
@@ -27,6 +28,9 @@ const getWeatherEmoji = (weather: string) => {
 }
 
 export default function OwnerHome() {
+  const { map, currentLocation } = useNaverMap('map', {
+    zoom: 16,
+  })
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
 
   // Next.js API Route로 날씨 정보를 가져오는 함수
@@ -63,11 +67,12 @@ export default function OwnerHome() {
 
   return (
     <div
+      id="map"
       className="bg-gray-medium relative"
       style={{ height: 'calc(100vh - 4rem)' }}
     >
       {/* 상단 날씨 정보 섹션 */}
-      <section className="w-full p-2 top-2 absolute h-28 bg-none">
+      <section className="w-full p-2 top-2 absolute h-28 bg-none z-50">
         <div className="flex justify-between items-center bg-white w-full h-full shadow-md rounded-md p-4">
           {weatherData ? (
             <div className="flex items-center">
@@ -105,7 +110,7 @@ export default function OwnerHome() {
       </section>
 
       {/* 하단 섹션 */}
-      <section className="flex flex-col items-center shadow-up-shadow bg-secondary-light rounded-t-xl w-full absolute bottom-0 px-6 pb-10 pt-7">
+      <section className="flex flex-col items-center z-50 shadow-up-shadow bg-secondary-light rounded-t-xl w-full absolute bottom-0 px-6 pb-10 pt-7">
         <h2 className="text-xl font-semibold pb-6">
           영업 장소가 이 장소가 맞나요?
         </h2>
