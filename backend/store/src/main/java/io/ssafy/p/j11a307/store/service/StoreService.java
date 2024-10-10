@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class StoreService{
 
+    private final PushAlertService pushAlertService;
     private final StoreRepository storeRepository;
     private final BusinessDayRepository businessDayRepository;
     private final OwnerClient ownerClient;
@@ -471,6 +472,9 @@ public class StoreService{
         Store store = storeRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.changeStatus(status);  // 상태 변경 메서드 호출
+        if (status.equals(StoreStatus.OPEN)) {
+            pushAlertService.sendOpenStoreAlert(store.getId(), store.getName(), internalRequestKey);
+        }
         storeRepository.save(store); // 변경된 상태를 저장
     }
 
