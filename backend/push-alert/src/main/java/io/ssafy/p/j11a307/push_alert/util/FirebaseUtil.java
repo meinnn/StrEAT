@@ -37,10 +37,22 @@ public class FirebaseUtil {
     }
 
     public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken, Notification notification) {
-        Message message = Message.builder()
+        WebpushFcmOptions webpushFcmOptions = WebpushFcmOptions.builder()
+                .setLink(fcmAlertData.getLink())
+                .build();
+        WebpushNotification webpushNotification = WebpushNotification.builder()
+                .setTitle(fcmAlertData.getTitle())
+                .setBody(fcmAlertData.getMessage())
+                .setIcon("/web-app-manifest-192x192.png")
+                .build();
+        WebpushConfig webpushConfig = WebpushConfig.builder()
+                .setFcmOptions(webpushFcmOptions)
+                .setNotification(webpushNotification)
                 .putAllData(fcmAlertData.getData())
-                .setNotification(notification)
+                .build();
+        Message message = Message.builder()
                 .setToken(receiverFcmToken)
+                .setWebpushConfig(webpushConfig)
                 .build();
 
         try {
