@@ -1,5 +1,6 @@
 package io.ssafy.p.j11a307.payment.service;
 
+import io.ssafy.p.j11a307.payment.dto.MessageResponseFromOtherService;
 import io.ssafy.p.j11a307.payment.dto.PayProcessRequest;
 import io.ssafy.p.j11a307.payment.global.MessageResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -11,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface OrderService {
 
     @PostMapping("/api/orders/order-request/pay-complete")
-    MessageResponse completeOrder(@RequestBody PayProcessRequest payProcessRequest,
-                                  @RequestHeader("X-Internal-Request") String internalRequestHeader);
+    MessageResponseFromOtherService completeOrder(@RequestBody PayProcessRequest payProcessRequest,
+                                                  @RequestHeader("X-Internal-Request") String internalRequestHeader);
 }
