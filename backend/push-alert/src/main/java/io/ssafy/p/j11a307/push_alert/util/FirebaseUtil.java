@@ -8,6 +8,7 @@ import io.ssafy.p.j11a307.push_alert.dto.alerts.FcmAlertData;
 import io.ssafy.p.j11a307.push_alert.exception.BusinessException;
 import io.ssafy.p.j11a307.push_alert.exception.ErrorCode;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
+@Slf4j
 public class FirebaseUtil {
 
     @Value("${firebase.api-url}")
@@ -42,7 +44,7 @@ public class FirebaseUtil {
                 .setToken(receiverFcmToken)
                 .setWebpushConfig(webpushConfig)
                 .build();
-
+        log.info("user token:{}", receiverFcmToken);
         try {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
