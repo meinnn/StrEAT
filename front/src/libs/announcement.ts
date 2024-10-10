@@ -39,7 +39,8 @@ export const postAnnouncementFile = async (
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ eventName }),
       cache: 'no-cache',

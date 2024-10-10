@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import FloatingButton from '@/components/FloatingButton'
 import StoreMenuItem from '@/containers/owner/store/menu/StoreMenuItem'
 import { useOwnerInfo } from '@/hooks/useOwnerInfo'
+import { useMyStoreInfo } from '@/hooks/useMyStoreInfo'
 
 interface Option {
   id: number
@@ -39,6 +40,11 @@ export default function StoreMenu() {
     error: ownerInfoError,
     isLoading: ownerInfoLoading,
   } = useOwnerInfo()
+  const {
+    data: storeData,
+    error: storeError,
+    isLoading: stoerLoading,
+  } = useMyStoreInfo(ownerInfo?.storeId)
   const getStoreMenuList = async () => {
     const response = await fetch(`/services/store/${ownerInfo?.storeId}/menu`, {
       method: 'GET',
@@ -73,7 +79,9 @@ export default function StoreMenu() {
   }
   return (
     <main className="py-5 pb-16">
-      <h2 className="text-xl font-bold mb-2 pl-7">옐로우 키친 치킨</h2>
+      <h2 className="text-xl font-bold mb-2 pl-7">
+        {storeData?.storeInfo?.name}
+      </h2>
       <div className="flex flex-col">
         {storeMenuListData &&
           storeMenuListData.length > 0 &&

@@ -69,7 +69,6 @@ export const updateProductStockStatus = async (
   token: string,
   productId: string
 ) => {
-  console.log('품절 여부 페이로드:', productId)
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACK_URL}/api/products/${productId}/stock-status`,
     {
