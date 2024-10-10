@@ -31,7 +31,7 @@ public class Payment {
     private String paymentKey;
     private String status;
     private String lastTransactionKey;
-    private Integer orderId;
+    private String orderId;
     private String orderName;
     private String requestedAt;
     private String approvedAt;
@@ -79,7 +79,7 @@ public class Payment {
         this.paymentKey = jsonNode.get("paymentKey").asText();
         this.status = jsonNode.get("status").asText();
         this.lastTransactionKey = jsonNode.get("lastTransactionKey").asText();
-        this.orderId = jsonNode.get("orderId").asInt();
+        this.orderId = jsonNode.get("orderId").asText();
         this.orderName = jsonNode.get("orderName").asText();
         this.requestedAt = jsonNode.get("requestedAt").asText();
         this.approvedAt = jsonNode.get("approvedAt").asText();

@@ -7,6 +7,7 @@ import io.ssafy.p.j11a307.user.entity.UserType;
 import io.ssafy.p.j11a307.user.exception.BusinessException;
 import io.ssafy.p.j11a307.user.exception.ErrorCode;
 import io.ssafy.p.j11a307.user.global.DataResponse;
+import io.ssafy.p.j11a307.user.global.MessageResponse;
 import io.ssafy.p.j11a307.user.service.UserService;
 import io.ssafy.p.j11a307.user.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -206,5 +207,18 @@ public class UserController {
         OwnerProfile ownerProfile = userService.getAnnouncementOwnerInformation(ownerId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("사장님 공고 신청 데이터 조회에 성공했습니다.", ownerProfile));
+    }
+
+    @PostMapping("/fcm-token")
+    @Operation(summary = "fcm 토큰 등록", description = "카카오 로그인 후 fcm 토큰 등록")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "fcm 토큰 등록 성공"),
+            @ApiResponse(responseCode = "404", description = "가입된 유저를 찾을 수 없음")
+    })
+    public ResponseEntity<MessageResponse> registerFcmToken(HttpServletRequest request, @RequestBody String fcmToken) {
+        String accessToken = request.getHeader(HEADER_AUTH);
+        Integer userId = jwtUtil.getUserIdFromAccessToken(accessToken);
+        userService.registerFcmToken(userId, fcmToken);
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of("fcm 토큰 등록에 성공했습니다."));
     }
 }
