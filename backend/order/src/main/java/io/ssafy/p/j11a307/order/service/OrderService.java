@@ -158,20 +158,20 @@ public class OrderService {
         Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
 
         //1. 주문 내역이 존재하지 않는다면?
-        Optional<Orders> orders = ordersRepository.findById(ordersId);
+        Orders orders = ordersRepository.findById(ordersId).orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(orders.isPresent()) {
-            //2. 처리할 권한이 없다면?
-            ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.get().getStoreId()).getData();
-            if(ownerId != readStoreDTO.userId()) throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        //2. 처리할 권한이 없다면?
+        ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(orders.getStoreId()).getData();
+        if(!ownerId.equals(readStoreDTO.userId())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
 
-            //3. 내역이 조리 중인 상태가 아니라면?
-            if(orders.get().getStatus().equals(OrderCode.PROCESSING)) {
-                orders.get().updateStatus(OrderCode.WAITING_FOR_RECEIPT);
+        //3. 내역이 조리 중인 상태가 아니라면?
+        if(!orders.getStatus().equals(OrderCode.PROCESSING)) {
+            throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
+        }
 
-                ordersRepository.save(orders.get());
-            } else throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
-        } else throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+        orders.updateStatus(OrderCode.WAITING_FOR_RECEIPT);
     }
 
     @Transactional
