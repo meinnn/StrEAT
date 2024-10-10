@@ -1,37 +1,51 @@
 'use client'
 
 import { useEffect } from 'react'
-import { onMessage, getMessaging } from 'firebase/messaging'
-import { getApps, initializeApp } from 'firebase/app'
+import { getMessaging, isSupported, onMessage } from 'firebase/messaging'
+import { firebaseApp } from '@/firebase'
 
-// Firebase 설정
-const firebaseConfig = {
-  apiKey: 'AIzaSyAyQpFxfnNdtIN8m_awd1cNzi2ZbLScfoI',
-  authDomain: 'streat-c2387.firebaseapp.com',
-  projectId: 'streat-c2387',
-  storageBucket: 'streat-c2387.appspot.com',
-  messagingSenderId: '164341366312',
-  appId: '1:164341366312:web:a51145fa1024cdf3cbff1d',
-  measurementId: 'G-5C2TRT8GEB',
+const messaging = async () => {
+  try {
+    const isSupportedBrowser = await isSupported()
+    if (isSupportedBrowser) {
+      return getMessaging(firebaseApp)
+    }
+    return null
+  } catch (err) {
+    console.error(err)
+    return null
+  }
 }
 
 export default function FCMHandler() {
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      // Firebase 앱이 이미 초기화되어 있는지 확인 후 초기화
-      const firebaseApp = !getApps().length
-        ? initializeApp(firebaseConfig)
-        : getApps()[0]
-      const messagingInstance = getMessaging(firebaseApp)
-      console.log(messagingInstance)
-
-      // 포그라운드 메시지 수신 처리
-      onMessage(messagingInstance, (payload) => {
-        console.log('Foreground message received: ', payload)
-        // 포그라운드 메시지 처리 로직 추가
-      })
+    const onMessageListener = async () => {
+      const messagingResolve = await messaging()
+      if (messagingResolve) {
+        onMessage(messagingResolve, (payload) => {
+          if (!('Notification' in window)) {
+            return
+          }
+          const { permission } = Notification
+          const title = `${payload.notification?.title} foreground`
+          const redirectUrl = payload.data?.url
+          const body = payload.notification?.body
+          if (permission === 'granted') {
+            if (payload.notification) {
+              console.log(payload)
+              const notification = new Notification(title, {
+                body,
+                icon: '/web-app-manifest-192x192.png',
+              })
+              notification.onclick = () => {
+                window.open(redirectUrl, '_blank')?.focus()
+              }
+            }
+          }
+        })
+      }
     }
+    onMessageListener().then()
   }, [])
-
-  return null // UI 요소가 필요 없으므로 null 반환
+  return null
 }
