@@ -1,10 +1,5 @@
 /* eslint-disable import/prefer-default-export */
 
-const imageHeaders = {
-  Authorization:
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
-}
-
 // 점포 이미지 등록 API
 export const postStoreImage = async (token: string, payload: FormData) => {
   const response = await fetch(
@@ -105,13 +100,13 @@ export const postStoreBusinessLocation = async (
   token: string,
   payload: FormData
 ) => {
-  console.log('payload:', payload)
   const response = await fetch(
-    // 원래는 create 대신 simple-only
     `${process.env.NEXT_PUBLIC_BACK_URL}/api/stores/locations/create`,
     {
       method: 'POST',
-      headers: imageHeaders,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: payload,
       cache: 'no-store',
     }
