@@ -1,13 +1,30 @@
 import React, { useState } from 'react'
-import { SlCalender } from 'react-icons/sl'
-import Calendar from '@/containers/owner/order-management/OrderInquiry/Calendar' // 절대 경로로 Calendar 불러오기
+import { FaCalendarAlt } from 'react-icons/fa'
+import Calendar from '@/containers/owner/order-management/OrderInquiry/Calendar'
+import { Condition } from '..'
 
-export default function ChooseDate() {
-  const today = new Date()
+export default function ChooseDate({
+  condition,
+  setCondition,
+}: {
+  condition: Condition
+  setCondition: React.Dispatch<React.SetStateAction<Condition>>
+}) {
+  console.log('오늘 날짜', new Date().toLocaleString())
   const [startDate, setStartDate] = useState<Date | null>(
-    new Date(today.setDate(today.getDate() - 7))
+    (() => {
+      const date = new Date(condition.startDate)
+      date.setHours(0, 0, 0, 0) // 시간을 00:00:00로 설정
+      return date
+    })()
   )
-  const [endDate, setEndDate] = useState<Date | null>(new Date())
+  const [endDate, setEndDate] = useState<Date | null>(
+    (() => {
+      const date = new Date(condition.endDate)
+      date.setHours(23, 59, 59, 999) // 시간을 23:59:59로 설정
+      return date
+    })()
+  )
 
   const [modalIsOpen, setModalIsOpen] = useState(false) // 모달 상태
 
@@ -25,10 +42,17 @@ export default function ChooseDate() {
     setModalIsOpen(false)
   }
 
+  console.log('condition:,', condition)
+
   // 확인 버튼 클릭 시 부모 상태에 값 반영
   const handleConfirm = () => {
     setStartDate(tempStartDate) // 선택된 임시 날짜를 부모 상태에 반영
     setEndDate(tempEndDate)
+    setCondition((pre: any) => ({
+      ...pre,
+      startDate: tempStartDate?.toISOString(),
+      endDate: tempEndDate?.toISOString(),
+    }))
     closeModal()
   }
 
@@ -39,7 +63,7 @@ export default function ChooseDate() {
         className="text-gray-800 mx-2 flex items-center cursor-pointer"
         onClick={openModal}
       >
-        <SlCalender className="mr-4 text-xl" />
+        <FaCalendarAlt className="mr-3 text-xl" />
         <span className="font-bold text-base">날짜 직접 선택</span>
       </div>
 
