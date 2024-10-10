@@ -249,4 +249,24 @@ public class StoreSimpleLocationService {
             throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
         }
     }
+
+    @Transactional
+    public Integer getSelectedSimpleLocationByStoreId(Integer storeId) {
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+        return store.getSelectedSimpleLocation().getId();
+    }
+
+    @Transactional
+    public StoreSimpleLocationDTO getStoreSimpleLocationInfo(Integer id) {
+        StoreSimpleLocation storeSimpleLocation = storeSimpleLocationRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.LOCATION_NOT_FOUND));
+
+        StoreSimpleLocationDTO storeSimpleLocationDTO = StoreSimpleLocationDTO.builder()
+                .address(storeSimpleLocation.getAddress())
+                .longitude(storeSimpleLocation.getLongitude())
+                .latitude(storeSimpleLocation.getLatitude())
+                .nickname(storeSimpleLocation.getNickname())
+                .build();
+
+        return storeSimpleLocationDTO;
+    }
 }

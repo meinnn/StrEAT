@@ -1,10 +1,12 @@
 package io.ssafy.p.j11a307.store.dto;
+import lombok.Builder;
 import org.springframework.web.multipart.MultipartFile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
+@Builder
 public record StoreSimpleLocationDTO(
         @Schema(description = "가게위치저장이름", example = "멀티캠퍼스 앞")
         String nickname,
