@@ -8,5 +8,6 @@ public record StoreDibsResponse(
         String storeName,
         String status,
         double averageScore,
-        boolean alertOn
+        boolean alertOn,
+        String imageSrc
 ) {}

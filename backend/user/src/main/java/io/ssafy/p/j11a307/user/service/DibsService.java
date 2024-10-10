@@ -92,6 +92,7 @@ public class DibsService {
                         .storeName(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).name())
                         .status(storeIdToDibsStoreStatusResponse.get(subscription.getSubscriptionId().getStoreId()).status())
                         .averageScore(reviewAverages.get(subscription.getSubscriptionId().getStoreId()))
+                        .imageSrc("https://streat-bucket.s3.ap-northeast-2.amazonaws.com/fa20fc1c-9rn_image_picker_lib_temp_a3ad48df-427e-4a1f-b316-3f248e6ffa68.png")
                         .alertOn(subscription.getAlertOn()).build()).toList();
         return storeDibsResponses;
     }
