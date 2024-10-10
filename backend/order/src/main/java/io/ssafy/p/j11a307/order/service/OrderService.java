@@ -42,6 +42,7 @@ public class OrderService {
     private final OrderProductOptionRepository orderProductOptionRepository;
     private final ReviewRepository reviewRepository;
     private final TimeUtil timeUtil;
+    private final PushAlertClient pushAlertClient;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -135,11 +136,19 @@ public class OrderService {
             throw new BusinessException(ErrorCode.WRONG_ORDER_ID);
         }
 
+        OrderStatusChangeRequest orderStatusChangeRequest = OrderStatusChangeRequest.builder()
+                .orderId(orders.getId())
+                .customerId(orders.getUserId())
+                .storeName(readStoreDTO.name())
+                .storeId(orders.getStoreId())
+                .build();
+
         if (flag == 0) {
             orders.updateStatus(OrderCode.REJECTED);
         }
         else if(flag == 1) {
             orders.updateStatus(OrderCode.PROCESSING);
+            pushAlertClient.sendOrderAcceptedAlert(orderStatusChangeRequest, internalRequestKey);
         }
         throw new BusinessException(ErrorCode.WRONG_FLAG);
     }
