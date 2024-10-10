@@ -10,6 +10,7 @@ export default function OrderSuccess() {
     // URL에서 쿼리 파라미터 값 가져오기
     const paymentKey = searchParams.get('paymentKey')
     const amount = searchParams.get('amount') // 결제 금액
+    const orderId = searchParams.get('orderId')
 
     // 필수 값이 없으면 실패 페이지로 리다이렉트
     if (!paymentKey || !amount) {
@@ -26,16 +27,16 @@ export default function OrderSuccess() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ paymentKey, amount }),
+          body: JSON.stringify({ paymentKey, amount, orderId }),
         })
 
         if (response.ok) {
           const data = await response.json()
-          const { orderId } = data.orderId // 응답에서 orderId 가져오기
+          const { responseId } = data.orderId // 응답에서 orderId 가져오기
 
           // 성공 시 주문 완료 UI를 보여준 후 1초 뒤에 리다이렉트
           const timer = setTimeout(() => {
-            router.push(`/customer/orders/${orderId}`)
+            router.push(`/customer/orders/${responseId}`)
           }, 1000)
 
           return () => clearTimeout(timer)
