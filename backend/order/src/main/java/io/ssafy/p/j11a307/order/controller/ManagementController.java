@@ -72,7 +72,7 @@ public class ManagementController {
     })
     @Parameters({
             @Parameter(name = "latitude", description = "선택한 장소의 위도"),
-            @Parameter(name = "longtitude", description = "선택한 장소의 경도"),
+            @Parameter(name = "longitude", description = "선택한 장소의 경도"),
     })
     public ResponseEntity<DataResponse<GetSurroundingBusinessDistrictDTO>> getSurroundingBusinessDistrict(@RequestHeader("Authorization") String token,
                                                                                                           @RequestParam Double latitude,

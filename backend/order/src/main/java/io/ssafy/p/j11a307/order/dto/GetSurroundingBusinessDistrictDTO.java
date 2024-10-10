@@ -7,13 +7,11 @@ import java.util.List;
 @Builder
 public record GetSurroundingBusinessDistrictDTO(
         /*
-        추천점수, 근처 비슷한 가게 수, 가게들 위치정보 및 이름,
+        근처 비슷한 가게 수, 가게들 위치정보 및 이름,
 
         여기서 제일 가까운 상권은 어디 근처예요!
         상권 매출 평균-> 연령별, 성별별, 시간별 제일 잘 팔리는 곳!(여기는 연령대 전체 평균보다 얘들이 몇 퍼센트 더 높아요!)
          */
-
-        Double score,
 
         String districtName,
         String businessDistrictName,

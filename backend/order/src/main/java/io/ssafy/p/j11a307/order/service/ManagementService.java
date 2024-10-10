@@ -354,10 +354,11 @@ public class ManagementService {
         for (Map.Entry<Integer, Integer> entry : sortedEntries) {
             System.out.println(entry.getKey()+ " " + entry.getValue());
             //map은 (간편위치, 나온 횟수)
-            StoreSimpleLocationDTO storeSimpleLocation = storeClient.getStoreSimpleLocationInfo(entry.getKey());
+            GetStoreSimpleLocationDTO storeSimpleLocation = storeClient.getStoreSimpleLocationInfo(entry.getKey());
 
             GetSalesTopPlace getSalesTopPlace = GetSalesTopPlace.builder()
                     .id(entry.getKey())
+                    .src(storeSimpleLocation.src())
                     .address(storeSimpleLocation.address())
                     .longitude(storeSimpleLocation.longitude())
                     .latitude(storeSimpleLocation.latitude())
@@ -598,15 +599,7 @@ public class ManagementService {
 
 
 
-
-
-
-
-
-
-
         GetSurroundingBusinessDistrictDTO getSurroundingBusinessDistrictDTO = GetSurroundingBusinessDistrictDTO.builder()
-                //.score()
                 .districtName(districtSales.getDistrictName())
                 .businessDistrictName(districtSales.getBusinessDistrictName())
                 .dayGroup(dayGroupDTO)

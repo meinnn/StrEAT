@@ -3,11 +3,9 @@ package io.ssafy.p.j11a307.order.service;
 import io.ssafy.p.j11a307.order.dto.ReadStoreBasicInfoDTO;
 import io.ssafy.p.j11a307.order.dto.ReadStoreCategoryDTO;
 import io.ssafy.p.j11a307.order.dto.ReadStoreDTO;
-import io.ssafy.p.j11a307.order.dto.StoreSimpleLocationDTO;
+import io.ssafy.p.j11a307.order.dto.GetStoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -26,7 +24,7 @@ public interface StoreClient {
     Integer getSelectedSimpleLocationByStoreId (@PathVariable Integer storeId);
 
     @GetMapping("/api/stores/locations/{id}/info")
-    StoreSimpleLocationDTO getStoreSimpleLocationInfo(@PathVariable Integer id);
+    GetStoreSimpleLocationDTO getStoreSimpleLocationInfo(@PathVariable Integer id);
 
     @GetMapping("/api/stores/category/{storeId}")
     ReadStoreCategoryDTO getStoreCategoryByStoreId(@PathVariable Integer storeId);

@@ -13,6 +13,9 @@ public record GetSalesTopPlace (
         @Schema(description = "간편위치 id", example = "1")
         Integer id,
 
+        @Schema(description = "간편위치 사진")
+        String src,
+
         @Schema(description = "간편위치 이름", example = "역삼역 앞")
         String nickname,
 
