@@ -44,10 +44,11 @@ export default function LocationPicker() {
       window.naver.maps.Service.reverseGeocode(
         {
           coords,
-          orders: [
-            naver.maps.Service.OrderType.ADDR,
-            naver.maps.Service.OrderType.ROAD_ADDR,
-          ],
+          orders: naver.maps.Service.OrderType.ROAD_ADDR,
+          // orders: [
+          //   naver.maps.Service.OrderType.ADDR,
+          //   naver.maps.Service.OrderType.ROAD_ADDR,
+          // ],
         },
         (status: any, response: any) => {
           if (status === naver.maps.Service.Status.OK) {

@@ -164,6 +164,7 @@ export default function OwnerStoreSettingBusinessHours() {
   useEffect(() => {
     if (!storeInfo || !storeInfo?.storeBusinessDays) return
     setDefaultBusinessDays(mergeTimeData())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeInfo])
 
   if (ownerInfoLoading || isLoading) return <p>로딩중</p>

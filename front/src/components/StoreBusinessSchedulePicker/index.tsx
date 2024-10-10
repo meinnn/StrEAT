@@ -2,8 +2,6 @@
 // eslint-disable-next-line react-hooks/rules-of-hooks
 
 import { useEffect, useState } from 'react'
-import { useMyStoreInfo } from '@/hooks/useMyStoreInfo'
-import { useOwnerInfo } from '@/hooks/useOwnerInfo'
 
 const DAYS = [
   {
@@ -65,23 +63,30 @@ interface Day {
   order: number
 }
 
+interface Schedule {
+  mondayStart: string
+  mondayEnd: string
+  tuesdayStart: string
+  tuesdayEnd: string
+  wednesdayStart: string
+  wednesdayEnd: string
+  thursdayStart: string
+  thursdayEnd: string
+  fridayStart: string
+  fridayEnd: string
+  saturdayStart: string
+  saturdayEnd: string
+  sundayStart: string
+  sundayEnd: string
+}
+
 export default function StoreBusinessSchedulePicker({
   setBusinessDays,
   defaultBusinessDays,
 }: {
-  setBusinessDays: React.Dispatch<React.SetStateAction<string[]>>
-  defaultBusinessDays: any
+  setBusinessDays: React.Dispatch<React.SetStateAction<Schedule>> // 여기에서 Schedule 타입을 사용합니다.
+  defaultBusinessDays?: Day[] // defaultBusinessDays의 타입도 명시합니다.
 }) {
-  const {
-    data: ownerInfo,
-    error: ownerInfoError,
-    isLoading: ownerInfoLoading,
-  } = useOwnerInfo()
-  const {
-    data: storeInfo,
-    error,
-    isLoading,
-  } = useMyStoreInfo(ownerInfo?.storeId)
   const [selectedDays, setSelectedDays] = useState<Day[]>([])
 
   const toggleDay = (day: Day) => {
@@ -92,7 +97,11 @@ export default function StoreBusinessSchedulePicker({
     )
   }
 
-  const handleTimeChange = (e: any, id: string, type: string) => {
+  const handleTimeChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
+    type: string
+  ) => {
     const { value } = e.target
     setSelectedDays((prevSelectedDays) =>
       prevSelectedDays.map((day) => {
@@ -107,8 +116,8 @@ export default function StoreBusinessSchedulePicker({
     )
   }
 
-  const generateSchedule = () => {
-    const schedule = {
+  const generateSchedule = (): Schedule => {
+    const schedule: Schedule = {
       mondayStart: '',
       mondayEnd: '',
       tuesdayStart: '',
@@ -169,7 +178,7 @@ export default function StoreBusinessSchedulePicker({
 
   useEffect(() => {
     setBusinessDays(generateSchedule())
-  }, [selectedDays])
+  }, [selectedDays, setBusinessDays])
 
   return (
     <section className="flex flex-col w-full">

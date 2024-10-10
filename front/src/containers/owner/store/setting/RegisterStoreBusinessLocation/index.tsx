@@ -11,6 +11,12 @@ import { ImageFile } from '@/containers/customer/orders/ReviewImageUploader'
 import useNaverMap from '@/hooks/useNaverMap'
 import { useOwnerInfo } from '@/hooks/useOwnerInfo'
 
+type ApiResponse<T> = {
+  message?: string
+  error?: string
+  data?: T
+}
+
 export default function RegisterStoreBusinessLocation() {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -47,10 +53,11 @@ export default function RegisterStoreBusinessLocation() {
       window.naver.maps.Service.reverseGeocode(
         {
           coords,
-          orders: [
-            naver.maps.Service.OrderType.ADDR,
-            naver.maps.Service.OrderType.ROAD_ADDR,
-          ],
+          orders: naver.maps.Service.OrderType.ROAD_ADDR,
+          // orders: [
+          //   naver.maps.Service.OrderType.ADDR,
+          //   naver.maps.Service.OrderType.ROAD_ADDR,
+          // ],
         },
         (status: any, response: any) => {
           if (status === naver.maps.Service.Status.OK) {

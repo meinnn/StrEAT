@@ -1,7 +1,4 @@
-/* eslint-disable func-names */
 /* eslint-disable consistent-return */
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-alert */
 
 'use client'
 
@@ -10,16 +7,25 @@ import { RiSearchLine } from 'react-icons/ri'
 import useNaverMap from '@/hooks/useNaverMap'
 import { useMapCenter } from '@/contexts/MapCenterContext'
 
+// naver.maps 관련 타입
+type NaverCoord = naver.maps.Coord
+type NaverMap = naver.maps.Map
+type NaverMarker = naver.maps.Marker
+
 export default function LocationPicker() {
-  const [searchVal, setSearchVal] = useState('')
+  const [searchVal, setSearchVal] = useState<string>('') // 타입 명시
   const [currentAddress, setCurrentAddress] =
     useState<string>('선택된 위치가 없습니다.')
   const { center, setCenter } = useMapCenter()
   const { map, currentLocation } = useNaverMap('map', { zoom: 16 })
-  const markerRef = useRef<naver.maps.Marker | null>(null)
+  const markerRef = useRef<NaverMarker | null>(null) // 타입 명시
 
-  const mark = (lat: any, lng: any) => {
+  const mark = (lat: number, lng: number) => {
+    // 타입 명시
     if (!map) return
+    if (markerRef.current) {
+      markerRef.current.setMap(null) // 이전 마커 제거
+    }
     markerRef.current = new naver.maps.Marker({
       position: new naver.maps.LatLng(lat, lng),
       map,
@@ -29,17 +35,18 @@ export default function LocationPicker() {
     })
   }
 
-  const fetchAddressFromCoords = useCallback((coords: naver.maps.Coord) => {
+  const fetchAddressFromCoords = useCallback((coords: NaverCoord) => {
     if (window.naver && window.naver.maps && window.naver.maps.Service) {
       window.naver.maps.Service.reverseGeocode(
         {
           coords,
-          orders: [
-            naver.maps.Service.OrderType.ADDR,
-            naver.maps.Service.OrderType.ROAD_ADDR,
-          ],
+          orders: naver.maps.Service.OrderType.ROAD_ADDR,
+          // [
+          //   naver.maps.Service.OrderType.ADDR,
+          //   naver.maps.Service.OrderType.ROAD_ADDR,
+          // ],
         },
-        (status: any, response: any) => {
+        (status: naver.maps.Service.Status, response: any) => {
           if (status === naver.maps.Service.Status.OK) {
             const { jibunAddress, roadAddress } = response.v2.address
             setCurrentAddress(roadAddress || jibunAddress)
@@ -67,7 +74,6 @@ export default function LocationPicker() {
     }
   }
 
-  // 주소를 좌표로 변환하는 함수
   const searchAddressToCoordinate = (address: string) => {
     if (!map) return
     if (window.naver && window.naver.maps && window.naver.maps.Service) {
@@ -75,7 +81,7 @@ export default function LocationPicker() {
         {
           query: address,
         },
-        (status: any, response: any) => {
+        (status: naver.maps.Service.Status, response: any) => {
           if (status === window.naver.maps.Service.Status.ERROR) {
             return alert('Something went wrong!')
           }
@@ -101,18 +107,16 @@ export default function LocationPicker() {
     if (!map) return
 
     const listener = naver.maps.Event.addListener(map, 'click', (e: any) => {
-      const clickedLatLng = e.coord
+      const clickedLatLng: NaverCoord = e.coord
 
       if (markerRef.current) {
         markerRef.current.setMap(null)
       }
 
       mark(clickedLatLng.y, clickedLatLng.x)
-
       fetchAddressFromCoords(clickedLatLng)
     })
 
-    // eslint-disable-next-line consistent-return
     return () => {
       naver.maps.Event.removeListener(listener)
     }
@@ -121,20 +125,21 @@ export default function LocationPicker() {
   return (
     <div
       id="map"
-      className="h-screen relative h-full px-3 pt-4 max-w-96 top-0 left-0 overflow-hidden bg-gray-dark max-h-[36rem] h-full w-full rounded-xl"
+      className="relative h-full px-3 pt-4 max-w-96 top-0 left-0 overflow-hidden bg-gray-dark max-h-[36rem] h-full w-full rounded-xl"
     >
       <div className="w-full pt-4 px-3 absolute z-10 top-0 left-0">
         <form
-          onSubmit={(e: any) => {
+          onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault()
-            // searchAddressToCoordinate(searchVal)
             handleInputChange(searchVal)
           }}
           className="flex items-center w-full shadow-md rounded-xl overflow-hidden pl-4 bg-white"
         >
           <RiSearchLine className="text-primary-400 w-6 h-6" />
           <input
-            onChange={(e: any) => setSearchVal(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchVal(e.target.value)
+            }
             type="text"
             placeholder="위치를 검색해주세요"
             className="outline-none placeholder-gray-dark w-full py-3 pr-4 pl-2 text-text"

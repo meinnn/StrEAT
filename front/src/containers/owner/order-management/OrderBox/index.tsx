@@ -1,15 +1,9 @@
-<<<<<<< Updated upstream
-import { useState } from 'react'
 import PrintOrderBtn from '@/containers/owner/order-management/OrderBox/PrintOrderBtn'
-import AcceptFinishBtn from '@/containers/owner/order-management/OrderBox/AcceptFinishBtn'
-=======
-import PrintOrderBtn from './PrintOrderBtn'
-import AcceptBtn from './AcceptBtn'
-import RefusalBtn from './RefusalBtn'
-import CompleteBtn from './CompleteBtn'
+import CompleteBtn from '@/containers/owner/order-management/OrderBox/CompleteBtn'
 import { useOrderList } from '@/hooks/useOrderList'
 import { useOwnerInfo } from '@/hooks/useOwnerInfo'
->>>>>>> Stashed changes
+import RefusalBtn from '@/containers/owner/order-management/OrderBox/RefusalBtn'
+import AcceptBtn from '@/containers/owner/order-management/OrderBox/AcceptBtn'
 
 export default function OrderBox() {
   const {
