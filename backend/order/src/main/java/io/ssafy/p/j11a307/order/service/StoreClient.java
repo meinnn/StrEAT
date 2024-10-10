@@ -1,6 +1,7 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.ReadStoreBasicInfoDTO;
+import io.ssafy.p.j11a307.order.dto.ReadStoreCategoryDTO;
 import io.ssafy.p.j11a307.order.dto.ReadStoreDTO;
 import io.ssafy.p.j11a307.order.dto.StoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.order.global.DataResponse;
@@ -26,5 +27,8 @@ public interface StoreClient {
 
     @GetMapping("/api/stores/locations/{id}/info")
     StoreSimpleLocationDTO getStoreSimpleLocationInfo(@PathVariable Integer id);
+
+    @GetMapping("/api/stores/category/{storeId}")
+    ReadStoreCategoryDTO getStoreCategoryByStoreId(@PathVariable Integer storeId);
 
 }

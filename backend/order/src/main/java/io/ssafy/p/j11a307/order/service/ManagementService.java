@@ -1,26 +1,24 @@
 package io.ssafy.p.j11a307.order.service;
 
 import io.ssafy.p.j11a307.order.dto.*;
+import io.ssafy.p.j11a307.order.entity.DistrictSales;
 import io.ssafy.p.j11a307.order.entity.OrderProduct;
 import io.ssafy.p.j11a307.order.entity.Orders;
 import io.ssafy.p.j11a307.order.global.OrderCode;
 import io.ssafy.p.j11a307.order.global.TimeUtil;
 import io.ssafy.p.j11a307.order.global.YearWeek;
+import io.ssafy.p.j11a307.order.repository.DistrictSalesRepository;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
-import java.util.stream.Collectors;
-import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
-import java.time.format.TextStyle;
 import java.time.temporal.IsoFields;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
 
@@ -33,6 +31,8 @@ public class ManagementService {
     private final StoreClient storeClient;
     private final ProductClient productClient;
     private final TimeUtil timeUtil;
+    private final OpenAPIClient openAPIClient;
+    private final DistrictSalesRepository districtSalesRepository;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -119,7 +119,6 @@ public class ManagementService {
             if(date.isEqual(now)) {
                 //Orders의 상품들 모두 가져오기
 
-
                 for(Orders orders : dailyOrders) {
                     //상품 이름들 가져와서 map에다 집어넣기.
                     List<OrderProduct> orderProducts = orderProductRepository.findByOrdersId(orders);
@@ -150,9 +149,6 @@ public class ManagementService {
                 for(Map.Entry<String, GetSalesListByTimeTypeProductDTO> entry : map.entrySet()) {
                     entry.getValue().setPercent((double)entry.getValue().getQuantity() /totalDailyOrders * 100);
                 }
-
-
-
             }
 
             dailyMap.put(getFormattedDate(date), sales);
@@ -375,5 +371,252 @@ public class ManagementService {
         }
 
         return getSalesTopPlaceList;
+    }
+
+    @Transactional
+    public GetSurroundingBusinessDistrictDTO getSurroundingBusinessDistrict(String token, Double latitude, Double longitude) {
+        Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
+        Integer storeId = storeClient.getStoreIdByUserId(ownerId);
+
+        ReadStoreCategoryDTO readStoreCategoryDTO = storeClient.getStoreCategoryByStoreId(storeId);
+        String openAPIServiceKey = "QIwhnv5m5KXaXU9cFxE4rud/rEU0h8D2qAJnQ0r82sZkmTSJnI7p6GGvNbNgIA/YxSVqiYLBckspxPRElQ7ltQ==";
+
+        String bCategory = "I2";
+        String mCategory = readStoreCategoryDTO.topCode();
+        String sCategory = readStoreCategoryDTO.subCode();
+        String numOfRows = Integer.toString(1000);
+        String pageNo = Integer.toString(0);
+        String radius = Integer.toString(2000);
+        String cx = Double.toString(longitude);
+        String cy = Double.toString(latitude);
+
+        ResponseEntity<ResponseData> response = openAPIClient.storeListInRadius(openAPIServiceKey, "json", numOfRows, pageNo, bCategory, mCategory, sCategory, radius, cx, cy);
+
+        //System.out.println(li.getBody().getBody();
+
+        List<SameStoreDTO> sameStoreDTOS = new ArrayList<>();
+
+        for (StoreListInRadiusListDTO storeListInRadiusListDTO: response.getBody().getItems()) {
+            SameStoreDTO sameStoreDTO = SameStoreDTO.builder()
+                    .storeLat(Double.parseDouble(storeListInRadiusListDTO.lat()))
+                    .storeLon(Double.parseDouble(storeListInRadiusListDTO.lon()))
+                    .storeName(storeListInRadiusListDTO.bizesNm())
+                    .storeType(storeListInRadiusListDTO.ksicNm())
+                    .build();
+            sameStoreDTOS.add(sameStoreDTO);
+        }
+
+        //해당 위치에서 가장 가까운 상권을 찾는다.
+        //그러나 이때 8만개를 전부 돌면 안된다..!! -> 시간 오래 걸림
+        //따라서 grid 방식을 써서 격자 안에 있는 부분만 도는 것.
+
+        //가장 가까운 상권을 찾아서 가져온 상황.
+        DistrictSales districtSales = districtSalesRepository.findByDistrictName("사가정역");
+
+        //해당 상권
+        // 구분코드명 : 발달상권, 골목상권, 전통시장, 관광특구
+        // 코드명 : 사가정역
+        // 요일별 건수: 어느 요일에 인기인지. 인기 없는지. 평균보다 몇 퍼센트 높거나 낮은지.
+
+        int[] salesCounts = {
+                districtSales.getMondaySalesCount(), districtSales.getTuesdaySalesCount(), districtSales.getWednesdaySalesCount(),
+                districtSales.getThursdaySalesCount(), districtSales.getFridaySalesCount(), districtSales.getSaturdaySalesCount(), districtSales.getSundaySalesCount()
+        };
+
+        String[] daysOfWeek = {
+                "월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"
+        };
+
+
+        // 최대값, 최소값, 총합 구하기
+        int maxSales = Integer.MIN_VALUE;
+        int minSales = Integer.MAX_VALUE;
+        String maxSalesDay = "";
+        String minSalesDay = "";
+        int totalSales = 0;
+
+        for (int i = 0; i < salesCounts.length; i++) {
+            if (salesCounts[i] > maxSales) {
+                maxSales = salesCounts[i];
+                maxSalesDay = daysOfWeek[i];
+            }
+            if (salesCounts[i] < minSales) {
+                minSales = salesCounts[i];
+                minSalesDay = daysOfWeek[i];
+            }
+            totalSales += salesCounts[i];
+        }
+
+        // 평균 구하기
+        double averageSales = totalSales / (double) salesCounts.length;
+
+        double maxSalesPercentageDiff = ((maxSales - averageSales) / averageSales) * 100;
+        double minSalesPercentageDiff = ((minSales - averageSales) / averageSales) * 100;
+
+        GroupDTO dayGroupDTO = GroupDTO.builder()
+                .tag("요일")
+                .average(averageSales)
+                .bestGroup(maxSalesDay)
+                .bestDegree(maxSalesPercentageDiff)
+                .worstDegree(minSalesPercentageDiff)
+                .worstGroup(minSalesDay)
+                .build();
+
+
+        // 성별별 건수: 어떤 성별에게 인기인지. 인기 없는지. 평균보다 몇 퍼센트 높거나 낮은지.
+
+        salesCounts = new int[]{
+                districtSales.getMaleSalesCount(), districtSales.getFemaleSalesCount()
+        };
+
+        daysOfWeek = new String[]{
+                "남자", "여자"
+        };
+
+        // 최대값, 최소값, 총합 구하기
+        maxSales = Integer.MIN_VALUE;
+        minSales = Integer.MAX_VALUE;
+        maxSalesDay = "";
+        minSalesDay = "";
+        totalSales = 0;
+
+        for (int i = 0; i < salesCounts.length; i++) {
+            if (salesCounts[i] > maxSales) {
+                maxSales = salesCounts[i];
+                maxSalesDay = daysOfWeek[i];
+            }
+            if (salesCounts[i] < minSales) {
+                minSales = salesCounts[i];
+                minSalesDay = daysOfWeek[i];
+            }
+            totalSales += salesCounts[i];
+        }
+
+        // 평균 구하기
+        averageSales = totalSales / (double) salesCounts.length;
+
+        maxSalesPercentageDiff = ((maxSales - averageSales) / averageSales) * 100;
+        minSalesPercentageDiff = ((minSales - averageSales) / averageSales) * 100;
+
+        GroupDTO genderGroupDTO = GroupDTO.builder()
+                .tag("성별")
+                .average(averageSales)
+                .bestGroup(maxSalesDay)
+                .bestDegree(maxSalesPercentageDiff)
+                .worstDegree(minSalesPercentageDiff)
+                .worstGroup(minSalesDay)
+                .build();
+
+        // 연령별 건수: 어떤 연령대한테 인기인지. 인기 없는지. 평균보다 몇 퍼센트 높거나 낮은지.
+        salesCounts = new int[]{
+                districtSales.getAgeGroup10SalesCount(),districtSales.getAgeGroup20SalesCount(), districtSales.getAgeGroup30SalesCount(),
+                districtSales.getAgeGroup40SalesCount(), districtSales.getAgeGroup50SalesCount(), districtSales.getAgeGroup60PlusSalesCount()
+        };
+
+        daysOfWeek = new String[]{
+                "10대", "20대", "30대", "40대", "50대", "60대 이상"
+        };
+
+        // 최대값, 최소값, 총합 구하기
+        maxSales = Integer.MIN_VALUE;
+        minSales = Integer.MAX_VALUE;
+        maxSalesDay = "";
+        minSalesDay = "";
+        totalSales = 0;
+
+        for (int i = 0; i < salesCounts.length; i++) {
+            if (salesCounts[i] > maxSales) {
+                maxSales = salesCounts[i];
+                maxSalesDay = daysOfWeek[i];
+            }
+            if (salesCounts[i] < minSales) {
+                minSales = salesCounts[i];
+                minSalesDay = daysOfWeek[i];
+            }
+            totalSales += salesCounts[i];
+        }
+
+        // 평균 구하기
+        averageSales = totalSales / (double) salesCounts.length;
+
+        maxSalesPercentageDiff = ((maxSales - averageSales) / averageSales) * 100;
+        minSalesPercentageDiff = ((minSales - averageSales) / averageSales) * 100;
+
+        GroupDTO ageGroupDTO = GroupDTO.builder()
+                .tag("연령대")
+                .average(averageSales)
+                .bestGroup(maxSalesDay)
+                .bestDegree(maxSalesPercentageDiff)
+                .worstDegree(minSalesPercentageDiff)
+                .worstGroup(minSalesDay)
+                .build();
+
+        // 시간대별 건수: 어느 시간대에 인기인지. 인기 없는지.
+        salesCounts = new int[]{
+            districtSales.getTimeSlot00To06SalesCount(), districtSales.getTimeSlot06To11SalesCount(),
+            districtSales.getTimeSlot11To14SalesCount(), districtSales.getTimeSlot14To17SalesCount(),
+            districtSales.getTimeSlot17To21SalesCount(), districtSales.getTimeSlot21To24SalesCount()
+        };
+
+        daysOfWeek = new String[]{
+                "0시~6시", "6시~11시", "11시~14시", "14시~17시", "17시~21시", "21시~24시"
+        };
+
+        // 최대값, 최소값, 총합 구하기
+        maxSales = Integer.MIN_VALUE;
+        minSales = Integer.MAX_VALUE;
+        maxSalesDay = "";
+        minSalesDay = "";
+        totalSales = 0;
+
+        for (int i = 0; i < salesCounts.length; i++) {
+            if (salesCounts[i] > maxSales) {
+                maxSales = salesCounts[i];
+                maxSalesDay = daysOfWeek[i];
+            }
+            if (salesCounts[i] < minSales) {
+                minSales = salesCounts[i];
+                minSalesDay = daysOfWeek[i];
+            }
+            totalSales += salesCounts[i];
+        }
+
+        // 평균 구하기
+        averageSales = totalSales / (double) salesCounts.length;
+
+        maxSalesPercentageDiff = ((maxSales - averageSales) / averageSales) * 100;
+        minSalesPercentageDiff = ((minSales - averageSales) / averageSales) * 100;
+
+        GroupDTO timeGroupDTO = GroupDTO.builder()
+                .tag("시간대")
+                .average(averageSales)
+                .bestGroup(maxSalesDay)
+                .bestDegree(maxSalesPercentageDiff)
+                .worstDegree(minSalesPercentageDiff)
+                .worstGroup(minSalesDay)
+                .build();
+
+
+
+
+
+
+
+
+
+
+        GetSurroundingBusinessDistrictDTO getSurroundingBusinessDistrictDTO = GetSurroundingBusinessDistrictDTO.builder()
+                //.score()
+                .districtName(districtSales.getDistrictName())
+                .businessDistrictName(districtSales.getBusinessDistrictName())
+                .dayGroup(dayGroupDTO)
+                .genderGroup(genderGroupDTO)
+                .ageGroup(ageGroupDTO)
+                .timeGroup(timeGroupDTO)
+                .sameStoreNum(response.getBody().getItems().size())
+                .sameStoreList(sameStoreDTOS)
+                .build();
+
+        return getSurroundingBusinessDistrictDTO;
     }
 }
