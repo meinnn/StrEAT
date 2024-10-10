@@ -63,11 +63,20 @@ export async function GET(request: Request) {
       },
     })
   } catch (error) {
-    console.error('Error fetching data:', error.message)
+    if (error instanceof Error) {
+      console.error('Error fetching data:', error.message)
+      return NextResponse.json(
+        {
+          message: '서버에서 데이터를 가져오는 데 실패했습니다.',
+          error: error.message,
+        },
+        { status: 500 }
+      )
+    }
+    console.error('Unknown error:', error)
     return NextResponse.json(
       {
-        message: '서버에서 데이터를 가져오는 데 실패했습니다.',
-        error: error.message,
+        message: '알 수 없는 오류가 발생했습니다.',
       },
       { status: 500 }
     )

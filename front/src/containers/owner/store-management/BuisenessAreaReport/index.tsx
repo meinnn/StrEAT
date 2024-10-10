@@ -32,7 +32,7 @@ export default function BusinessAreaReport() {
         >
           주변 상권 분석
         </div>
-        <div
+        {/* <div
           onClick={() => setActiveTab('NewSpot')}
           className={`${
             activeTab === 'NewSpot'
@@ -41,7 +41,7 @@ export default function BusinessAreaReport() {
           } px-4 py-2 rounded-full text-center shadow-lg text-sm font-semibold cursor-pointer`}
         >
           새로운 스팟 추천
-        </div>
+        </div> */}
       </div>
 
       {/* 지도 아래에 배치 */}

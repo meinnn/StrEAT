@@ -69,7 +69,10 @@ export default function TopThree() {
 
   useEffect(() => {
     if (map && storeData.length > 0) {
-      const bounds = new naver.maps.LatLngBounds()
+      const bounds = new naver.maps.LatLngBounds(
+        new naver.maps.LatLng(storeData[0].latitude, storeData[0].longitude), // 남서쪽 좌표 (예시로 첫 번째 매장 좌표)
+        new naver.maps.LatLng(storeData[0].latitude, storeData[0].longitude) // 북동쪽 좌표 (초기값)
+      )
 
       // 매장 데이터에 대해 마커와 원을 모두 표시
       storeData.forEach((store) => {
@@ -159,7 +162,7 @@ export default function TopThree() {
                       alt={store.nickname}
                       width={40}
                       height={40}
-                      className="object-cover w-full h-full"
+                      className="object-cover w-full h-full mr-1"
                     />
                   </div>
                   {/* 매장 정보 */}
