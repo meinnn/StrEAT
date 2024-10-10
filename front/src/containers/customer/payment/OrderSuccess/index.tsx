@@ -15,7 +15,7 @@ export default function OrderSuccess() {
     // 필수 값이 없으면 실패 페이지로 리다이렉트
     if (!paymentKey || !orderId || !amount) {
       console.error('필수 결제 정보가 없습니다.')
-      router.push('/customer/payment/OrderFailure')
+      router.push('/customer/payment/result?status=failure')
       return
     }
 
