@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
+export const dynamic = 'force-dynamic' // 강제로 동적 렌더링
+
 async function getAccessToken() {
   const cookieStore = cookies()
   return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기

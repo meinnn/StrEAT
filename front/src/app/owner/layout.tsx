@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import OwnerNav from '@/components/OwnerNav'
 import ClientWrapper from '@/utils/ClientWrapper'

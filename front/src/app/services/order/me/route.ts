@@ -2,10 +2,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
+export const dynamic = 'force-dynamic' // 강제로 동적 렌더링
+
+async function getAccessToken() {
+  const cookieStore = cookies()
+  return cookieStore.get('accessToken')?.value // 쿠키에서 accessToken 가져오기
+}
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
-    const cookieStore = cookies()
-    const token = cookieStore.get('accessToken')?.value
+    const token = await getAccessToken()
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = req.nextUrl
     const page = Number(searchParams.get('page') ?? '0')
     const limit = Number(searchParams.get('limit') ?? '5')

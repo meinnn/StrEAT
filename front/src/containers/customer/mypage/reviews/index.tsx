@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+
 'use client'
 
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -49,7 +51,6 @@ const fetchMyReview = async ({ pageParam = 0 }: any) => {
     return await response.json()
   } catch (error) {
     console.error('Error:', error)
-    throw error
   }
 }
 
