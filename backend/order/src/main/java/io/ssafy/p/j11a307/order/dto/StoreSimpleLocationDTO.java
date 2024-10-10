@@ -1,8 +1,9 @@
-package io.ssafy.p.j11a307.store.dto;
-import lombok.Builder;
-import org.springframework.web.multipart.MultipartFile;
+package io.ssafy.p.j11a307.order.dto;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,5 +27,4 @@ public record StoreSimpleLocationDTO(
         @NotNull(message = "이미지 파일은 필수 입력 항목입니다.")
         List<MultipartFile> images // 이미지 파일 배열로 처리
 ) {
-
 }

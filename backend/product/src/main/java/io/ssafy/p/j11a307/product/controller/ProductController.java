@@ -233,14 +233,16 @@ public class ProductController {
     @PutMapping("/{productId}/stock-status")
     @Operation(summary = "상품 품절 여부 변경 (true : 재고 있음 / false : 품절)")
     @Transactional
-    public ResponseEntity<Void> toggleProductStockStatus(@RequestHeader("Authorization") String token,
+    public ResponseEntity<MessageResponse> toggleProductStockStatus(@RequestHeader("Authorization") String token,
                                                          @PathVariable Integer productId) {
         // 1. 서비스 호출하여 재고 상태 변경
-        productService.toggleProductStockStatus(productId, token);
+        boolean updatedStockStatus = productService.toggleProductStockStatus(productId, token);
+
+        String stockStatusMessage = updatedStockStatus ? "재고 있음" : "품절";
 
         // 2. 성공적으로 처리되었으면 204 No Content 응답
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageResponse.of("상품 품절 여부 변경 성공 | " + "현재 재고 여부 => " + stockStatusMessage));
     }
-
 
 }

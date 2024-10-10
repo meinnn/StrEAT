@@ -4,8 +4,10 @@ import io.ssafy.p.j11a307.store.dto.StoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.store.entity.StoreSimpleLocation;
 import io.ssafy.p.j11a307.store.global.DataResponse;
 import io.ssafy.p.j11a307.store.global.MessageResponse;
+import io.ssafy.p.j11a307.store.service.StoreService;
 import io.ssafy.p.j11a307.store.service.StoreSimpleLocationService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StoreSimpleLocationController {
     private final StoreSimpleLocationService simpleLocationService;
+    private final StoreService storeService;
 
     /**
      * 간편 위치 ID로 가게 정보도 함께 수정
@@ -64,8 +67,29 @@ public class StoreSimpleLocationController {
     }
 
     /**
-     * 간편 위치 수정
+     * 특정 가게의 간편 위치 조회 -> storeId로 조회
      */
+    @GetMapping("/store/{storeId}/current-loc")
+    @Operation(summary = "storeId를 통해 내 가게의 현재 간편위치 id 조회")
+    public Integer getSelectedSimpleLocationByStoreId (@PathVariable Integer storeId) {
+        return simpleLocationService.getSelectedSimpleLocationByStoreId(storeId);
+    }
+
+    /*
+    간편 위치 상세조회
+     */
+
+    @GetMapping("/{id}/info")
+    @Operation(summary = "간편위치 id로 간편위치 상세조회")
+    public StoreSimpleLocationDTO  getStoreSimpleLocationInfo(@PathVariable Integer id) {
+        return simpleLocationService.getStoreSimpleLocationInfo(id);
+    }
+
+
+
+        /**
+         * 간편 위치 수정
+         */
     @PutMapping(value ="/update/{locationId}", consumes = {"multipart/form-data"})
     @Operation(summary = "간편 위치 정보 수정")
     public ResponseEntity<MessageResponse> updateSimpleLocation(

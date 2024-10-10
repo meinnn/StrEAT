@@ -68,14 +68,21 @@ public class PaymentService {
             payment.addTossEasyPayPayment(tossEasyPayment);
         }
 
-        orderService.completeOrder(payment.getOrderId(), internalRequestKey);
+        PayProcessRequest payProcessRequest = PayProcessRequest.builder()
+                .orderNumber(payment.getOrderId())
+                .approvedAt(payment.getApprovedAt())
+                .method(payment.getMethod())
+                .isSuccess(1)
+                .build();
+
+        orderService.completeOrder(payProcessRequest, internalRequestKey);
 
         paymentRepository.save(payment);
         return new PaymentResponse(payment.getId(), payment.getOrderId());
     }
 
     @Transactional
-    public void cancelTossPayment(Integer orderId, TossPaymentCancelRequest tossPaymentCancelRequest) {
+    public void cancelTossPayment(String orderId, TossPaymentCancelRequest tossPaymentCancelRequest) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set(HEADER_AUTH, "Basic " + tossSecretKey);

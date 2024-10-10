@@ -10,9 +10,6 @@ public record CreateOrderNumberRequest (
         @Schema(description = "총 가격", example = "30000")
         Integer totalPrice,
 
-        @Schema(description = "요청사항", example = "벨 눌러줘요")
-        String request,
-
         @Schema(description = "상품 리스트")
         List<CreateOrderNumberProductListDTO> orderProducts
 ){ }
