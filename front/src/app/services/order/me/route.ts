@@ -1,8 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+    const cookieStore = cookies()
+    const token = cookieStore.get('accessToken')?.value
     const { searchParams } = req.nextUrl
     const page = Number(searchParams.get('page') ?? '0')
     const limit = Number(searchParams.get('limit') ?? '5')
@@ -12,9 +15,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization':
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJpYXQiOjE3Mjc4MzE0MTQsImV4cCI6MjA4NzgzMTQxNCwidXNlcklkIjoxMn0.UrVrI-WUCXdx017R4uRIl6lzxbktVSfEDjEgYe5J8UQ',
+          Authorization: `Bearer ${token}`,
         },
         cache: 'no-store',
       }

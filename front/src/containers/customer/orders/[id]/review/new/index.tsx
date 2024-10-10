@@ -9,7 +9,7 @@ import { FaStar } from 'react-icons/fa'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import ReviewImageUploader, {
-  ImageList,
+  ImageFile,
 } from '@/containers/customer/orders/ReviewImageUploader'
 
 const TASTE_LIST = [
@@ -42,7 +42,7 @@ export default function CustomerCreateReview({
     score: 0,
     content: '',
   })
-  const [reviewImageList, setReviewImageList] = useState<ImageList[]>([])
+  const [reviewImageList, setReviewImageList] = useState<ImageFile[]>([])
   const isReviewButtonEnabled = review.score > 0 && review.content.length > 0
 
   const handleSubmitReview = async () => {

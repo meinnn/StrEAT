@@ -1,6 +1,6 @@
-import Login from '@/containers/login'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import Login from '@/containers/login'
 
 export default async function Home() {
   const cookieStore = cookies()
