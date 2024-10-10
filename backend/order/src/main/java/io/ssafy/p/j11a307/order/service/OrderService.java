@@ -473,9 +473,13 @@ public class OrderService {
         ReadStoreDTO readStoreDTO = storeClient.getStoreInfo(storeId).getData();
         if(readStoreDTO == null) throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
 
+        //현재 storeSimpleLocationId 찾아야 함!!!!
+        Integer storeSimpleLocationId = storeClient.getSelectedSimpleLocationByStoreId(storeId);
+
         Orders orders = Orders.builder()
                 .storeId(storeId)
                 .userId(customerId)
+                .storeSimpleLocationId(storeSimpleLocationId)
                 .createdAt(timeUtil.getCurrentSeoulTime())
                 .status(OrderCode.WAITING_FOR_PAYING)
                 .totalPrice(createOrderNumberRequest.totalPrice())

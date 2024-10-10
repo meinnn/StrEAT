@@ -2,6 +2,7 @@ package io.ssafy.p.j11a307.order.controller;
 
 import io.ssafy.p.j11a307.order.dto.GetDailySalesDTO;
 import io.ssafy.p.j11a307.order.dto.GetSalesListByTimeTypeDTO;
+import io.ssafy.p.j11a307.order.dto.GetSalesTopPlace;
 import io.ssafy.p.j11a307.order.global.DataResponse;
 import io.ssafy.p.j11a307.order.service.ManagementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -50,5 +52,21 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("종류별 매출 조회에 성공했습니다.", getSalesListByTimeTypeDTO));
     }
 
+
+    //주문내역이 가장 많았던 탑3 간편지역 조회
+    @GetMapping("/spot/top-three")
+    @Operation(summary = "주문횟수 상위 간편위치 조회", description = "가장 순위가 높았던 간편위치 3개를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "매출 상위 간편위치 조회 성공")
+    })
+    public ResponseEntity<DataResponse<List<GetSalesTopPlace>>> getSalesTopPlace(@RequestHeader("Authorization") String token) {
+        List<GetSalesTopPlace> placeList = managementService.getSalesTopPlace(token);
+        
+        return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("주문횟수 상위 간편위치 조회에 성공했습니다.", placeList));
+    }
+
+
+
+    //공공데이터를 통한 주변 상권 분석
 
 }

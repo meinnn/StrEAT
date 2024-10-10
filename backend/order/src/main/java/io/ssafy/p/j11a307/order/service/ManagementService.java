@@ -11,6 +11,8 @@ import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Or;
+import java.util.stream.Collectors;
+import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -331,4 +333,47 @@ public class ManagementService {
         return LocalDate.parse(localDateTime.format(formatter), formatter);
     }
 
+    @Transactional
+    public List<GetSalesTopPlace> getSalesTopPlace(String token) {
+        Integer ownerId = ownerClient.getOwnerId(token, internalRequestKey);
+        Integer storeId = storeClient.getStoreIdByUserId(ownerId);
+
+        //주문내역에서 해당 storeId랑 동일한 데이터 중, simple_location 아이디 1~3위 찾기
+        List<Integer> li = ordersRepository.findByStoreId(storeId).stream().map(Orders::getStoreSimpleLocationId).toList();
+
+        Map<Integer, Integer> frequencyMap = new HashMap<>();
+        for (Integer num : li) {
+            frequencyMap.put(num, frequencyMap.getOrDefault(num, 0) + 1);
+        }
+
+        // 빈도 순으로 정렬된 리스트 생성 (내림차순)
+        List<Map.Entry<Integer, Integer>> sortedEntries = frequencyMap.entrySet().stream()
+                .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue())) // 빈도 수 기준 내림차순
+                .limit(3) // 상위 3개만 가져옴
+                .toList();
+
+        List<GetSalesTopPlace> getSalesTopPlaceList = new ArrayList<>();
+
+        Integer rank = 1;
+        for (Map.Entry<Integer, Integer> entry : sortedEntries) {
+            System.out.println(entry.getKey()+ " " + entry.getValue());
+            //map은 (간편위치, 나온 횟수)
+            StoreSimpleLocationDTO storeSimpleLocation = storeClient.getStoreSimpleLocationInfo(entry.getKey());
+
+            GetSalesTopPlace getSalesTopPlace = GetSalesTopPlace.builder()
+                    .id(entry.getKey())
+                    .address(storeSimpleLocation.address())
+                    .longitude(storeSimpleLocation.longitude())
+                    .latitude(storeSimpleLocation.latitude())
+                    .nickname(storeSimpleLocation.nickname())
+                    .orderCount(entry.getValue())
+                    .rank(rank)
+                    .build();
+
+            rank++;
+            getSalesTopPlaceList.add(getSalesTopPlace);
+        }
+
+        return getSalesTopPlaceList;
+    }
 }
