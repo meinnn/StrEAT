@@ -421,12 +421,6 @@ public class StoreService{
     public List<DibsStoreStatusDTO> getStoresByIds(List<Integer> storeIds) {
         // 가게 ID 리스트로 가게 정보 조회
         List<Store> stores = storeRepository.findAllById(storeIds);
-
-//        // Store 엔티티를 ReadStoreStatusDTO로 변환
-//        return stores.stream()
-//                .map(store -> new DibsStoreStatusDTO(store.getId(), store.getName(), store.getStatus()))
-//                .collect(Collectors.toList());
-
         return stores.stream()
                 .map(store -> new DibsStoreStatusDTO(
                         store.getId(),
@@ -458,6 +452,27 @@ public class StoreService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.changeStatus(status);  // 상태 변경 메서드 호출
         storeRepository.save(store); // 변경된 상태를 저장
+    }
+
+    @Transactional(readOnly = true)
+    public ReadStoreCategoryDTO getStoreCategoryByStoreId(Integer storeId) {
+        // Store 조회
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        // SubCategory와 TopCategory 정보 가져오기
+        var subCategory = store.getSubCategory();
+        var topCategory = subCategory.getTopCategory();
+
+        // DTO 생성 후 반환
+        return new ReadStoreCategoryDTO(
+                subCategory.getId(),
+                subCategory.getName(),
+                subCategory.getCode(),
+                topCategory.getId(),
+                topCategory.getName(),
+                topCategory.getCode()
+        );
     }
 
 

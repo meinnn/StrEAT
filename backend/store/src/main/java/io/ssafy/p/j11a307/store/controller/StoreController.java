@@ -255,4 +255,11 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageResponse.of("스토어의 서브카테고리가 업데이트되었습니다."));
     }
+
+    @GetMapping("/category/{storeId}")
+    @Operation(summary = "Store의 SubCategory와 TopCategory 정보 조회")
+    public ResponseEntity<ReadStoreCategoryDTO> getStoreCategoryByStoreId(@PathVariable Integer storeId) {
+        ReadStoreCategoryDTO storeCategory = storeService.getStoreCategoryByStoreId(storeId);
+        return ResponseEntity.ok(storeCategory);
+    }
 }
