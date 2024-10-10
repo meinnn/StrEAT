@@ -125,7 +125,7 @@ export default function Orders() {
             height={80}
             priority
           />
-          <p className="text-text font-bold">장바구니에 담은 메뉴가 없습니다</p>
+          <p className="text-text font-bold">주문내역이 없습니다</p>
         </div>
       </div>
     )
