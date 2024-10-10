@@ -7,6 +7,7 @@ import CartSkeletonPage from '@/components/skeleton/CartSkeleton'
 import { useCart } from '@/contexts/CartContext'
 import { useRouter } from 'next/navigation'
 import EmptyCart from '@/containers/customer/home/cart/EmptyCart'
+import { useState, useCallback } from 'react'
 
 export default function CartPage() {
   const router = useRouter()
@@ -21,6 +22,8 @@ export default function CartPage() {
     handleRemoveItem,
   } = useCart()
 
+  const [loading, setLoading] = useState(false) // 로딩 상태 추가
+
   const totalPrice =
     cartItems
       .filter((item) => item.checked)
@@ -30,6 +33,56 @@ export default function CartPage() {
     cartItems
       .filter((item) => item.checked)
       .reduce((acc, item) => acc + item.quantity, 0) ?? 0
+
+  // orderId 요청 함수
+  const fetchOrderId = useCallback(async () => {
+    if (!cartStore) {
+      console.error('Store ID is missing.')
+      return null
+    }
+
+    const requestBody = {
+      storeId: cartStore.storeId,
+      totalPrice, // 총 가격
+      orderProducts: cartItems.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        orderProductOptions: [], // 옵션을 추가하는 경우 여기에 반영
+      })),
+    }
+
+    try {
+      const response = await fetch(`/services/payments/orderid`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      if (!response.ok) {
+        throw new Error('Order ID 발급 실패')
+      }
+
+      const result = await response.json()
+      return result.orderId
+    } catch (error) {
+      console.error('Order ID 발급 오류:', error)
+      return null
+    }
+  }, [cartStore, cartItems, totalPrice])
+
+  // 결제 버튼 클릭 시 실행되는 함수
+  const handlePayment = async () => {
+    setLoading(true) // 로딩 상태 시작
+    const orderId = await fetchOrderId() // orderId를 먼저 요청
+    setLoading(false) // 로딩 상태 종료
+
+    if (orderId) {
+      // orderId가 발급되면 결제 페이지로 이동
+      router.push(`/customer/payment/toss?orderId=${orderId}`)
+    }
+  }
 
   if (status === 'pending') return <CartSkeletonPage />
   if (cartItems.length === 0) return <EmptyCart />
@@ -85,15 +138,17 @@ export default function CartPage() {
       <div className="fixed bottom-0 inset-x-0 p-3 bg-white">
         <button
           type="button"
-          onClick={() => router.push('/customer/payment/toss')}
+          onClick={handlePayment} // 결제 버튼 클릭 시 실행
           className={`w-full py-4 font-bold rounded-lg ${
             totalQuantity > 0
               ? 'bg-primary-500 text-white'
               : 'bg-gray-medium text-gray-dark'
           }`}
-          disabled={totalQuantity === 0}
+          disabled={totalQuantity === 0 || loading} // 로딩 중이면 버튼 비활성화
         >
-          {`${totalPrice.toLocaleString()}원 결제하기`}
+          {loading
+            ? '결제 준비 중...'
+            : `${totalPrice.toLocaleString()}원 결제하기`}
         </button>
       </div>
 

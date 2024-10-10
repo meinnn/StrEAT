@@ -19,9 +19,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData()
     const formEntries = Array.from(formData.entries())
-    formEntries.forEach(([key, value]) => {
-      console.log(key, value)
-    })
+    formEntries.forEach(([key, value]) => {})
 
     const newFormData = new FormData()
 

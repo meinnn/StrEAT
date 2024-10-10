@@ -1,12 +1,31 @@
-/* eslint-disable */
 'use client'
 
-import { useState } from 'react'
+/* eslint-disable react/no-array-index-key */
+import { useState, useEffect } from 'react'
 import { LuPencil } from 'react-icons/lu'
 import { FaRegTrashAlt, FaPlus } from 'react-icons/fa'
 
-export default function MenuAddOption() {
-  const [optionGroups, setOptionGroups] = useState([
+interface Option {
+  name: string
+  price: string
+}
+
+interface OptionGroup {
+  name: string
+  options: Option[]
+  isRequired: boolean
+  minOptions: number
+  maxOptions: number
+}
+
+interface MenuAddOptionsProps {
+  onOptionsChange: (optionGroups: OptionGroup[]) => void
+}
+
+export default function MenuAddOptions({
+  onOptionsChange,
+}: MenuAddOptionsProps) {
+  const [optionGroups, setOptionGroups] = useState<OptionGroup[]>([
     {
       name: '옵션 1',
       options: [{ name: '선택 1', price: '' }],
@@ -15,6 +34,10 @@ export default function MenuAddOption() {
       maxOptions: 1,
     },
   ])
+
+  useEffect(() => {
+    onOptionsChange(optionGroups)
+  }, [optionGroups, onOptionsChange])
 
   // 옵션 그룹 추가
   const handleAddOptionGroup = () => {
@@ -75,8 +98,8 @@ export default function MenuAddOption() {
     <div className="mb-4 mt-6 pr-4 pl-4">
       {optionGroups.map((group, groupIndex) => (
         <div
-          key={groupIndex}
-          className="mb-10 border-2 border-gray-300 rounded-md p-4"
+          key={`group-${groupIndex}`} // 배열 인덱스 대신 고유한 문자열을 사용
+          className="mb-6 border-2 border-gray-300 rounded-md p-4"
         >
           <div className="mb-4 flex justify-between items-center">
             {/* 옵션 그룹 이름 수정 필드 */}
@@ -96,10 +119,14 @@ export default function MenuAddOption() {
               <span className="mr-2">선택 여부</span>
               <div
                 onClick={() => handleToggle(groupIndex)}
-                className={`relative w-14 h-7 flex items-center ${group.isRequired ? 'bg-secondary' : 'bg-gray-300'} rounded-full p-1 cursor-pointer transition-colors duration-300`}
+                className={`relative w-14 h-7 flex items-center ${
+                  group.isRequired ? 'bg-secondary' : 'bg-gray-300'
+                } rounded-full p-1 cursor-pointer transition-colors duration-300`}
               >
                 <div
-                  className={`w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-xs font-bold transform ${group.isRequired ? 'translate-x-6' : 'translate-x-0'} transition-transform duration-300`}
+                  className={`w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-xs font-bold transform ${
+                    group.isRequired ? 'translate-x-6' : 'translate-x-0'
+                  } transition-transform duration-300`}
                 >
                   {group.isRequired ? '필수' : '선택'}
                 </div>
@@ -109,7 +136,10 @@ export default function MenuAddOption() {
           {/* 옵션들 */}
           <div className="border-2 border-gray-500 rounded-md p-4">
             {group.options.map((option, optionIndex) => (
-              <div key={optionIndex} className="flex items-center mb-2">
+              <div
+                key={`option-${groupIndex}-${optionIndex}`} // 배열 인덱스 대신 고유한 문자열을 사용
+                className="flex items-center mb-2"
+              >
                 <input
                   type="text"
                   value={option.name}
@@ -175,7 +205,7 @@ export default function MenuAddOption() {
                     { length: group.options.length + 1 },
                     (_, i) => i
                   ).map((value) => (
-                    <option key={value} value={value}>
+                    <option key={`min-${groupIndex}-${value}`} value={value}>
                       {value}개
                     </option>
                   ))}
@@ -199,7 +229,7 @@ export default function MenuAddOption() {
                     { length: group.options.length },
                     (_, i) => i + 1
                   ).map((value) => (
-                    <option key={value} value={value}>
+                    <option key={`max-${groupIndex}-${value}`} value={value}>
                       {value}개
                     </option>
                   ))}
@@ -220,22 +250,13 @@ export default function MenuAddOption() {
       ))}
 
       {/* 옵션 그룹 추가하기 버튼 */}
-      <div className="mb-6 flex justify-center">
+      <div className="mb-4 flex justify-center">
         <button
           onClick={handleAddOptionGroup}
-          className=" text-gray-400 py-2 px-6"
+          className=" text-gray-400 py-2 px-6 flex items-center"
         >
+          <FaPlus className="mr-2" />
           옵션 추가하기
-          <div className="flex justify-center text-black">
-            <FaPlus />
-          </div>
-        </button>
-      </div>
-
-      {/* 저장하기 버튼 */}
-      <div className="mt-4 flex justify-center">
-        <button className="bg-primary-500 text-white font-bold py-2 px-6 rounded-md w-full">
-          저장하기
         </button>
       </div>
     </div>
