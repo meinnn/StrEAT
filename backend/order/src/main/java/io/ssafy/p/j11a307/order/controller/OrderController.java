@@ -188,13 +188,13 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "주문내역이 존재하지 않음")
     })
     @Tag(name = "내부 서비스 간 요청")
-    public ResponseEntity<MessageResponse> paymentProcessing(@RequestBody PayProcessRequest payProcessRequest,
+    public ResponseEntity<DataResponse<Integer>> paymentProcessing(@RequestBody PayProcessRequest payProcessRequest,
                                                              @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (internalRequestKey.equals(internalRequest)) {
-             orderService.paymentProcessing(payProcessRequest);
+             Integer orderId = orderService.paymentProcessing(payProcessRequest);
 
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(MessageResponse.of("결제 성공/실패 처리를 완료했습니다."));
+                    .body(DataResponse.of("결제 성공/실패 처리를 완료했습니다.", orderId));
         }
         return null;
     }

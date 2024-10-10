@@ -25,11 +25,18 @@ public class FcmStoreOpenAlert implements FcmAlertData {
     }
 
     @Override
+    public String getLink() {
+        return "/customer/stores/" + storeId;
+    }
+
+    @Override
     public Map<String, String> getData() {
         return Map.of(
                 "storeId", storeId,
                 "storeName", storeName,
-                "createdAt", createdAt
+                "createdAt", createdAt,
+                "title", alertType.getMessage(),
+                "message", storeName
         );
     }
 }
