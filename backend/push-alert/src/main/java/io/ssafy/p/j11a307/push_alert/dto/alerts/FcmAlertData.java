@@ -8,5 +8,7 @@ public interface FcmAlertData {
 
     String getTitle();
 
+    String getLink();
+
     Map<String, String> getData();
 }
