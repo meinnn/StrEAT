@@ -4,10 +4,7 @@ import io.ssafy.p.j11a307.order.dto.*;
 import io.ssafy.p.j11a307.order.entity.*;
 import io.ssafy.p.j11a307.order.exception.BusinessException;
 import io.ssafy.p.j11a307.order.exception.ErrorCode;
-import io.ssafy.p.j11a307.order.global.MessageResponse;
-import io.ssafy.p.j11a307.order.global.OrderCode;
-import io.ssafy.p.j11a307.order.global.PayTypeCode;
-import io.ssafy.p.j11a307.order.global.TimeUtil;
+import io.ssafy.p.j11a307.order.global.*;
 import io.ssafy.p.j11a307.order.repository.OrderProductOptionRepository;
 import io.ssafy.p.j11a307.order.repository.OrderProductRepository;
 import io.ssafy.p.j11a307.order.repository.OrdersRepository;
@@ -564,5 +561,24 @@ public class OrderService {
         orders.setPaymentMethod(payTypeCode);
         orders = ordersRepository.save(orders);
         return orders.getId();
+    }
+
+    public PickupCompletedResponse pickupFood(String token, Integer storeId) {
+        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+        List<Orders> waitingOrders = ordersRepository
+                .findAllByStoreIdAndUserIdAndStatus(storeId, customerId, OrderCode.WAITING_FOR_RECEIPT);
+        waitingOrders.forEach(order -> order.updateStatus(OrderCode.RECEIVED));
+        List<Integer> waitingOrderIds = waitingOrders.stream().map(Orders::getId).toList();
+        if (!waitingOrderIds.isEmpty()) {
+            ReadStoreDTO storeInfo = storeClient.getStoreInfo(storeId).getData();
+            OrderStatusChangeRequest orderStatusChangeRequest = OrderStatusChangeRequest.builder()
+                    .storeId(storeId)
+                    .storeName(storeInfo.name())
+                    .customerId(customerId)
+                    .orderId(waitingOrderIds.getFirst())
+                    .build();
+            pushAlertClient.sendPickupCompletedAlert(orderStatusChangeRequest, internalRequestKey);
+        }
+        return new PickupCompletedResponse(waitingOrderIds);
     }
 }
