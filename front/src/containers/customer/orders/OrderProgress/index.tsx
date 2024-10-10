@@ -117,9 +117,9 @@ export default function OrderProgress({
                 {step.id}
               </div>
 
-              <p className={`mt-1 text-sm ${getLabelStyle(step.status)}`}>
+              <div className={`mt-1 text-sm ${getLabelStyle(step.status)}`}>
                 {step.label}
-              </p>
+              </div>
             </div>
           </div>
         ))}
@@ -140,7 +140,9 @@ export default function OrderProgress({
       </div>
 
       {/* 대기 및 조리 상태 메시지 */}
-      <p className="font-medium text-center mt-7">{renderStatusMessage()}</p>
+      <div className="font-medium text-center mt-7">
+        {renderStatusMessage()}
+      </div>
     </div>
   )
 }

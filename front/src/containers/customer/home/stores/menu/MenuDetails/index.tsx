@@ -1,5 +1,5 @@
 import BackButtonWithImage from '@/components/BackButtonWithImage'
-import MenuOptions from '@/containers/customer/home/stores/menu/MenuOptions'
+import MenuOptions from '@/components/MenuOptions'
 import { Menu, OptionCategory } from '@/types/menu'
 
 async function fetchOptionCategory(id: number): Promise<OptionCategory> {

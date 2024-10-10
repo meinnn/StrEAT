@@ -6,6 +6,7 @@ import CartItem from '@/containers/customer/home/cart/CartItem'
 import CartSkeletonPage from '@/components/skeleton/CartSkeleton'
 import { useCart } from '@/contexts/CartContext'
 import { useRouter } from 'next/navigation'
+import EmptyCart from '@/containers/customer/home/cart/EmptyCart'
 import { useState, useCallback } from 'react'
 
 export default function CartPage() {
@@ -84,6 +85,7 @@ export default function CartPage() {
   }
 
   if (status === 'pending') return <CartSkeletonPage />
+  if (cartItems.length === 0) return <EmptyCart />
 
   return (
     <div

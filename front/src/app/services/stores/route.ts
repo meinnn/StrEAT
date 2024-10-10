@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   try {
     // 일단 최대 20개만 가져옴
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/stores/nearby?latitude=${lat}&longitude=${lng}&page=0&size=20`
+      `https://j11a307.p.ssafy.io/api/stores/nearby/1km?latitude=${lat}&longitude=${lng}&page=0&size=20`
     )
 
     if (!response.ok) {

@@ -1,6 +1,6 @@
 'use client'
 
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
@@ -39,6 +39,7 @@ interface CartStore {
 
 interface CartContextProps {
   cartItems: CartMenu[]
+  setCartItems: React.Dispatch<React.SetStateAction<CartMenu[]>>
   cartStore: CartStore | null
   fetchNextPage: () => void
   hasNextPage: boolean | undefined
@@ -66,13 +67,13 @@ async function fetchCartItems({ pageParam = 0 }): Promise<CartResponseData> {
   }
   const result = await response.json()
 
-  const updatedBasketList = result.data.basketList.map((item: BasketItem) => ({
+  const updatedBasketList = result.basketList.map((item: BasketItem) => ({
     ...item,
     checked: true,
   }))
 
   return {
-    ...result.data,
+    ...result,
     basketList: updatedBasketList,
   }
 }
@@ -151,6 +152,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       cartItems,
+      setCartItems,
       cartStore,
       fetchNextPage,
       hasNextPage,
@@ -164,12 +166,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       cartItems,
       cartStore,
       fetchNextPage,
-      hasNextPage,
-      isFetchingNextPage,
-      status,
-      reloadCartItems,
       handleItemCheck,
       handleRemoveItem,
+      hasNextPage,
+      isFetchingNextPage,
+      reloadCartItems,
+      status,
     ]
   )
 

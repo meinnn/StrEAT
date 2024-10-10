@@ -8,7 +8,7 @@ import {
 } from '@/types/menu'
 import { useEffect, useState } from 'react'
 import Drawer from '@/components/Drawer'
-import MenuOptions from '@/containers/customer/home/stores/menu/MenuOptions'
+import MenuOptions from '@/components/MenuOptions'
 
 interface CartItemProps {
   item: CartMenu
@@ -131,6 +131,7 @@ export default function CartItem({ item, onCheck, onRemove }: CartItemProps) {
             width={80}
             height={80}
             className="rounded-lg bg-gray-medium"
+            priority
           />
           <div>
             <h3 className="text-md font-semibold">{item.name}</h3>

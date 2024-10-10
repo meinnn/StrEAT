@@ -3,6 +3,9 @@ import localFont from 'next/font/local'
 import './globals.css'
 import Script from 'next/script'
 import { MapCenterProvider } from '@/contexts/MapCenterContext'
+import FCMHandler from '@/components/FCMHandler'
+import { StoreLocationProvider } from '@/contexts/StoreLocationContext'
+import { StoreRegistProvider } from '@/contexts/storeRegistContext'
 
 const pretendard = localFont({
   src: '../../public/fonts/woff2/PretendardVariable.woff2',
@@ -13,6 +16,19 @@ const pretendard = localFont({
 export const metadata: Metadata = {
   title: 'StrEAT',
   description: '주문결제를 간편하게 StrEAT!',
+  icons: {
+    icon: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '48x48',
+        url: '/favicon-48x48.png',
+      },
+      { rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' },
+    ],
+    apple: '/apple-touch-icon.png', // Apple Touch Icon 설정
+    shortcut: '/favicon.ico', // Shortcut Icon 설정
+  },
 }
 
 export default function RootLayout({
@@ -25,10 +41,13 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.className}>
       <body className="font-pretendard antialiased">
-        <MapCenterProvider>
-          {modal}
-          <main className="min-h-screen h-full">{children}</main>
-        </MapCenterProvider>
+        <StoreRegistProvider>
+          <MapCenterProvider>
+            {modal}
+            <main className="min-h-screen h-full">{children}</main>
+            <FCMHandler />
+          </MapCenterProvider>
+        </StoreRegistProvider>
         <Script
           type="text/javascript"
           src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}&submodules=geocoder`}

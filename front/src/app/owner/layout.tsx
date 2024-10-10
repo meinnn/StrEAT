@@ -1,5 +1,5 @@
-import OwnerNav from '@/components/OwnerNav'
 import React from 'react'
+import OwnerNav from '@/components/OwnerNav'
 
 export default function CustomerLayout({
   children,
