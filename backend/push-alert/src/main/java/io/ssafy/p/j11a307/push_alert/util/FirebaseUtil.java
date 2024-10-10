@@ -37,19 +37,7 @@ public class FirebaseUtil {
     }
 
     public void pushAlertToClient(FcmAlertData fcmAlertData, String receiverFcmToken, Notification notification) {
-        WebpushFcmOptions webpushFcmOptions = WebpushFcmOptions.builder()
-                .setLink(fcmAlertData.getLink())
-                .build();
-        WebpushNotification webpushNotification = WebpushNotification.builder()
-                .setTitle(fcmAlertData.getTitle())
-                .setBody(fcmAlertData.getMessage())
-                .setIcon("/web-app-manifest-192x192.png")
-                .build();
-        WebpushConfig webpushConfig = WebpushConfig.builder()
-                .setFcmOptions(webpushFcmOptions)
-                .setNotification(webpushNotification)
-                .putAllData(fcmAlertData.getData())
-                .build();
+        WebpushConfig webpushConfig = createWebpushConfig(fcmAlertData);
         Message message = Message.builder()
                 .setToken(receiverFcmToken)
                 .setWebpushConfig(webpushConfig)
@@ -63,19 +51,7 @@ public class FirebaseUtil {
     }
 
     public void pushAlertTopic(FcmAlertData fcmAlertData, String topic, Notification notification) {
-        WebpushFcmOptions webpushFcmOptions = WebpushFcmOptions.builder()
-                .setLink(fcmAlertData.getLink())
-                .build();
-        WebpushNotification webpushNotification = WebpushNotification.builder()
-                .setTitle(fcmAlertData.getTitle())
-                .setBody(fcmAlertData.getMessage())
-                .setIcon("/web-app-manifest-192x192.png")
-                .build();
-        WebpushConfig webpushConfig = WebpushConfig.builder()
-                .setFcmOptions(webpushFcmOptions)
-                .setNotification(webpushNotification)
-                .putAllData(fcmAlertData.getData())
-                .build();
+        WebpushConfig webpushConfig = createWebpushConfig(fcmAlertData);
         Message message = Message.builder()
                 .setTopic(topic)
                 .setWebpushConfig(webpushConfig)
@@ -102,5 +78,21 @@ public class FirebaseUtil {
         } catch (FirebaseMessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private WebpushConfig createWebpushConfig(FcmAlertData fcmAlertData) {
+        WebpushFcmOptions webpushFcmOptions = WebpushFcmOptions.builder()
+                .setLink(fcmAlertData.getLink())
+                .build();
+        WebpushNotification webpushNotification = WebpushNotification.builder()
+                .setTitle(fcmAlertData.getTitle())
+                .setBody(fcmAlertData.getMessage())
+                .setIcon("/web-app-manifest-192x192.png")
+                .build();
+        return WebpushConfig.builder()
+                .setFcmOptions(webpushFcmOptions)
+                .setNotification(webpushNotification)
+                .putAllData(fcmAlertData.getData())
+                .build();
     }
 }
