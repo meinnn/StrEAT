@@ -544,6 +544,11 @@ public class OrderService {
         Orders orders = ordersRepository.findByOrderNumber(orderNum);
 
         if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+        Integer orderId = orders.getId();
+        if (payProcessRequest.isSuccess().equals(0)) {
+            ordersRepository.delete(orders);
+            return orderId;
+        }
         if(orders.getPaidAt() != null) throw new BusinessException(ErrorCode.ALREADY_DONE);
 
         PayTypeCode payTypeCode = switch (payProcessRequest.method()) {
@@ -560,7 +565,7 @@ public class OrderService {
 
         orders.setPaymentMethod(payTypeCode);
         orders = ordersRepository.save(orders);
-        return orders.getId();
+        return orderId;
     }
 
     public PickupCompletedResponse pickupFood(String token, Integer storeId) {
