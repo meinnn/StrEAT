@@ -64,7 +64,6 @@ export default function CartPage() {
       }
 
       const result = await response.json()
-      console.log('Order ID 발급 성공:', result.orderId)
       return result.orderId
     } catch (error) {
       console.error('Order ID 발급 오류:', error)

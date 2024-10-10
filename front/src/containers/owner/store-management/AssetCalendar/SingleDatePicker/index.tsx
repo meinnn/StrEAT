@@ -33,7 +33,6 @@ export default function SingleDatePicker({
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
-      console.log('날짜 변경됨: ', date)
       setSelectedDate(date)
       const formattedDate = date
         .toLocaleDateString('ko-KR', {

@@ -39,7 +39,7 @@ const fetchTransactions = async (
   authToken: string // 'token' 대신 'authToken'으로 변경
 ): Promise<{ [key: string]: Transaction }> => {
   // 객체로 반환 타입 수정
-  console.log('Fetching transactions for month:', month) // 콘솔 로그 추가
+
   try {
     const response = await fetch(`/services/calendar?month=${month}`, {
       method: 'GET',
@@ -54,7 +54,6 @@ const fetchTransactions = async (
     }
 
     const data = await response.json()
-    console.log('Fetched transactions:', data)
 
     // 데이터를 날짜를 key로 한 객체로 변환
     return (
@@ -86,7 +85,6 @@ export default function AssetCalendar() {
   useEffect(() => {
     const tokenFromCookies = getTokenFromCookies() // 'token' 대신 'tokenFromCookies'로 변경
     if (tokenFromCookies) {
-      console.log('Token found:', tokenFromCookies) // 토큰을 찾았는지 로그 확인
       setToken(tokenFromCookies) // 토큰을 상태에 저장
     } else {
       console.error('Token not found in cookies') // 토큰을 찾지 못했을 때 오류 로그
@@ -102,7 +100,6 @@ export default function AssetCalendar() {
       }
 
       if (month === cachedMonth) {
-        console.log(`Transactions for month ${month} are already cached.`)
         return // 이미 같은 달의 데이터를 캐시했으면 다시 요청하지 않음
       }
 
@@ -120,7 +117,6 @@ export default function AssetCalendar() {
     if (!token) return // 토큰이 없으면 API 호출하지 않음
 
     const selectedMonth = selectedDate.split('-')[1] // 월을 추출
-    console.log('Selected month:', selectedMonth) // 선택된 월 확인
     loadTransactionsForMonth(selectedMonth, token) // token이 설정된 후에만 호출
   }, [token, selectedDate, loadTransactionsForMonth]) // loadTransactionsForMonth 추가
 

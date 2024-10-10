@@ -36,8 +36,6 @@ export default function MenuAdd() {
         })) || [], // 옵션이 없을 경우 빈 배열을 사용
     }
 
-    console.log(JSON.stringify(productInfo, null, 2))
-
     const formData = new FormData()
     formData.append('productInfo', JSON.stringify(productInfo))
     images.forEach((image) => {
@@ -51,7 +49,6 @@ export default function MenuAdd() {
       })
 
       if (response.ok) {
-        console.log('저장이 완료되었습니다.')
         // 메뉴 목록 페이지로 리다이렉트
         window.location.href = '/owner/store'
       } else {

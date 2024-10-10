@@ -6,9 +6,7 @@ export default function BusinessRegistrationNumber() {
   const [isCorrect] = useState<boolean | null>(null)
   const { register, handleSubmit, watch } = useForm()
 
-  const onSubmit = (data: { businessRegistrationNumber?: string }) => {
-    console.log(data)
-  }
+  const onSubmit = (data: { businessRegistrationNumber?: string }) => {}
 
   const businessRegistrationNumber = watch('businessRegistrationNumber')
 

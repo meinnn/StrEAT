@@ -11,7 +11,6 @@ export default function OrderSuccess() {
     const paymentKey = searchParams.get('paymentKey')
     const orderId = searchParams.get('orderId')
     const amount = searchParams.get('amount')
-    console.log(paymentKey, orderId, amount)
 
     // 필수 값이 없으면 실패 페이지로 리다이렉트
     if (!paymentKey || !orderId || !amount) {
@@ -32,7 +31,6 @@ export default function OrderSuccess() {
         })
 
         if (response.ok) {
-          console.log('결제 성공!')
           // 성공 시 주문 완료 UI를 보여준 후 1초 뒤에 리다이렉트
           const timer = setTimeout(() => {
             router.push(`/customer/orders/${orderId}`)
