@@ -31,19 +31,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(ownerInfoData.data)
   } catch (error: unknown) {
     let errorMessage = '서버 에러가 발생했습니다.'
-    let errorStatus = 500
+    const errorStatus = 500
 
+    // 에러가 문자열일 때 바로 처리
     if (error instanceof Error) {
-      const parsedError = JSON.parse(error.message)
-      errorMessage = parsedError.message || errorMessage
-      errorStatus = parsedError.status || errorStatus
+      errorMessage = error.message || errorMessage
     } else if (typeof error === 'string') {
       errorMessage = error
     } else if (typeof error === 'object' && error !== null) {
       errorMessage = JSON.stringify(error)
     }
 
-    // throw new Error(errorData.error || 'Unknown error occurred');
     return NextResponse.json({ error: errorMessage }, { status: errorStatus })
   }
 }
