@@ -1,143 +1,78 @@
 'use client'
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
-
-const menuData = {
-  daily: [
-    { id: 1, name: '후라이드', value: 65, percentage: 0.4 },
-    { id: 2, name: '양념', value: 1556, percentage: 37 },
-    { id: 3, name: '트러플', value: 1003, percentage: 33 },
-    { id: 4, name: '뿌링클', value: 265, percentage: 16 },
-    { id: 5, name: '굽네', value: 1026, percentage: 10 },
-  ],
-  weekly: [
-    { id: 1, name: '후라이드', value: 320, percentage: 2 },
-    { id: 2, name: '양념', value: 850, percentage: 50 },
-    { id: 3, name: '트러플', value: 600, percentage: 35 },
-    { id: 4, name: '뿌링클', value: 130, percentage: 8 },
-    { id: 5, name: '굽네', value: 100, percentage: 5 },
-  ],
-  monthly: [
-    { id: 1, name: '후라이드', value: 1200, percentage: 3 },
-    { id: 2, name: '양념', value: 15000, percentage: 40 },
-    { id: 3, name: '트러플', value: 12000, percentage: 32 },
-    { id: 4, name: '뿌링클', value: 4500, percentage: 12 },
-    { id: 5, name: '굽네', value: 3500, percentage: 13 },
-  ],
-  yearly: [
-    { id: 1, name: '후라이드', value: 15000, percentage: 4 },
-    { id: 2, name: '양념', value: 175000, percentage: 38 },
-    { id: 3, name: '트러플', value: 125000, percentage: 27 },
-    { id: 4, name: '뿌링클', value: 50000, percentage: 11 },
-    { id: 5, name: '굽네', value: 80000, percentage: 20 },
-  ],
-}
+import { useEffect, useState } from 'react'
 
 const COLORS = ['#F5B63F', '#61AF3E', '#D8D8D8', '#246FB7', '#FF4365']
 
-const RADIAN = Math.PI / 180
-
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  index,
-}: {
-  cx: number
-  cy: number
-  midAngle: number
-  innerRadius: number
-  outerRadius: number
-  percent: number
-  index: number
-}) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5
-  const x = cx + radius * Math.cos(-midAngle * RADIAN)
-  const y = cy + radius * Math.sin(-midAngle * RADIAN)
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="black"
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      fontSize="12"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  )
+interface MenuGraphProps {
+  salesData: Record<string, any>
+  selectedRange: string
 }
 
-export default function MenuGraph() {
-  const data = menuData.daily
+export default function MenuGraph({
+  salesData,
+  selectedRange,
+}: MenuGraphProps) {
+  const [menuData, setMenuData] = useState<
+    { name: string; value: number; percentage: number }[]
+  >([])
+
+  useEffect(() => {
+    const getProductData = () => {
+      if (!salesData) return []
+
+      const rangeData = salesData[`${selectedRange}Product`] || {}
+      return Object.entries(rangeData).map(([name, value]: any) => ({
+        name,
+        value: value.quantity,
+        percentage: value.percent,
+      }))
+    }
+
+    setMenuData(getProductData())
+  }, [salesData, selectedRange])
 
   return (
-    <div
-      className="w-full flex flex-col items-center mb-4"
-      style={{
-        padding: '20px',
-        backgroundColor: '#FFFBF3',
-        borderRadius: '15px',
-        maxWidth: '600px',
-      }}
-    >
-      <ResponsiveContainer width="100%" height={270}>
+    <div className="w-full flex flex-col items-center mb-4 mt-6 p-5 bg-yellow-50 rounded-lg max-w-md">
+      <ResponsiveContainer width="100%" height={280}>
         <PieChart>
           <Pie
-            data={data}
+            data={menuData}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={false}
+            label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
             outerRadius={100}
             fill="#8884d8"
             dataKey="value"
           >
-            {data.map((entry) => (
+            {menuData.map((entry) => (
               <Cell
-                key={`cell-${entry.id}`}
-                fill={COLORS[entry.id % COLORS.length]}
+                key={entry.name} // 'name' 필드를 사용해 고유한 key 지정
+                fill={COLORS[menuData.indexOf(entry) % COLORS.length]}
               />
             ))}
           </Pie>
           <Tooltip />
         </PieChart>
       </ResponsiveContainer>
-      <div
-        className="w-full grid grid-cols-2 gap-2"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '20px',
-          maxWidth: '500px',
-        }}
-      >
-        {data.map((entry) => (
-          <div
-            key={entry.id}
-            className="flex items-center justify-between"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
+
+      <div className="w-full grid grid-cols-2 gap-5 max-w-xs">
+        {menuData.map((entry) => (
+          <div key={entry.name} className="flex items-center justify-between">
             <div className="flex items-center">
               <div
-                className="w-3 h-3 rounded-full"
+                className="w-3 h-3 rounded-full mr-2"
                 style={{
-                  backgroundColor: COLORS[entry.id % COLORS.length],
-                  marginRight: '8px',
+                  backgroundColor:
+                    COLORS[menuData.indexOf(entry) % COLORS.length],
                 }}
               />
               <span>{entry.name}</span>
             </div>
             <span>{entry.percentage}%</span>
-            <span>{entry.value}</span>
+            <span>{entry.value}개</span>
           </div>
         ))}
       </div>

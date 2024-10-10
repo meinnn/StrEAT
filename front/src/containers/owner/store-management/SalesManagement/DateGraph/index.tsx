@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import {
   BarChart,
   Bar,
@@ -13,63 +12,44 @@ import {
 } from 'recharts'
 import '@/containers/owner/store-management/SalesManagement/DateGraph/graphStyles.css'
 
-const sampleData = {
-  daily: [
-    { date: '2024-10-01', sales: 4000 },
-    { date: '2024-10-02', sales: 3000 },
-    { date: '2024-10-03', sales: 2000 },
-    { date: '2024-10-04', sales: 4500 },
-    { date: '2024-10-05', sales: 3200 },
-    { date: '2024-10-06', sales: 2800 },
-    { date: '2024-10-07', sales: 3800 },
-  ],
-  weekly: [
-    { week: 'Week 1', sales: 21000 },
-    { week: 'Week 2', sales: 17000 },
-    { week: 'Week 3', sales: 25000 },
-    { week: 'Week 4', sales: 23000 },
-    { week: 'Week 5', sales: 24000 },
-    { week: 'Week 6', sales: 22000 },
-  ],
-  monthly: [
-    { month: 'January', sales: 43000 },
-    { month: 'February', sales: 39000 },
-    { month: 'March', sales: 50000 },
-    { month: 'April', sales: 47000 },
-    { month: 'May', sales: 52000 },
-    { month: 'June', sales: 49000 },
-    { month: 'July', sales: 51000 },
-    { month: 'August', sales: 48000 },
-    { month: 'September', sales: 53000 },
-    { month: 'October', sales: 49000 },
-    { month: 'November', sales: 47000 },
-    { month: 'December', sales: 52000 },
-  ],
-  yearly: [
-    { year: '2022', sales: 450000 },
-    { year: '2023', sales: 380000 },
-    { year: '2024', sales: 570000 },
-  ],
+const defaultData = {
+  daily: {},
+  weekly: {},
+  monthly: {},
+  yearly: {},
 }
 
-export default function DateGraph() {
-  const [selectedRange, setSelectedRange] = useState('monthly')
-
-  const handleRangeChange = (range: string) => {
-    setSelectedRange(range)
-  }
-
+export default function DateGraph({
+  salesData = defaultData, // 부모로부터 받은 데이터
+  selectedRange, // 부모로부터 받은 필터 상태
+}: {
+  salesData: any
+  selectedRange: string
+}) {
+  // 선택된 범위에 따른 데이터를 반환하는 함수
   const getDisplayData = () => {
     switch (selectedRange) {
       case 'daily':
-        return sampleData.daily.slice(0, 7) // 일주일치 데이터
+        return Object.entries(salesData.daily).map(([date, value]) => ({
+          date,
+          sales: value,
+        }))
       case 'weekly':
-        return sampleData.weekly.slice(0, 6) // 주간 데이터 6개
+        return Object.entries(salesData.weekly).map(([week, value]) => ({
+          week,
+          sales: value,
+        }))
       case 'monthly':
-        return sampleData.monthly.slice(0, 6) // 월간 데이터 6개
+        return Object.entries(salesData.monthly).map(([month, value]) => ({
+          month,
+          sales: value,
+        }))
       case 'yearly':
       default:
-        return sampleData.yearly // 년간 데이터
+        return Object.entries(salesData.yearly).map(([year, value]) => ({
+          year,
+          sales: value,
+        }))
     }
   }
 
@@ -94,49 +74,6 @@ export default function DateGraph() {
 
   return (
     <div className="custom-graph p-2">
-      <div className="flex justify-start space-x-2 mb-4 mt-2 ml-2">
-        <button
-          onClick={() => handleRangeChange('daily')}
-          className={`w-20 px-4 py-2 rounded-full ${
-            selectedRange === 'daily'
-              ? 'bg-[#471515] text-white'
-              : 'bg-[#f5f2ea] text-black'
-          }`}
-        >
-          Daily
-        </button>
-        <button
-          onClick={() => handleRangeChange('weekly')}
-          className={`w-20 px-4 py-2 rounded-full ${
-            selectedRange === 'weekly'
-              ? 'bg-[#471515] text-white'
-              : 'bg-[#f5f2ea] text-black'
-          }`}
-        >
-          Weekly
-        </button>
-        <button
-          onClick={() => handleRangeChange('monthly')}
-          className={`w-20 px-3 py-2 rounded-full ${
-            selectedRange === 'monthly'
-              ? 'bg-[#471515] text-white'
-              : 'bg-[#f5f2ea] text-black'
-          }`}
-        >
-          Monthly
-        </button>
-        <button
-          onClick={() => handleRangeChange('yearly')}
-          className={`w-20 px-4 py-2 rounded-full ${
-            selectedRange === 'yearly'
-              ? 'bg-[#471515] text-white'
-              : 'bg-[#f5f2ea] text-black'
-          }`}
-        >
-          Yearly
-        </button>
-      </div>
-
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={getDisplayData()} barCategoryGap="20%">
           <CartesianGrid strokeDasharray="3 3" />

@@ -1,7 +1,8 @@
 'use client'
 
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useCart } from '@/contexts/CartContext'
 
 const clientKey =
@@ -9,10 +10,10 @@ const clientKey =
   'test_ck_Z61JOxRQVEnQpON5xeMzrW0X9bAq'
 const customerKey = 'SfRLtISYsjv6yX7CV2Wuz'
 
-export default function PaymentCheckoutPage() {
+function PaymentCheckoutComponent() {
   const [payment, setPayment] = useState<any>(null)
 
-  const { cartItems } = useCart()
+  const { cartItems } = useCart() // storeId 제거
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     string | null
@@ -21,6 +22,9 @@ export default function PaymentCheckoutPage() {
   const selectPaymentMethod = (method: string) => {
     setSelectedPaymentMethod(method)
   }
+
+  const searchParams = useSearchParams() // URL의 쿼리 파라미터 추출
+  const orderId = searchParams.get('orderId') // 'orderId' 파라미터를 URL에서 가져옴
 
   useEffect(() => {
     const fetchPayment = async () => {
@@ -38,9 +42,15 @@ export default function PaymentCheckoutPage() {
     fetchPayment().then()
   }, [])
 
+  // 결제 요청 함수
   const requestPayment = useCallback(async () => {
     if (!payment) {
       console.error('Payment is not initialized')
+      return
+    }
+
+    if (!orderId) {
+      console.error('Order ID가 없습니다.')
       return
     }
 
@@ -56,7 +66,7 @@ export default function PaymentCheckoutPage() {
       await payment.requestPayment({
         method: selectedPaymentMethod || 'CARD',
         amount,
-        orderId: 'YVyBWblH0boLvfy5NgZJU',
+        orderId, // URL에서 받은 orderId 사용
         orderName: `${cartItems[0].name} 외 ${cartItems.length - 1}건`,
         successUrl: `${window.location.origin}/customer/payment/result?status=success`,
         failUrl: `${window.location.origin}/customer/payment/result?status=failure`,
@@ -73,9 +83,9 @@ export default function PaymentCheckoutPage() {
     } catch (error) {
       console.error('Payment error:', error)
     }
-  }, [cartItems, payment, selectedPaymentMethod])
+  }, [cartItems, payment, selectedPaymentMethod, orderId])
 
-  // 컴포넌트가 렌더링될 때 바로 결제 요청
+  // 컴포넌트가 렌더링될 때 결제 요청 실행
   useEffect(() => {
     if (payment) {
       requestPayment().then()
@@ -86,5 +96,13 @@ export default function PaymentCheckoutPage() {
     <div>
       <h2>결제 이동 중...</h2>
     </div>
+  )
+}
+
+export default function PaymentCheckoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentCheckoutComponent />
+    </Suspense>
   )
 }

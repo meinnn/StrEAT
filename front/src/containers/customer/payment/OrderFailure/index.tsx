@@ -8,7 +8,7 @@ export default function OrderFailure() {
         <FaExclamation className="text-white" size={112} />
       </div>
       <p className="mt-8 text-3xl font-bold">주문을 완료하지 못했어요</p>
-      <p className="mt-4 text-gray-dark">[카카오페이] 사용 한도 초과</p>
+      <p className="mt-4 text-gray-dark">[toss] 결제 처리 실패</p>
 
       <Link
         href="/customer"
