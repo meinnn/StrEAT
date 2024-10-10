@@ -5,9 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductOptionCategoryRepository extends JpaRepository<ProductOptionCategory, Integer> {
-    @Query("SELECT MAX(p.id) FROM ProductOptionCategory p")
-    Integer findLastProductOptionCategoryId();
     List<ProductOptionCategory> findByProductId(Integer productId);
+    Optional<ProductOptionCategory> findByProductIdAndName(Integer productId, String name);
 }
