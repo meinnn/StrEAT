@@ -570,6 +570,7 @@ public class OrderService {
         return orderId;
     }
 
+    @Transactional
     public PickupCompletedResponse pickupFood(String token, Integer storeId) {
 //        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
         Integer customerId = 9;
