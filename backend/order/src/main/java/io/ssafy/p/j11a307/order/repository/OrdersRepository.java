@@ -85,5 +85,5 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     @Query(value = "SELECT * FROM orders WHERE store_id = :storeId AND (paid_at BETWEEN :weekStart AND :weekEnd)", nativeQuery = true)
     List<Orders> findOrdersByWeek(Integer storeId, LocalDateTime weekStart, LocalDateTime weekEnd);
 
-    List<Orders> findAllByStoreIdAndUserIdAndStatus(Integer storeId, Integer userId, String status);
+    List<Orders> findAllByStoreIdAndUserId(Integer storeId, Integer userId);
 }
