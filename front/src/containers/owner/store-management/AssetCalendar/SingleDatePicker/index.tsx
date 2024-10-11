@@ -7,7 +7,10 @@ import '@/containers/owner/store-management/AssetCalendar/SingleDatePicker/singl
 
 // 거래 데이터를 기반으로 일별 총 결제 금액을 표시하는 함수
 const dayContents = (day: number, date: Date, transactions: any[]) => {
-  const dayIndex = date.getDate() // 날짜에서 일(day) 추출
+  const adjustedDate = new Date(date) // 날짜 복사
+  adjustedDate.setDate(day) // 날짜 그대로 사용
+  adjustedDate.setDate(adjustedDate.getDate() - 1) // 하루를 빼서 이전 날짜에 데이터를 맞춤
+  const dayIndex = adjustedDate.getDate() // 날짜에서 일(day) 추출
   const transaction = transactions[dayIndex] || null // 해당 일자에 맞는 거래 데이터 찾기
 
   return (
@@ -34,14 +37,7 @@ export default function SingleDatePicker({
   const handleDateChange = (date: Date | null) => {
     if (date) {
       setSelectedDate(date)
-      const formattedDate = date
-        .toLocaleDateString('ko-KR', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        })
-        .replace(/. /g, '-')
-        .replace('.', '') // 로컬 날짜로 변환 후 문자열로 전달
+      const formattedDate = date.toISOString().split('T')[0] // UTC 변환 없이 날짜 형식만 추출
       onChange(formattedDate)
     }
   }

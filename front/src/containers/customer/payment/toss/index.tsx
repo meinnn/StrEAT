@@ -12,6 +12,7 @@ const customerKey = 'SfRLtISYsjv6yX7CV2Wuz'
 
 function PaymentCheckoutComponent() {
   const [payment, setPayment] = useState<any>(null)
+  const [isPaymentRequested, setIsPaymentRequested] = useState(false) // 결제 요청 상태 관리
 
   const { cartItems } = useCart() // storeId 제거
 
@@ -44,8 +45,8 @@ function PaymentCheckoutComponent() {
 
   // 결제 요청 함수
   const requestPayment = useCallback(async () => {
-    if (!payment) {
-      console.error('Payment is not initialized')
+    if (!payment || isPaymentRequested) {
+      // 이미 요청이 발생한 경우 중복 방지
       return
     }
 
@@ -80,17 +81,18 @@ function PaymentCheckoutComponent() {
           useAppCardOnly: false,
         },
       })
+      setIsPaymentRequested(true) // 결제 요청 완료 상태로 변경
     } catch (error) {
-      const a = 1
+      console.error('결제 요청 오류:', error)
     }
-  }, [cartItems, payment, selectedPaymentMethod, orderId])
+  }, [cartItems, payment, selectedPaymentMethod, orderId, isPaymentRequested])
 
   // 컴포넌트가 렌더링될 때 결제 요청 실행
   useEffect(() => {
-    if (payment) {
+    if (payment && !isPaymentRequested) {
       requestPayment().then()
     }
-  }, [payment, requestPayment])
+  }, [payment, requestPayment, isPaymentRequested])
 
   return (
     <div>
