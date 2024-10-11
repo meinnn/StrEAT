@@ -11,6 +11,7 @@ import io.ssafy.p.j11a307.order.repository.OrdersRepository;
 import io.ssafy.p.j11a307.order.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
     private final StoreClient storeClient;
     private final OwnerClient ownerClient;
@@ -546,8 +548,8 @@ public class OrderService {
         if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
         Integer orderId = orders.getId();
         if (payProcessRequest.isSuccess().equals(0)) {
-            orderProductRepository.deleteByOrdersId(orders);
-            ordersRepository.delete(orders);
+//            orderProductRepository.deleteByOrdersId(orders);
+//            ordersRepository.delete(orders);
 
             return orderId;
         }
