@@ -28,6 +28,7 @@ export default function OrderSuccess() {
     }
 
     // 결제 API 호출
+    // eslint-disable-next-line consistent-return
     const handlePayment = async () => {
       try {
         const response = await fetch('/services/payments', {
