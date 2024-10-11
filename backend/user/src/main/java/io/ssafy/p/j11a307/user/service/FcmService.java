@@ -18,11 +18,11 @@ public interface FcmService {
                           @RequestHeader(value = "X-Internal-Request") String internalRequest,
                           @RequestParam Integer userId);
 
-    @PostMapping("/global/dibs-alert")
+    @PostMapping("/api/push-alert/global/dibs-alert")
     MessageResponse turnOnAllDibsAlerts(@RequestBody GlobalDibsAlertRequest globalDibsAlertRequest,
                                         @RequestHeader(value = "X-Internal-Request") String internalRequest);
 
-    @DeleteMapping("/global/dibs-alert")
+    @DeleteMapping("/api/push-alert/global/dibs-alert")
     MessageResponse turnOffAllDibsAlerts(@RequestBody GlobalDibsAlertRequest globalDibsAlertRequest,
                                          @RequestHeader(value = "X-Internal-Request") String internalRequest);
 }

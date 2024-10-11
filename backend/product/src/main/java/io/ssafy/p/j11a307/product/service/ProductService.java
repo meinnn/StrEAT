@@ -45,6 +45,7 @@ public class ProductService {
                 .price(createProductDTO.price())
                 .description(createProductDTO.description())
                 .category(category)  // 카테고리 설정
+                .stockStatus(true)
                 .build();
 
         // 상품 저장
@@ -134,6 +135,42 @@ public class ProductService {
             throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
         }
     }
+
+    @Transactional
+    public void updateProducts(String token, Integer productId, UpdateProductAllDTO productDTO) {
+        // 1. 기존 상품 조회
+
+        Integer storeId = getStoreIdByToken(token);
+
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if(storeId != existingProduct.getStoreId()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        // 2. 상품 정보 업데이트
+        if (productDTO.name() != null) {
+            existingProduct.changeName(productDTO.name());
+        }
+        if (productDTO.description() != null) {
+            existingProduct.changeDescription(productDTO.description());
+        }
+        if (productDTO.price() != null) {
+            existingProduct.changePrice(productDTO.price());
+        }
+
+        // 3. 카테고리 업데이트
+        if (productDTO.categoryId() != null) {
+            ProductCategory category = productCategoryRepository.findById(productDTO.categoryId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND));
+            existingProduct.changeCategory(category);
+        }
+
+        // 4. 상품 정보 저장
+        productRepository.save(existingProduct);
+    }
+
 
     @Transactional
     public void deleteProduct(String token, Integer productId) {

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -23,7 +24,8 @@ public class Product {
     private String name;
     private Integer price;
     private String description;
-    private Boolean stockStatus;
+    @ColumnDefault("true")
+    private Boolean stockStatus = true;
 
     @ManyToOne
     @JoinColumn(name = "product_category_id", nullable = false)
@@ -67,6 +69,15 @@ public class Product {
         this.stockStatus = stockStatus;
     }
 
+    public void changeCategory(ProductCategory category) {
+        if(category == null) {
+            throw new IllegalArgumentException("Category cannot be null.");
+        }
+        this.category = category;
+    }
+
+
+
     public Product updateWith(UpdateProductDTO request, ProductCategory category) {
         this.name = request.name() != null ? request.name() : this.name;
         this.price = request.price() != null ? request.price() : this.price;
@@ -76,4 +87,6 @@ public class Product {
 
         return this; // 수정된 객체 반환
     }
+
+
 }

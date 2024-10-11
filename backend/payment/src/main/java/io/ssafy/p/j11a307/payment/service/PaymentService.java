@@ -54,7 +54,17 @@ public class PaymentService {
         HttpEntity<String> httpEntity = new HttpEntity<>(message, httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().addFirst(new StringHttpMessageConverter(StandardCharsets.UTF_8));
-        String response = restTemplate.exchange(confirmUrl, HttpMethod.POST, httpEntity, String.class).getBody();
+        String response;
+        try {
+            response = restTemplate.exchange(confirmUrl, HttpMethod.POST, httpEntity, String.class).getBody();
+        } catch (Exception e) {
+            PayProcessRequest payProcessRequest = PayProcessRequest.builder()
+                    .orderNumber(tossPaymentBaseRequest.orderId())
+                    .isSuccess(0)
+                    .build();
+            orderService.completeOrder(payProcessRequest, internalRequestKey);
+            return null;
+        }
         JsonNode jsonNode = objectMapper.readTree(response);
         Payment payment = new Payment(jsonNode);
         JsonNode cardNode = jsonNode.get("card");
@@ -75,10 +85,11 @@ public class PaymentService {
                 .isSuccess(1)
                 .build();
 
-        orderService.completeOrder(payProcessRequest, internalRequestKey);
+        DataResponseFromOtherService<Integer> dataResponseFromOtherService = orderService.completeOrder(payProcessRequest, internalRequestKey);
+        Integer orderId = dataResponseFromOtherService.getData();
 
         paymentRepository.save(payment);
-        return new PaymentResponse(payment.getId(), payment.getOrderId());
+        return new PaymentResponse(payment.getId(), orderId);
     }
 
     @Transactional

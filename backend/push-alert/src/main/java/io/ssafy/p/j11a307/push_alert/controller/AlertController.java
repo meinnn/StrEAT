@@ -35,7 +35,7 @@ public class AlertController {
 
     private final AlertService alertService;
 
-    @GetMapping(value = {"/order-accept", "/order-requested", "/cooking-completed", "/pickup-completed"})
+    @PostMapping(value = {"/order-accept", "/order-requested", "/cooking-completed", "/pickup-completed"})
     @Operation(summary = "주문 상태 변화 알림 전송", description = "주문 상태 변화 알림 전송")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "요청 성공, 푸시 알림 전송 성공"),
@@ -49,7 +49,7 @@ public class AlertController {
             @Parameter(name = "storeId", description = "점포 아이디")
     })
     public void sendOrderStatusChangeAlert(
-            @RequestParam OrderStatusChangeRequest orderStatusChangeRequest,
+            @RequestBody OrderStatusChangeRequest orderStatusChangeRequest,
             @RequestHeader(value = "X-Internal-Request") String internalRequest,
             HttpServletRequest request) {
         if (!internalRequestKey.equals(internalRequest)) {
@@ -72,7 +72,8 @@ public class AlertController {
             @Parameter(name = "storeId", description = "점포 아이디"),
             @Parameter(name = "storeName", description = "점포명")
     })
-    public void sendOpenStoreAlert(Integer storeId, String storeName, @RequestHeader(value = "X-Internal-Request") String internalRequest) {
+    public void sendOpenStoreAlert(@RequestParam Integer storeId, @RequestParam String storeName,
+                                   @RequestHeader(value = "X-Internal-Request") String internalRequest) {
         if (!internalRequestKey.equals(internalRequest)) {
             // MSA 내부 접속이 아닌 경우 에러 발생
             throw new BusinessException(ErrorCode.BAD_REQUEST);

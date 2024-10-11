@@ -53,5 +53,22 @@ public class ProductOption {
         this.productOptionPrice = productOption.getProductOptionPrice();
     }
 
+    public void updateOptionName(String optionName) {
+        if (optionName == null || optionName.isEmpty()) {
+            throw new IllegalArgumentException("Option name cannot be null or empty.");
+        }
+        this.productOptionName = optionName;
+    }
+
+    // 새롭게 추가된 옵션 가격 변경 메서드
+    public void updateOptionPrice(Integer optionPrice) {
+        if (optionPrice == null || optionPrice < 0) {
+            throw new IllegalArgumentException("Option price cannot be null or negative.");
+        }
+        this.productOptionPrice = optionPrice;
+    }
+
+
+
 
 }

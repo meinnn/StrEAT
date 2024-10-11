@@ -119,6 +119,13 @@ public class ProductOptionService {
     }
 
     @Transactional
+    public void deleteProductOptions(Integer optionId) {
+        ProductOption productOption = productOptionRepository.findById(optionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        productOptionRepository.delete(productOption);
+    }
+
+    @Transactional
     public Integer sumProductOption(List<Integer> optionList) {
         int sum = 0;
 
@@ -160,5 +167,40 @@ public class ProductOptionService {
         if(product.isPresent()) readProductOptionDTOs = productOptionRepository.findAllByProduct(product.get());
 
         return readProductOptionDTOs;
+    }
+
+    public List<ProductOption> findByProductOptionCategoryId(Integer productOptionCategoryId) {
+        return productOptionRepository.findByProductOptionCategoryId(productOptionCategoryId);
+    }
+
+
+    @Transactional
+    public Integer updateOrCreateProductOption(String token, Integer productId, Integer productOptionCategoryId, UpdateProductOptionDTO optionDTO) {
+        // 1. 상품 및 옵션 카테고리 조회
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+        ProductOptionCategory productOptionCategory = productOptionCategoryRepository.findById(productOptionCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_CATEGORY_NOT_FOUND));
+
+        // 2. 옵션 조회 (기존 옵션이 있는지 확인)
+        ProductOption existingOption = productOptionRepository.findByProductOptionCategoryIdAndProductOptionName(
+                        productOptionCategoryId, optionDTO.productOptionName())
+                .orElseGet(() -> ProductOption.builder()
+                        .product(product)
+                        .productOptionCategory(productOptionCategory)
+                        .productOptionName(optionDTO.productOptionName())
+                        .productOptionPrice(optionDTO.productOptionPrice())
+                        .build());
+
+        // 3. 옵션 업데이트
+        if (existingOption.getId() != null) {
+            existingOption.updateOptionName(optionDTO.productOptionName());
+            existingOption.updateOptionPrice(optionDTO.productOptionPrice());
+        } else {
+            // 새로운 옵션인 경우 저장
+            existingOption = productOptionRepository.save(existingOption);
+        }
+
+        return existingOption.getId();
     }
 }

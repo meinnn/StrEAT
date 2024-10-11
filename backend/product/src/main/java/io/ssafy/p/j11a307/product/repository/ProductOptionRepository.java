@@ -12,4 +12,8 @@ public interface ProductOptionRepository extends JpaRepository<ProductOption, In
     Optional<ProductOption> findById(Integer id);
 
     List<ReadProductOptionDTO> findAllByProduct(Product product);
+
+    List<ProductOption> findByProductOptionCategoryId(Integer productOptionCategoryId);
+
+    Optional<ProductOption> findByProductOptionCategoryIdAndProductOptionName(Integer productOptionCategoryId, String optionName);
 }

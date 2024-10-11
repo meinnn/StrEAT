@@ -3,6 +3,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import io.ssafy.p.j11a307.store.dto.GetStoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.store.dto.StoreSimpleLocationDTO;
 import io.ssafy.p.j11a307.store.entity.Store;
 import io.ssafy.p.j11a307.store.entity.StoreLocationPhoto;
@@ -10,6 +11,7 @@ import io.ssafy.p.j11a307.store.entity.StoreSimpleLocation;
 import io.ssafy.p.j11a307.store.exception.BusinessException;
 import io.ssafy.p.j11a307.store.exception.ErrorCode;
 import io.ssafy.p.j11a307.store.repository.StoreLocationPhotoRepository;
+import io.ssafy.p.j11a307.store.repository.StorePhotoRepository;
 import io.ssafy.p.j11a307.store.repository.StoreRepository;
 import io.ssafy.p.j11a307.store.repository.StoreSimpleLocationRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +20,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.ssafy.p.j11a307.store.entity.StorePhoto;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,6 +39,7 @@ public class StoreSimpleLocationService {
     private final StoreLocationPhotoRepository storeLocationPhotoRepository;
     private final StoreSimpleLocationRepository storeSimpleLocationRepository;
     private final StoreRepository storeRepository;
+    private final StorePhotoRepository storePhotoRepository;
     private final AmazonS3 amazonS3;
 
     private final OwnerClient ownerClient;
@@ -280,16 +286,31 @@ public class StoreSimpleLocationService {
     }
 
     @Transactional
-    public StoreSimpleLocationDTO getStoreSimpleLocationInfo(Integer id) {
+    public GetStoreSimpleLocationDTO getStoreSimpleLocationInfo(Integer id) {
         StoreSimpleLocation storeSimpleLocation = storeSimpleLocationRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.LOCATION_NOT_FOUND));
 
-        StoreSimpleLocationDTO storeSimpleLocationDTO = StoreSimpleLocationDTO.builder()
-                .address(storeSimpleLocation.getAddress())
-                .longitude(storeSimpleLocation.getLongitude())
-                .latitude(storeSimpleLocation.getLatitude())
-                .nickname(storeSimpleLocation.getNickname())
-                .build();
+        Store store = storeSimpleLocation.getStore();
+        Optional<String> src = storeLocationPhotoRepository.findByStoreSimpleLocationId(store.getSelectedSimpleLocation().getId())
+                .stream()
+                .findFirst()
+                .map(storeLocationPhoto -> storeLocationPhoto.getSrc() != null && !storeLocationPhoto.getSrc().isEmpty()
+                        ? storeLocationPhoto.getSrc()
+                        : storePhotoRepository.findByStoreId(store.getId())
+                        .stream()
+                        .findFirst()
+                        .map(StorePhoto::getSrc)
+                        .orElse(""));
+        if(src.isPresent()) {
+            GetStoreSimpleLocationDTO storeSimpleLocationDTO = GetStoreSimpleLocationDTO.builder()
+                    .address(storeSimpleLocation.getAddress())
+                    .longitude(storeSimpleLocation.getLongitude())
+                    .latitude(storeSimpleLocation.getLatitude())
+                    .nickname(storeSimpleLocation.getNickname())
+                    .src(src.get())
+                    .build();
 
-        return storeSimpleLocationDTO;
+            return storeSimpleLocationDTO;
+        }
+        throw new BusinessException(ErrorCode.SRC_NOT_FOUND);
     }
 }
