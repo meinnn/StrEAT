@@ -9,6 +9,30 @@ spring:
           uri: http://streat-user:8080
           predicates:
             - Path=/api/users/**
+        - id: store
+          uri: http://streat-store:8080
+          predicates:
+            - Path=/api/stores/**
+        - id: order
+          uri: http://streat-order:8080
+          predicates:
+            - Path=/api/orders/**
+        - id: product
+          uri: http://streat-product:8080
+          predicates:
+            - Path=/api/products/**
+        - id: payment
+          uri: http://streat-payment:8080
+          predicates:
+            - Path=/api/payments/**
+        - id: announcement
+          uri: http://streat-announcement:8080
+          predicates:
+            - Path=/api/announcements/**
+        - id: push-alert
+          uri: http://streat-push-alert:8080
+          predicates:
+            - Path=/api/push-alert/**
     config:
       uri: http://localhost:8888
       label: main
@@ -24,4 +48,14 @@ springdoc:
     use-root-path: true
     urls:
       - name: Store API
-        url: http://localhost:8787/api/stores/v3/api-docs
+        url: https://j11a307.p.ssafy.io/api/stores/v3/api-docs
+      - name: user API
+        url: https://j11a307.p.ssafy.io/api/users/v3/api-docs
+      - name: Order API
+        url: https://j11a307.p.ssafy.io/api/orders/v3/api-docs
+      - name: Product API
+        url: https://j11a307.p.ssafy.io/api/products/v3/api-docs
+      - name: Payment API
+        url: https://j11a307.p.ssafy.io/api/payments/v3/api-docs
+      - name: Announcement API
+        url: https://j11a307.p.ssafy.io/api/announcements/v3/api-docs
