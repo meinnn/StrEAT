@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -41,10 +43,12 @@ public class PaymentController {
             @Parameter(name = "amount", description = "결제 금액")
     })
     public ResponseEntity<DataResponse<PaymentResponse>> tossRequestPayment(@RequestBody TossPaymentBaseRequest tossPaymentBaseRequest) throws JsonProcessingException {
+        log.info("request orderId: {}", tossPaymentBaseRequest.orderId());
         PaymentResponse paymentResponse = paymentService.tossRequestPayment(tossPaymentBaseRequest);
         if (paymentResponse == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        log.info("response orderId: {}", paymentResponse.orderId());
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of("결제 성공", paymentResponse));
     }
 

@@ -10,6 +10,7 @@ import io.ssafy.p.j11a307.payment.entity.TossCancel;
 import io.ssafy.p.j11a307.payment.entity.TossEasyPayment;
 import io.ssafy.p.j11a307.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
 
     @Value("${toss.payments.confirm-url}")
@@ -89,6 +91,7 @@ public class PaymentService {
         Integer orderId = dataResponseFromOtherService.getData();
 
         paymentRepository.save(payment);
+        log.info("service finished");
         return new PaymentResponse(payment.getId(), orderId);
     }
 

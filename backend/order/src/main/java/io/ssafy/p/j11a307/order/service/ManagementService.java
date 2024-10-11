@@ -33,6 +33,7 @@ public class ManagementService {
     private final TimeUtil timeUtil;
     private final OpenAPIClient openAPIClient;
     private final DistrictSalesRepository districtSalesRepository;
+    private final KakaoClient kakaoClient;
 
     @Value("${streat.internal-request}")
     private String internalRequestKey;
@@ -410,9 +411,34 @@ public class ManagementService {
         //해당 위치에서 가장 가까운 상권을 찾는다.
         //그러나 이때 8만개를 전부 돌면 안된다..!! -> 시간 오래 걸림
         //따라서 grid 방식을 써서 격자 안에 있는 부분만 도는 것.
+        List<DistrictSales> districtSalesList = districtSalesRepository.findAll();
+
+//        int count = 1;
+//        for(DistrictSales districtSales: districtSalesList) {
+//            System.out.println("count: " + count);
+//            //카카오 api
+//            ResponseEntity<ResponseData2> searchResult = kakaoClient.searchLocation(districtSales.getDistrictName(), "KakaoAK 22c4c321f3adbd17a9642917af948274");
+//
+//            if(searchResult.getBody().documents().size() != 0) {
+//                Optional<DistrictSales> districtSales1 = districtSalesRepository.findById(count);
+//
+//                if(districtSales1.isPresent()) {
+//                    districtSales1.get().setLatitude(Double.parseDouble(searchResult.getBody().documents().get(0).y()));
+//                    districtSales1.get().setLongitude(Double.parseDouble(searchResult.getBody().documents().get(0).x()));
+//                }
+//
+//                districtSalesRepository.save(districtSales1.get());
+//
+//                //System.out.println(searchResult.getBody().documents().get(0).x() + " " + searchResult.getBody().documents().get(0).y());
+//            }
+//            count++;
+//        }
+
 
         //가장 가까운 상권을 찾아서 가져온 상황.
-        DistrictSales districtSales = districtSalesRepository.findByDistrictName("사가정역");
+        //DistrictSales districtSales = districtSalesRepository.findByDistrictName("사가정역");
+
+        DistrictSales districtSales = districtSalesRepository.findByIdAndDistrictName(1001, "역삼역 4번");
 
         //해당 상권
         // 구분코드명 : 발달상권, 골목상권, 전통시장, 관광특구
