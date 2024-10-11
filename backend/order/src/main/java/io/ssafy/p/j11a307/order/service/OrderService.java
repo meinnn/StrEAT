@@ -577,7 +577,7 @@ public class OrderService {
 //        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
         Integer customerId = 9;
         List<Orders> waitingOrders = ordersRepository
-                .findAllByStoreIdAndUserIdAndStatus(storeId, customerId, OrderCode.WAITING_FOR_RECEIPT);
+                .findAllByStoreIdAndUserIdAndStatus(storeId, customerId, OrderCode.WAITING_FOR_RECEIPT.name());
         log.info("waitingOrder size: {}", waitingOrders.size());
         waitingOrders.forEach(order -> order.updateStatus(OrderCode.RECEIVED));
         waitingOrders.forEach(order -> log.info("order id: {}, status: {}" , order.getId(), order.getStatus().name()));
