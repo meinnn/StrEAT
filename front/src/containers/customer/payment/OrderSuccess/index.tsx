@@ -47,11 +47,11 @@ export default function OrderSuccess() {
         const errorData = await response.json()
         console.error('결제 실패:', errorData.message)
         // 결제 실패 시 메인 페이지로 리다이렉트
-        router.push('/') // 실패 시에도 메인 페이지로 리다이렉트
+        router.push('/customer/orders') // 실패 시에도 메인 페이지로 리다이렉트
       } catch (error) {
         console.error('결제 요청 오류:', error)
         // 오류 시 메인 페이지로 리다이렉트
-        router.push('/') // 오류 시에도 메인 페이지로 리다이렉트
+        router.push('/customer/orders') // 오류 시에도 메인 페이지로 리다이렉트
       }
 
       return undefined // 실패 시에도 undefined를 명시적으로 반환
