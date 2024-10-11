@@ -1,13 +1,11 @@
 package io.ssafy.p.j11a307.order.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DistrictSales {
         @Id // 적절한 기본 키를 설정해야 합니다. 필요시 복합키를 만들 수 있습니다.
