@@ -212,9 +212,9 @@ public class OrderController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "음식 수령 성공")
     })
-    public ResponseEntity<DataResponse<PickupCompletedResponse>> pickupFood(HttpServletRequest request, @RequestBody Integer storeId) {
+    public ResponseEntity<DataResponse<PickupCompletedResponse>> pickupFood(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        PickupCompletedResponse pickupCompletedResponse= orderService.pickupFood(token, storeId);
+        PickupCompletedResponse pickupCompletedResponse= orderService.pickupFood(token, 14);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of("음식 수령에 성공했습니다.", pickupCompletedResponse));
     }
