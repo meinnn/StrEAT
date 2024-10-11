@@ -1,6 +1,9 @@
 package io.ssafy.p.j11a307.order.service;
 
+import io.ssafy.p.j11a307.order.dto.ResponseData;
+import io.ssafy.p.j11a307.order.dto.ResponseData2;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public interface KakaoClient {
     @GetMapping("/search/keyword.json")
-    String searchLocation(@RequestParam("query") String query,
-                          @RequestHeader("Authorization") String authorization);
+    ResponseEntity<ResponseData2> searchLocation(@RequestParam("query") String query,
+                                                 @RequestHeader("Authorization") String authorization);
 
 
 
