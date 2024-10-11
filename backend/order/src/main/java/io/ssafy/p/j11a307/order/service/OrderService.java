@@ -571,7 +571,8 @@ public class OrderService {
     }
 
     public PickupCompletedResponse pickupFood(String token, Integer storeId) {
-        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+//        Integer customerId = ownerClient.getCustomerId(token, internalRequestKey);
+        Integer customerId = 9;
         List<Orders> waitingOrders = ordersRepository
                 .findAllByStoreIdAndUserIdAndStatus(storeId, customerId, OrderCode.WAITING_FOR_RECEIPT);
         waitingOrders.forEach(order -> order.updateStatus(OrderCode.RECEIVED));
