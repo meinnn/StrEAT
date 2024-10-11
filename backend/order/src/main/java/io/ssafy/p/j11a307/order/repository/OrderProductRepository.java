@@ -11,5 +11,6 @@ import java.util.List;
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Integer> {
     //해당 주문에 따른 주문 상품들
     List<OrderProduct> findByOrdersId(Orders ordersId);
+    void deleteByOrdersId(Orders ordersId);
 
 }

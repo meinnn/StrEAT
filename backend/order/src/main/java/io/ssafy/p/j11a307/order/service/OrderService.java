@@ -546,7 +546,9 @@ public class OrderService {
         if(orders == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
         Integer orderId = orders.getId();
         if (payProcessRequest.isSuccess().equals(0)) {
+            orderProductRepository.deleteByOrdersId(orders);
             ordersRepository.delete(orders);
+
             return orderId;
         }
         if(orders.getPaidAt() != null) throw new BusinessException(ErrorCode.ALREADY_DONE);
