@@ -81,7 +81,7 @@ function PaymentCheckoutComponent() {
         },
       })
     } catch (error) {
-      console.error('Payment error:', error)
+      const a = 1
     }
   }, [cartItems, payment, selectedPaymentMethod, orderId])
 
