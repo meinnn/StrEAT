@@ -35,21 +35,22 @@ export default function FCMHandler() {
           if (!('Notification' in window)) {
             return
           }
+          console.log(payload)
 
           const title = payload.notification?.title || '알림'
           const body = payload.notification?.body || '메시지 내용'
           const redirectUrl = payload.data?.url || '/'
 
           // 브라우저 알림 표시
-          const { permission } = Notification
-          if (permission === 'granted') {
-            new Notification(title, {
-              body,
-              icon: '/web-app-manifest-192x192.png',
-            }).onclick = () => {
-              window.open(redirectUrl, '_blank')?.focus()
-            }
-          }
+          // const { permission } = Notification
+          // if (permission === 'granted') {
+          //   new Notification(title, {
+          //     body,
+          //     icon: '/web-app-manifest-192x192.png',
+          //   }).onclick = () => {
+          //     window.open(redirectUrl, '_blank')?.focus()
+          //   }
+          // }
 
           // 알림 리스트에 새 알림 추가
           setNotifications((prev) => [

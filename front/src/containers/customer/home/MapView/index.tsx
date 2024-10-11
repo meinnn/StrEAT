@@ -38,26 +38,29 @@ export default function MapView({
   const [isLocationAvailable, setIsLocationAvailable] = useState(true) // 위치 정보 사용 가능 여부
 
   // 마커 클릭 시 해당 가게로 스크롤 이동 함수
-  const scrollToStore = (storeId: number) => {
-    const storeElement =
-      itemRefs.current[storeList.findIndex((store) => store.id === storeId)]
-    if (storeElement) {
-      // Tailwind로 색상 강조 효과를 추가
-      storeElement.classList.add('scale-105')
+  const scrollToStore = useCallback(
+    (storeId: number) => {
+      const storeElement =
+        itemRefs.current[storeList.findIndex((store) => store.id === storeId)]
+      if (storeElement) {
+        // Tailwind로 색상 강조 효과를 추가
+        storeElement.classList.add('scale-105')
 
-      // 일정 시간이 지난 후 색상 클래스를 제거
-      setTimeout(() => {
-        storeElement.classList.remove('scale-105')
-      }, 700) // 0.7초 동안 색상 변경
+        // 일정 시간이 지난 후 색상 클래스를 제거
+        setTimeout(() => {
+          storeElement.classList.remove('scale-105')
+        }, 700) // 0.7초 동안 색상 변경
 
-      // 스크롤 이동
-      storeElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'start',
-      })
-    }
-  }
+        // 스크롤 이동
+        storeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'start',
+        })
+      }
+    },
+    [storeList]
+  )
 
   // 위치 권한 확인 및 버튼 표시 여부 결정
   useEffect(() => {
@@ -210,7 +213,7 @@ export default function MapView({
         markersRef.current.push(marker)
       })
     }
-  }, [map, storeList, setCenter])
+  }, [map, storeList, setCenter, scrollToStore])
 
   // 처음 렌더링 시만 onReSearch 실행
   useEffect(() => {
