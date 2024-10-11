@@ -322,3 +322,29 @@ export const updateStoreInfo = async (token: string, payload: any) => {
 
   return response
 }
+
+// 음식 수령하는 API
+export const pickUpFood = async (token: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-request/pick-up`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  )
+
+  console.log('response:', response)
+
+  if (!response.ok) {
+    const errorMessage = await response.json()
+    throw new Error(
+      JSON.stringify({ message: errorMessage.message, status: response.status })
+    )
+  }
+
+  return response
+}
