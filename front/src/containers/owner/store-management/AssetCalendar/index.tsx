@@ -11,17 +11,16 @@ interface DailySales {
 }
 
 interface Transaction {
-  [x: string]: any
   dailySalesList: DailySales[]
   dailyTotalPayAmount: number
 }
 
-// 현재 날짜를 YYYY-MM-DD 형식으로 반환하는 함수
+// 현재 날짜를 YYYY-MM-DD 형식으로 반환하는 함수 (UTC 시간으로 반환)
 const getCurrentDate = (): string => {
   const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, '0') // 월은 0부터 시작하므로 +1
-  const day = String(today.getDate()).padStart(2, '0') // 일자도 2자리로 맞춤
+  const year = today.getUTCFullYear() // UTC 기준 연도
+  const month = String(today.getUTCMonth() + 1).padStart(2, '0') // 월은 0부터 시작하므로 +1
+  const day = String(today.getUTCDate()).padStart(2, '0') // UTC 기준 일자
   return `${year}-${month}-${day}`
 }
 
@@ -36,16 +35,14 @@ const getTokenFromCookies = (): string | null => {
 // 거래 데이터를 서버에서 불러오는 함수
 const fetchTransactions = async (
   month: string,
-  authToken: string // 'token' 대신 'authToken'으로 변경
+  authToken: string
 ): Promise<{ [key: string]: Transaction }> => {
-  // 객체로 반환 타입 수정
-
   try {
     const response = await fetch(`/services/calendar?month=${month}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`, // 토큰을 함께 보내는 코드
+        'Authorization': `Bearer ${authToken}`,
       },
     })
 
@@ -55,17 +52,23 @@ const fetchTransactions = async (
 
     const data = await response.json()
 
+    // 데이터가 객체가 아닌 경우 처리
+    if (!data?.data || typeof data.data !== 'object') {
+      console.error('Expected data to be an object but got:', typeof data?.data)
+      return {}
+    }
+
     // 데이터를 날짜를 key로 한 객체로 변환
-    return (
-      data?.data?.reduce(
-        (acc: { [key: string]: Transaction }, transaction: Transaction) => {
-          const dateKey = transaction.someDateField // 적절한 날짜 필드를 키로 설정 (적절한 필드로 대체)
-          acc[dateKey] = transaction
-          return acc
-        },
-        {}
-      ) || {}
-    ) // 빈 객체를 반환
+    return Object.entries(data.data).reduce(
+      (
+        acc: { [key: string]: Transaction },
+        [dateKey, transaction]: [string, unknown]
+      ) => {
+        acc[dateKey] = transaction as Transaction // transaction을 Transaction으로 명시적 단언
+        return acc
+      },
+      {}
+    )
   } catch (error) {
     console.error('Error fetching transactions:', error)
     return {}
@@ -73,17 +76,17 @@ const fetchTransactions = async (
 }
 
 export default function AssetCalendar() {
-  const [selectedDate, setSelectedDate] = useState<string>(getCurrentDate()) // 현재 날짜를 기본값으로 설정
-  const [transactions, setTransactions] = useState<
-    { [key: string]: Transaction } | undefined
-  >(undefined) // 거래 데이터 상태를 객체로 수정
+  const [selectedDate, setSelectedDate] = useState<string>(getCurrentDate()) // 현재 UTC 날짜를 기본값으로 설정
+  const [transactions, setTransactions] = useState<{
+    [key: string]: Transaction
+  }>({}) // 거래 데이터 상태를 빈 객체로 설정
   const [cachedMonth, setCachedMonth] = useState<string | null>(null) // 현재 캐시된 월 상태
   const [token, setToken] = useState<string | null>(null) // 토큰 상태 추가
   const [loading, setLoading] = useState<boolean>(false) // 로딩 상태 추가
 
   // 쿠키에서 토큰 가져오기
   useEffect(() => {
-    const tokenFromCookies = getTokenFromCookies() // 'token' 대신 'tokenFromCookies'로 변경
+    const tokenFromCookies = getTokenFromCookies()
     if (tokenFromCookies) {
       setToken(tokenFromCookies) // 토큰을 상태에 저장
     } else {
@@ -93,8 +96,8 @@ export default function AssetCalendar() {
 
   // API 요청 함수
   const loadTransactionsForMonth = useCallback(
-    async (month: string, authToken: string) => {
-      if (!authToken) {
+    async (month: string) => {
+      if (!token) {
         console.error('No token available for fetching transactions') // 토큰이 없을 때
         return // 토큰이 없으면 요청을 보내지 않음
       }
@@ -104,12 +107,12 @@ export default function AssetCalendar() {
       }
 
       setLoading(true) // 로딩 시작
-      const newTransactions = await fetchTransactions(month, authToken) // 'authToken' 사용
+      const newTransactions = await fetchTransactions(month, token) // 'token' 사용
       setTransactions(newTransactions) // 불러온 데이터로 상태 업데이트
       setCachedMonth(month) // 캐시된 월 업데이트
       setLoading(false) // 로딩 끝
     },
-    [cachedMonth] // cachedMonth가 변경될 때만 함수가 재생성됨
+    [cachedMonth, token] // token을 의존성 배열에 추가
   )
 
   // token 상태가 존재할 때만 API 호출
@@ -117,11 +120,11 @@ export default function AssetCalendar() {
     if (!token) return // 토큰이 없으면 API 호출하지 않음
 
     const selectedMonth = selectedDate.split('-')[1] // 월을 추출
-    loadTransactionsForMonth(selectedMonth, token) // token이 설정된 후에만 호출
+    loadTransactionsForMonth(selectedMonth) // token이 설정된 후에만 호출
   }, [token, selectedDate, loadTransactionsForMonth]) // loadTransactionsForMonth 추가
 
   // 객체의 값들을 배열로 변환하여 SingleDatePicker에 전달
-  const transactionsArray = transactions ? Object.values(transactions) : []
+  const transactionsArray = Object.values(transactions)
 
   return (
     <div>
