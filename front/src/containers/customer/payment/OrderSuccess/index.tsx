@@ -1,10 +1,13 @@
+'use client'
+
 import { FaCheck } from 'react-icons/fa6'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function OrderSuccess() {
   const router = useRouter()
   const searchParams = useSearchParams() // URL의 쿼리 파라미터를 가져오는 훅
+  const [isPaymentProcessed, setIsPaymentProcessed] = useState(false) // 결제 처리 여부 상태
 
   useEffect(() => {
     // URL에서 쿼리 파라미터 값 가져오기
@@ -16,6 +19,11 @@ export default function OrderSuccess() {
     if (!paymentKey || !amount || !initialOrderId) {
       console.error('필수 결제 정보가 없습니다.')
       router.push('/') // 실패 시 메인 페이지로 리다이렉트
+      return
+    }
+
+    // 이미 결제 요청을 보냈다면 다시 요청하지 않음
+    if (isPaymentProcessed) {
       return
     }
 
@@ -32,13 +40,16 @@ export default function OrderSuccess() {
 
         if (response.ok) {
           const data = await response.json()
-          console.log(data)
+          console.log('data:', data)
           const { orderId: responseOrderId } = data // 응답에서 새로운 orderId(숫자)를 받음
+          console.log('responseOrderId:', responseOrderId)
+
+          setIsPaymentProcessed(true) // 결제 처리 완료 상태로 설정
 
           // 성공 시 주문 완료 UI를 보여준 후 1초 뒤에 리다이렉트
           const timer = setTimeout(() => {
             router.push(`/customer/orders/${responseOrderId}`) // 숫자로 받은 orderId로 리다이렉트
-          }, 100)
+          }, 1000)
 
           return () => clearTimeout(timer)
         }
@@ -53,13 +64,11 @@ export default function OrderSuccess() {
         // 오류 시 메인 페이지로 리다이렉트
         router.push('/customer/orders') // 오류 시에도 메인 페이지로 리다이렉트
       }
-
-      return undefined // 실패 시에도 undefined를 명시적으로 반환
     }
 
     // 결제 처리 함수 호출
     handlePayment()
-  }, [router, searchParams]) // searchParams 훅을 의존성으로 추가
+  }, [router, searchParams, isPaymentProcessed]) // isPaymentProcessed를 의존성으로 추가
 
   return (
     <div className="h-screen z-50 flex flex-col items-center justify-center">
