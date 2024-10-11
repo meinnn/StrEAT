@@ -12,7 +12,7 @@ const LINKS = [
   { name: '홈', href: '/', icon: TbSmartHome },
   { name: '내 점포 정보', href: '/store', icon: BiStoreAlt },
   { name: '주문 접수', href: '/order-management', icon: BiReceipt },
-  { name: '매장 관리', href: '/manage', icon: LuFilePieChart },
+  { name: '매장 관리', href: '/store-management', icon: LuFilePieChart },
   { name: '전체', href: '/all', icon: FiGrid },
 ]
 
