@@ -38,7 +38,9 @@ export default function Favorites() {
     queryFn: getFavoriteList,
   })
 
-  if (favoriteListData.length === 0) {
+  console.log('favoriteListData:', favoriteListData)
+
+  if (favoriteListData?.length === 0) {
     return (
       <div>
         <AppBar title="찜목록" />
@@ -70,16 +72,16 @@ export default function Favorites() {
       <AppBar title="찜목록" />
       <main className="pb-32">
         {favoriteListData &&
-          favoriteListData.length > 0 &&
+          favoriteListData?.length > 0 &&
           favoriteListData?.map((favorite) => (
             <FavoriteItem
-              key={favorite.storeId}
-              storeId={favorite.storeId}
-              status={favorite.status}
-              imageSrc={favorite.imageSrc}
-              title={favorite.storeName}
-              score={favorite.averageScore}
-              notification={favorite.alertOn}
+              key={favorite?.storeId}
+              storeId={favorite?.storeId}
+              status={favorite?.status}
+              imageSrc={favorite?.imageSrc || '/images/보쌈사진.jpg'}
+              title={favorite?.storeName}
+              score={favorite?.averageScore}
+              notification={favorite?.alertOn}
             />
           ))}
       </main>
