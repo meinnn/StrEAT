@@ -590,7 +590,7 @@ public class OrderService {
                     .customerId(customerId)
                     .orderId(waitingOrderIds.getFirst())
                     .build();
-            pushAlertClient.sendPickupCompletedAlert(orderStatusChangeRequest, internalRequestKey);
+//            pushAlertClient.sendPickupCompletedAlert(orderStatusChangeRequest, internalRequestKey);
         }
         return new PickupCompletedResponse(waitingOrderIds);
     }
