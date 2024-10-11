@@ -32,6 +32,7 @@ export default function OrderSuccess() {
 
         if (response.ok) {
           const data = await response.json()
+          console.log(data)
           const { responseId } = data.orderId // 응답에서 orderId 가져오기
 
           // 성공 시 주문 완료 UI를 보여준 후 1초 뒤에 리다이렉트
