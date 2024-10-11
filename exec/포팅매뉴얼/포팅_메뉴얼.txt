@@ -1,0 +1,27 @@
+Java 21
+Spring Boot 3.3.5
+Spring Cloud Version 2023.0.3
+Intellij 2024.2.0.2
+
+설정파일
+설정파일/application.yml : 외부 저장소인 github에 올려놓고 config server에서 이를 참조하고 사용
+설정파일에 db 정보 등 필요한 정보 모두 기재
+
+환경변수
+-Djasypt.encryptor.password=streatpassword : config server를 실행하기 위해서는 해당 환경변수 설정 필수
+  -> github에 있는 설정파일을 읽어들이는 서버. github 설정을 난독화했고, 이를 디코딩하기 위해 환경변수 설정
+
+프로파일
+로컬환경에서 실행시키기 위해서는 각 서버는 dev 프로파일로 실행 필수
+
+배포 특이사항
+각 브랜치별로 파이프라인 생성
+Dockerfile에 기재. / front-end Dockerfile은 front directory 아래 Dockerfile 존재. nginx 설정과 같이 위치
+
+----Jenkins Credentials-----
+JASYPT_PASSWORD  :  JASYPT_PASSWORD
+f75c072f-4462-4e7f-8d28-c69f6c42c575  :  jeuslee99@naver.com/****** -> Jenkins 로그인 정보
+dockerhub-jenkins  :  junbeomson/****** -> Docker hub 정보
+
+---- Jenkins에 파일 업로드 필수 -----
+fcm-config.json
