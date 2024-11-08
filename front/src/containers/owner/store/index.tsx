@@ -1,26 +1,37 @@
 'use client'
 
-import Image from 'next/image'
-import StoreBusinessLocation from '@/containers/owner/store/StoreBusinessLocation'
-import StoreBusinessHours from '@/containers/owner/store/StoreBusinessHours'
-import StoreInformation from '@/containers/owner/store/StoreInformation'
+import { useState } from 'react'
+import OwnerTabList from '@/components/OwnerTabList'
+import Store from '@/containers/owner/store/Store'
+import StoreMenu from '@/containers/owner/store/menu/store-menu'
+
+const TAB_LIST = [
+  { id: 'store-info', name: '내 점포 정보', href: '/store' },
+  { id: 'store-menu', name: '메뉴 정보', href: '/menu' },
+]
+
+const renderView = (activeTab: string): React.ReactNode => {
+  switch (activeTab) {
+    case 'store-info':
+      return <Store />
+    case 'store-menu':
+      return <StoreMenu />
+    default:
+      return null
+  }
+}
 
 export default function OwnerStore() {
+  const [selectedTab, setSelectedTab] = useState(TAB_LIST[0].id)
+
   return (
-    <div className="bg-white">
-      <main className="pb-8 flex flex-col">
-        <div className="relative w-full h-40 overflow-hidden bg-gray-medium">
-          <Image
-            src="/images/보쌈사진.jpg"
-            alt="store"
-            fill
-            className="object-cover"
-          />
-        </div>
-        <StoreInformation />
-        <StoreBusinessLocation />
-        <StoreBusinessHours />
-      </main>
+    <div>
+      <OwnerTabList
+        tabList={TAB_LIST}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
+      {renderView(selectedTab)}
     </div>
   )
 }

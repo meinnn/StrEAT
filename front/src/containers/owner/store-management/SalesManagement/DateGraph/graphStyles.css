@@ -1,0 +1,22 @@
+/* graphStyles.css */
+.custom-graph {
+  padding: 2px;
+  margin-right: 20px; /* 그래프를 왼쪽으로 이동시키기 위해 추가 */
+}
+
+.custom-graph .recharts-tooltip-label {
+  color: white;
+  font-weight: bold;
+}
+
+.custom-graph .recharts-legend-item-text {
+  color: #000;
+}
+
+.custom-graph .bar-background {
+  fill: #e0e0e0;
+}
+
+.custom-graph .bar {
+  fill: #ff6384;
+}

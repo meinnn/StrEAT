@@ -4,7 +4,17 @@ import { useState } from 'react'
 import MenuCategoryModal from '@/containers/customer/home/MenuCategoryModal'
 import { useRouter } from 'next/navigation'
 
-export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
+type StoreSearchHeaderProps = {
+  view: 'map' | 'list'
+  currentAddress: string
+  onReSearch?: () => void
+}
+
+export default function StoreSearchHeader({
+  view,
+  currentAddress,
+  onReSearch,
+}: StoreSearchHeaderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedMenu, setSelectedMenu] = useState<string | null>(null) // 선택된 메뉴 저장
   const router = useRouter()
@@ -23,7 +33,7 @@ export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
         }}
         className="w-full flex items-center justify-between rounded-xl h-12 px-5 border border-gray-medium drop-shadow-md bg-white"
       >
-        <span>현재 주소</span>
+        <span>{currentAddress || '위치 검색'}</span>
         <GoChevronRight size="18" />
       </button>
       <div className="mt-4 flex overflow-x-auto whitespace-nowrap gap-2">
@@ -43,6 +53,7 @@ export default function StoreSearchHeader({ view }: { view: 'map' | 'list' }) {
         {view === 'map' && (
           <button
             type="button"
+            onClick={onReSearch}
             className="bg-primary-500 text-white rounded-full px-6 h-9 text-sm"
           >
             현재 지도에서 가게 재검색

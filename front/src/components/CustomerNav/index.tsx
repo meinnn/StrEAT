@@ -14,13 +14,19 @@ const LINKS = [
   { name: '마이 페이지', href: '/mypage', icon: HiOutlineUser },
 ]
 
-const HIDDEN_PATHS = ['/customer/stores', '/customer/cart', '/customer/payment']
+const HIDDEN_PATHS = [
+  '/customer/stores',
+  '/customer/cart',
+  '/customer/payment',
+  '/customer/mypage/reviews',
+  '/customer/orders/\\d+/review/new',
+]
 
 export default function CustomerNav() {
   const path = usePathname()
 
   const isHiddenPath = HIDDEN_PATHS.some((hiddenPath) =>
-    path.startsWith(hiddenPath)
+    new RegExp(`^${hiddenPath}`).test(path)
   )
   if (isHiddenPath) return null
 

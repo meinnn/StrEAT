@@ -1,8 +1,0 @@
-.idea
-.idea/
-announcement/.idea
-*.xml
-
-**/build
-**/out
-**/.gradle

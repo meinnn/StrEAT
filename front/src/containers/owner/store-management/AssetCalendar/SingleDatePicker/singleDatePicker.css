@@ -1,0 +1,114 @@
+/* 전체 달력 컨테이너 */
+.react-datepicker {
+  font-family: 'Inter', sans-serif;
+  background-color: white;
+  width: 100%;
+  max-width: 100%; /* 페이지에 맞게 최대 너비를 100%로 설정 */
+  padding-bottom: 4px;
+  text-align: center;
+  padding-top: 10px;
+  margin: 0; /* 좌우 여백을 자동으로 설정하여 가운데 정렬 */
+  box-sizing: border-box;
+  overflow-x: hidden; /* 좌우 스크롤 방지 */
+}
+
+/* 요일 스타일 (가로 정렬) */
+.react-datepicker__day-names {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.9rem;
+  text-align: center;
+  padding-bottom: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* 날짜 스타일 (가로 정렬) */
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-around;
+  font-size: large;
+  margin-bottom: 1rem;
+  align-items: stretch; /* 각 날짜의 높이를 동일하게 맞추기 위해 추가 */
+}
+
+/* 날짜 버튼 스타일 */
+.react-datepicker__day {
+  font-size: 1rem;
+  color: #626060;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 날짜와 금액을 적절히 분리 */
+  align-items: center;
+  width: 3rem; /* 날짜 버튼 크기 고정 */
+  height: 3rem; /* 날짜 버튼 크기 고정 */
+  margin: 0.2rem; /* 날짜 간 간격 */
+  transition: background-color 0.3s ease;
+  background-color: transparent; /* 선택되지 않은 날짜의 배경 투명 */
+  border: none; /* 클릭 시 테두리 제거 */
+  outline: none; /* 클릭 시 윤곽선 제거 */
+  box-shadow: none; /* 클릭 시 박스 그림자 제거 */
+}
+
+/* 입출금 내역이 있는 날짜 텍스트 위치 조정 */
+.react-datepicker__day span {
+  vertical-align: middle; /* 날짜 텍스트와 금액을 수직으로 정렬 */
+  line-height: 1.2rem; /* 날짜와 금액 간 간격 조정 */
+}
+
+/* 선택된 날짜 스타일 */
+.react-datepicker__day--selected {
+  background-color: transparent;
+  color: black;
+  font-weight: bold;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 오늘 날짜 스타일 */
+.react-datepicker__day--today {
+  font-weight: bold;
+  color: #ff4081;
+}
+
+/* 거래 금액 스타일 */
+.transaction-amount {
+  font-size: 0.6rem;
+  line-height: 1rem;
+  white-space: nowrap;
+  text-align: center;
+  margin-top: 5px; /* 금액과 날짜 간 간격 추가 */
+}
+
+/* 날짜 호버 스타일 */
+.react-datepicker__day:hover {
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+/* 월 이동 버튼 수정 */
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  background-color: #fffbf3;
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff4081;
+  border: none;
+}
+
+/* 중복된 월/년 요소 숨기기 */
+.react-datepicker__aria-live {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+}
