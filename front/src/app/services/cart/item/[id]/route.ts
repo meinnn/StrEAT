@@ -18,7 +18,7 @@ export async function POST(
   const body = await request.json()
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/${params.id}/basket`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/${params.id}/basket`,
       {
         method: 'POST',
         headers: {
@@ -58,7 +58,7 @@ export async function DELETE(
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/${params.id}/basket`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/${params.id}/basket`,
       {
         method: 'DELETE',
         headers: {
@@ -97,7 +97,7 @@ export async function PATCH(
     const { optionList, quantity } = await request.json()
 
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/${params.id}/basket`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/${params.id}/basket`,
       {
         method: 'PATCH',
         headers: {

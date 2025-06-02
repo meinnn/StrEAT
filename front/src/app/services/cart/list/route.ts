@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   try {
     // 장바구니 목록을 가져오는 API 요청
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/basket/list?pgno=${pgno}&spp=${spp}`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/basket/list?pgno=${pgno}&spp=${spp}`,
       {
         method: 'GET',
         headers: {
@@ -69,7 +69,7 @@ export async function DELETE() {
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/basket`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/basket`,
       {
         method: 'DELETE',
         headers: {

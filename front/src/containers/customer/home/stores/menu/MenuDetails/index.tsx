@@ -4,7 +4,7 @@ import { Menu, OptionCategory } from '@/types/menu'
 
 async function fetchOptionCategory(id: number): Promise<OptionCategory> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/products/option-categories/${id}`
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/products/option-categories/${id}`
   )
 
   if (!response.ok) {
@@ -17,7 +17,7 @@ async function fetchOptionCategory(id: number): Promise<OptionCategory> {
 
 async function fetchMenuDetails(menuId: string): Promise<Menu> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/products/${menuId}`
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/products/${menuId}`
   )
 
   if (!response.ok) {

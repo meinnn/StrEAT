@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   const { userType } = await request.json() // 요청 본문에서 userType 가져오기
 
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/users/${userType}/register`,
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/${userType}/register`,
     {
       method: 'POST',
       headers: {

@@ -19,7 +19,7 @@ export async function GET(req: Request) {
   try {
     // API 요청을 보냄
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/order-manage/day-list?month=${month}`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-manage/day-list?month=${month}`,
       {
         method: 'GET',
         headers: {

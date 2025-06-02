@@ -20,7 +20,7 @@ interface StoreDetails {
 
 async function fetchStoreDetails(storeId: string): Promise<StoreDetails> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/stores/${storeId}`,
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/stores/${storeId}`,
     { cache: 'no-store' }
   )
 
@@ -34,7 +34,7 @@ async function fetchStoreDetails(storeId: string): Promise<StoreDetails> {
 
 async function fetchBusinessDays(storeId: string) {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/stores/business-days/${storeId}`
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/stores/business-days/${storeId}`
   )
   const result = await response.json()
 

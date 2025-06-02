@@ -19,7 +19,7 @@ async function fetchStoreReviewSummary(
   storeId: string
 ): Promise<ReviewSummary> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/orders/stores/${storeId}/reviews/summary`
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/stores/${storeId}/reviews/summary`
   )
 
   if (!response.ok) {
@@ -32,7 +32,7 @@ async function fetchStoreReviewSummary(
 
 async function fetchStoreDetails(storeId: string): Promise<Store> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/stores/${storeId}/details/customer`,
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/stores/${storeId}/details/customer`,
     { cache: 'no-store' }
   )
 

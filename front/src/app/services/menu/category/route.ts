@@ -5,7 +5,7 @@ export async function GET() {
   try {
     // 외부 API에 GET 요청을 보냅니다.
     const response = await fetch(
-      'https://j11a307.p.ssafy.io/api/products/categories',
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/products/categories`,
       {
         method: 'GET',
         headers: {

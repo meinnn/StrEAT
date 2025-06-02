@@ -14,7 +14,7 @@ export async function GET(
   }
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/basket/${params.id}/info`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/basket/${params.id}/info`,
       {
         method: 'GET',
         headers: {

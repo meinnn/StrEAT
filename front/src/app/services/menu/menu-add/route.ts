@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // 외부 API로 FormData와 함께 요청
     const response = await fetch(
-      'https://j11a307.p.ssafy.io/api/products/all',
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/products/all`,
       {
         method: 'POST',
         headers: {

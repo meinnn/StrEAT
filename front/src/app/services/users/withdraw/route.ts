@@ -11,7 +11,7 @@ export async function DELETE() {
   }
 
   const response = await fetch(
-    'https://j11a307.p.ssafy.io/api/users/withdraw',
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/withdraw`,
     {
       method: 'DELETE',
       headers: {

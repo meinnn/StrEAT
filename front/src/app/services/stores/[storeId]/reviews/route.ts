@@ -15,7 +15,7 @@ export async function GET(
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/stores/${params.storeId}/reviews/summary`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/stores/${params.storeId}/reviews/summary`,
       {
         method: 'GET',
         headers: {

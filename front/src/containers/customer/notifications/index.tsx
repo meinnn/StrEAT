@@ -16,7 +16,7 @@ async function fetchNotificationList(): Promise<NotificationResponse[]> {
   const token = cookieStore.get('accessToken')?.value
 
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/push-alert/all?pgno=0&spp=10`,
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/push-alert/all?pgno=0&spp=10`,
     {
       method: 'GET',
       headers: {
