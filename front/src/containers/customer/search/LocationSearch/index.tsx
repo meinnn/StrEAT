@@ -1,10 +1,11 @@
 'use client'
 
 import { RiSearchLine } from 'react-icons/ri'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useRef, useState } from 'react'
 import { useMapCenter } from '@/contexts/MapCenterContext'
 import { useRouter } from 'next/navigation'
 import { IoCloseOutline } from 'react-icons/io5'
+import SkeletonList from '@/containers/customer/search/SkeletonList'
 
 interface Location {
   id: string
@@ -54,15 +55,24 @@ export default function LocationSearch() {
     )
   }
 
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
   // 사용자가 입력할 때 호출되는 함수
   const handleInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value
     setSearchQuery(query)
+    setIsSearching(true) // 입력하자마자 로딩 UI 보여주기
 
-    if (query.length > 0) {
-      setIsSearching(true) // 검색 중 상태를 표시
-      setSearchResults([]) // 검색 결과 리셋
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current) // 이전 타이머 제거
+    }
 
+    if (query.length === 0) {
+      setSearchResults([])
+      setIsSearching(false) // 검색 완료 상태
+      return
+    }
+
+    debounceTimer.current = setTimeout(async () => {
       const res = await fetch(
         `/services/naver-search?query=${encodeURIComponent(query)}`
       )
@@ -76,9 +86,7 @@ export default function LocationSearch() {
 
       setSearchResults(formattedResults || [])
       setIsSearching(false) // 검색 완료 상태
-    } else {
-      setSearchResults([]) // 입력이 없을 경우 결과 초기화
-    }
+    }, 200) // 200ms 이후에 실행
   }
 
   function parseHtmlString(htmlString: string): string {
@@ -111,45 +119,49 @@ export default function LocationSearch() {
           onChange={handleInputChange}
         />
       </div>
-      <div className="mt-6 px-4">
-        {/* 검색 결과 출력 또는 최근 검색 위치 출력 */}
-        {searchQuery.length === 0 && (
-          <h2 className="text-xl font-semibold mb-2">최근 검색 위치</h2>
-        )}
-        <ul>
-          {locations.map((location) => (
-            <li
-              key={`${location.mapx}-${location.mapy}`}
-              className="flex justify-between items-center border-b border-gray-200 py-4"
-            >
-              <div
-                role="presentation"
-                className="w-full cursor-pointer"
-                onClick={() =>
-                  handleLocationClick(location.mapx, location.mapy)
-                }
+      {isSearching ? (
+        <div className="mt-6 px-4">
+          <SkeletonList />
+        </div>
+      ) : (
+        <div className="mt-6 px-4">
+          {/* 검색 결과 출력 또는 최근 검색 위치 출력 */}
+          {searchQuery.length === 0 && (
+            <h2 className="text-xl font-semibold mb-2">최근 검색 위치</h2>
+          )}
+          <ul>
+            {locations.map((location) => (
+              <li
+                key={`${location.mapx}-${location.mapy}`}
+                className="flex justify-between items-center border-b border-gray-200 py-4"
               >
-                <p className="font-semibold mb-1">
-                  {parseHtmlString(location.title)}
-                </p>
-                <p className="text-xs text-primary-950">{location.address}</p>
-              </div>
-              {/* 삭제 버튼 */}
-              {searchQuery.length === 0 && (
-                <button
-                  type="button"
-                  onClick={() => handleRemove(location.id)}
-                  className="text-gray-dark self-start"
+                <div
+                  role="presentation"
+                  className="w-full cursor-pointer"
+                  onClick={() =>
+                    handleLocationClick(location.mapx, location.mapy)
+                  }
                 >
-                  <IoCloseOutline size={18} />
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-      {/* 로딩 상태 표시 */}
-      {isSearching && <p className="text-sm text-gray-500 m-4">검색 중...</p>}
+                  <p className="font-semibold mb-1">
+                    {parseHtmlString(location.title)}
+                  </p>
+                  <p className="text-xs text-primary-950">{location.address}</p>
+                </div>
+                {/* 삭제 버튼 */}
+                {searchQuery.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(location.id)}
+                    className="text-gray-dark self-start"
+                  >
+                    <IoCloseOutline size={18} />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
