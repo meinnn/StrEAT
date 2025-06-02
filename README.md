@@ -117,7 +117,7 @@ $ cd ./backend
       <sub>toss API를 이용한 결제 시스템</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/1169991f-ab07-450d-ae51-fe6d1b850af3" alt="주문 알림" style="max-width: 100%; height: 300px; object-fit: contain; display: block; margin: auto;">
+      <img src="https://github.com/user-attachments/assets/70660a9b-e719-4113-86c7-d8b6e1dfe309" alt="주문 알림" style="max-width: 100%; height: 300px; object-fit: contain; display: block; margin: auto;">
       <img src="https://github.com/user-attachments/assets/4bf93b26-17dc-4a1d-ba0a-a3909a002932" alt="주문 관리" style="max-width: 100%; height: 300px; object-fit: contain; display: block; margin: auto;">
       <p>📃주문 알림/주문 관리</p>
       <sub>주문 관련 알림과 주문 내역을 확인하고 관리할 수 있는 주문 관리 시스템</sub>
