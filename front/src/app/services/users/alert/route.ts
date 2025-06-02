@@ -9,9 +9,9 @@ export async function POST(req: NextRequest) {
     // alertType에 따라 API URL을 결정
     let apiUrl = ''
     if (alertType === 'dibs-store-alert') {
-      apiUrl = 'https://j11a307.p.ssafy.io/api/users/dibs-store-alert'
+      apiUrl = `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/dibs-store-alert`
     } else if (alertType === 'order-status-alert') {
-      apiUrl = 'https://j11a307.p.ssafy.io/api/users/order-status-alert'
+      apiUrl = `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/order-status-alert`
     } else {
       return NextResponse.json(
         { error: '잘못된 알림 유형입니다' },

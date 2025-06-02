@@ -8,7 +8,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      'https://j11a307.p.ssafy.io/api/users/profile',
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/profile`,
       {
         method: 'GET',
         headers: {

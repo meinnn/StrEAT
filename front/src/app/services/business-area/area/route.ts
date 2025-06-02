@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
     // 외부 API 요청
     const apiResponse = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/order-manage/spot/surround-radius?latitude=${latitude}&longitude=${longitude}`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-manage/spot/surround-radius?latitude=${latitude}&longitude=${longitude}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

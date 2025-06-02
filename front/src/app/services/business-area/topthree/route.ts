@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     // 외부 API로 GET 요청
     const response = await fetch(
-      'https://j11a307.p.ssafy.io/api/orders/order-manage/spot/top-three',
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-manage/spot/top-three`,
       {
         method: 'GET',
         headers: {

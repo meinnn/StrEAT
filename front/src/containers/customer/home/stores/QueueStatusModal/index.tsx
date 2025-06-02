@@ -9,7 +9,7 @@ interface WaitingList {
 
 async function fetchWaitingList(storeId: string): Promise<WaitingList> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/orders/order-request/${storeId}/list/waiting`,
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-request/${storeId}/list/waiting`,
     {
       method: 'GET',
       cache: 'no-store', // 항상 새 정보

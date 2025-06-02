@@ -14,7 +14,7 @@ interface MenuListItem {
 
 async function fetchMenuList(storeId: string): Promise<MenuListItem[]> {
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/products/store/${storeId}`
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/products/store/${storeId}`
   )
 
   if (!response.ok) {

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-const BASE_URL = 'https://j11a307.p.ssafy.io'
+const BASE_URL = `${process.env.NEXT_PUBLIC_BACK_URL}`
 
 // eslint-disable-next-line import/prefer-default-export
 export async function GET(request: Request) {
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     )
   }
 
-  const apiUrl = `https://j11a307.p.ssafy.io/api/users/login/kakao/auth?code=${code}`
+  const apiUrl = `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/login/kakao/auth?code=${code}`
 
   try {
     const response = await fetch(apiUrl, {

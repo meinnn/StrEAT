@@ -8,7 +8,7 @@ export async function GET() {
     const token = cookieStore.get('accessToken')?.value
 
     const response = await fetch(
-      'https://j11a307.p.ssafy.io/api/orders/order-request/mine/list/ongoing',
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-request/mine/list/ongoing`,
       {
         method: 'GET',
         headers: {

@@ -12,7 +12,7 @@ export async function GET(req: Request) {
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/orders/order-manage/report`, // 엔드포인트에서 storeId 제거
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-manage/report`, // 엔드포인트에서 storeId 제거
       {
         method: 'GET',
         headers: {

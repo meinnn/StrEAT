@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const token = cookieStore.get('accessToken')?.value // 쿠키에서 access_token 가져오기
 
   const response = await fetch(
-    `https://j11a307.p.ssafy.io/api/orders/order-request/${storeId}`,
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/orders/order-request/${storeId}`,
     {
       method: 'POST',
       headers: {

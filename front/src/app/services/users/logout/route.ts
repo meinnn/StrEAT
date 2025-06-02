@@ -10,12 +10,15 @@ export async function POST() {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  const response = await fetch('https://j11a307.p.ssafy.io/api/users/logout', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/logout`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
 
   if (response.ok) {
     // 쿠키 삭제

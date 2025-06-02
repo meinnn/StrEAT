@@ -14,7 +14,7 @@ export async function GET(
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/users/dibs/${params.storeId}/called`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/dibs/${params.storeId}/called`,
       {
         method: 'GET',
         headers: {
@@ -61,7 +61,7 @@ export async function POST(
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/users/dibs/${params.storeId}`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/dibs/${params.storeId}`,
       {
         method: 'POST',
         headers: {
@@ -104,7 +104,7 @@ export async function DELETE(
 
   try {
     const response = await fetch(
-      `https://j11a307.p.ssafy.io/api/users/dibs/${params.storeId}`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/dibs/${params.storeId}`,
       {
         method: 'DELETE',
         headers: {

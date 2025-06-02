@@ -9,7 +9,7 @@ export default async function Home() {
   if (accessToken) {
     // 액세스 토큰이 존재하는 경우 자동 로그인 API 호출
     const response = await fetch(
-      'https://j11a307.p.ssafy.io/api/users/login-auto',
+      `${process.env.NEXT_PUBLIC_BACK_URL}/api/users/login-auto`,
       {
         method: 'POST',
         headers: {
